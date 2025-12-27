@@ -1205,35 +1205,30 @@
       // Auto-refresh period left every minute
       setInterval(renderTable, 60000);
     </script>
-    <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/EMI-And-Expense-calculator/sw.js");
-    }
-  </script>
-    <script>
+   <script>
 let deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent Chrome from showing the default prompt
+  console.log('beforeinstallprompt fired'); // <-- check if it fires
   e.preventDefault();
   deferredPrompt = e;
 
-  // Optionally, show your own install button
+  // Create a manual Install button
   const btn = document.createElement('button');
-  btn.innerText = "Install App";
-  btn.style.position = "fixed";
-  btn.style.bottom = "20px";
-  btn.style.left = "20px";
-  btn.style.padding = "10px";
-  btn.style.zIndex = "999";
+  btn.innerText = 'Install App';
+  btn.style.position = 'fixed';
+  btn.style.bottom = '20px';
+  btn.style.left = '20px';
+  btn.style.padding = '10px';
+  btn.style.zIndex = '999';
   document.body.appendChild(btn);
 
   btn.addEventListener('click', async () => {
     deferredPrompt.prompt();
-    const choiceResult = await deferredPrompt.userChoice;
-    console.log(choiceResult.outcome);
+    const choice = await deferredPrompt.userChoice;
+    console.log('User choice: ', choice.outcome);
     deferredPrompt = null;
-    btn.remove(); // remove the button after install
+    btn.remove();
   });
 });
 </script>
