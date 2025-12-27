@@ -121,6 +121,94 @@
         color: var(--text-primary);
       }
 
+      /* Sort Controls */
+      .sort-controls {
+        padding: 0 16px 12px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .sort-bar {
+        background: var(--card-bg);
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .sort-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .sort-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        white-space: nowrap;
+      }
+
+      .sort-select {
+        flex: 1;
+        padding: 8px 12px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .sort-select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      }
+
+      .sort-direction-btn {
+        padding: 8px 12px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+      }
+
+      .sort-direction-btn:hover {
+        border-color: var(--primary-color);
+        background: #f8fafc;
+      }
+
+      .sort-direction-btn:active {
+        transform: scale(0.95);
+      }
+
+      .group-header {
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-primary);
+      }
+
+      .group-header td {
+        padding: 12px;
+        border-bottom: 2px solid var(--border-color);
+      }
+
       /* Table Container */
       .table-container {
         padding: 0 16px 16px;
@@ -187,6 +275,22 @@
 
       tbody tr:hover {
         background-color: #f8fafc;
+      }
+
+      tbody tr.loan-row {
+        background-color: #fee2e2;
+      }
+
+      tbody tr.loan-row:hover {
+        background-color: #fecaca;
+      }
+
+      tbody tr.savings-row {
+        background-color: #d1fae5;
+      }
+
+      tbody tr.savings-row:hover {
+        background-color: #a7f3d0;
       }
 
       tbody tr:last-child td {
@@ -455,7 +559,8 @@
 
       input[type="text"],
       input[type="number"],
-      input[type="date"] {
+      input[type="date"],
+      select {
         width: 100%;
         padding: 12px 14px;
         border: 2px solid var(--border-color);
@@ -466,7 +571,8 @@
         background: white;
       }
 
-      input:focus {
+      input:focus,
+      select:focus {
         outline: none;
         border-color: var(--primary-color);
         box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
@@ -593,6 +699,15 @@
           grid-template-columns: repeat(2, 1fr);
         }
 
+        .sort-bar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .sort-group {
+          width: 100%;
+        }
+
         th,
         td {
           padding: 12px 8px;
@@ -656,6 +771,51 @@
         <div class="summary-card success">
           <div class="summary-label">Total Debt</div>
           <div class="summary-value" id="totalDebt">₹0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sort & Filter Controls -->
+    <div class="sort-controls">
+      <div class="sort-bar">
+        <div class="sort-group">
+          <span class="sort-label">Sort By:</span>
+          <select
+            id="sortBy"
+            class="sort-select"
+            onchange="applySortAndGroup()"
+          >
+            <option value="entry">Entry Order</option>
+            <option value="dueDate">Due Date</option>
+            <option value="amount">Amount</option>
+            <option value="endDate">End Date</option>
+            <option value="periodLeft">Period Left</option>
+            <option value="name">Name (A-Z)</option>
+            <option value="type">Type</option>
+            <option value="category">Category</option>
+          </select>
+          <button
+            id="sortDirection"
+            class="sort-direction-btn"
+            onclick="toggleSortDirection()"
+            title="Sort Direction"
+          >
+            ↑
+          </button>
+        </div>
+        <div class="sort-group">
+          <span class="sort-label">Group By:</span>
+          <select
+            id="groupBy"
+            class="sort-select"
+            onchange="applySortAndGroup()"
+          >
+            <option value="none">No Grouping</option>
+            <option value="category">Category</option>
+            <option value="type">Type</option>
+            <option value="dueDateRange">Due Date Range</option>
+            <option value="status">Status</option>
+          </select>
         </div>
       </div>
     </div>
@@ -740,6 +900,22 @@
               <div class="form-section-title">
                 <span>Mandatory Information</span>
                 <span class="required-badge">REQUIRED</span>
+              </div>
+
+              <div class="form-group">
+                <label for="emiCategory"
+                  >Category <span class="required">*</span></label
+                >
+                <select
+                  id="emiCategory"
+                  required
+                  onchange="toggleCategoryFields()"
+                >
+                  <option value="expense" id="categoryExpenseOption">
+                    Expense/Debt
+                  </option>
+                  <option value="savings">Savings</option>
+                </select>
               </div>
 
               <div class="form-group">
@@ -862,8 +1038,9 @@
     </div>
 
     <script>
-      // LocalStorage Key
+      // LocalStorage Keys
       const STORAGE_KEY = "emi_tracker_data";
+      const SORT_PREFS_KEY = "emi_tracker_sort_prefs";
 
       // Toggle form fields based on type selection
       function toggleFormFields() {
@@ -876,27 +1053,34 @@
         const nameLabel = document.getElementById("nameLabel");
         const amountLabel = document.getElementById("amountLabel");
         const endDateLabel = document.getElementById("endDateLabel");
+        const categoryExpenseOption = document.getElementById(
+          "categoryExpenseOption"
+        );
 
         if (isEMI) {
           // EMI mode
-          emiOnlyFields.classList.add("active");
+          categoryExpenseOption.textContent = "Loan/Debt";
           endDateInput.required = true;
           endDateRequired.style.display = "inline";
           endDateHelper.style.display = "none";
-          nameInput.placeholder = "e.g., Home Loan, Car EMI";
+          nameInput.placeholder = "e.g., Home Loan, Car EMI, SIP, RD";
           nameLabel.innerHTML = 'Name <span class="required">*</span>';
           amountLabel.innerHTML =
             'Monthly Amount (₹) <span class="required">*</span>';
           endDateLabel.innerHTML =
             'End Date <span class="required" id="endDateRequired">*</span>';
+
+          // Check category to show/hide EMI Details
+          toggleCategoryFields();
         } else {
           // Constant Expense mode
           emiOnlyFields.classList.remove("active");
+          categoryExpenseOption.textContent = "Expense";
           endDateInput.required = false;
           endDateRequired.style.display = "none";
           endDateHelper.style.display = "block";
-          nameInput.placeholder = "e.g., Rent, Utilities, Internet";
-          nameLabel.innerHTML = 'Expense Name <span class="required">*</span>';
+          nameInput.placeholder = "e.g., Rent, Utilities, SIP, Insurance";
+          nameLabel.innerHTML = 'Name <span class="required">*</span>';
           amountLabel.innerHTML =
             'Monthly Amount (₹) <span class="required">*</span>';
           endDateLabel.innerHTML =
@@ -906,6 +1090,26 @@
           document.getElementById("totalAmount").value = "";
           document.getElementById("principalPaid").value = "";
           document.getElementById("interestPaid").value = "";
+        }
+      }
+
+      // Toggle category-specific fields
+      function toggleCategoryFields() {
+        const isEMI = document.getElementById("typeEMI").checked;
+        const category = document.getElementById("emiCategory").value;
+        const emiOnlyFields = document.getElementById("emiOnlyFields");
+
+        // Only show EMI Details for EMI type with Expense/Debt category
+        if (isEMI && category === "expense") {
+          emiOnlyFields.classList.add("active");
+        } else {
+          emiOnlyFields.classList.remove("active");
+          // Clear fields when hiding
+          if (category === "savings") {
+            document.getElementById("totalAmount").value = "";
+            document.getElementById("principalPaid").value = "";
+            document.getElementById("interestPaid").value = "";
+          }
         }
       }
 
@@ -921,7 +1125,7 @@
       }
 
       // Calculate period left
-      function calculatePeriodLeft(endDate, type) {
+      function calculatePeriodLeft(endDate, type, category) {
         if (!endDate) {
           return { text: "Ongoing", class: "normal" };
         }
@@ -945,8 +1149,13 @@
         if (months > 0) periodText += `${months}m `;
         if (days > 0 || periodText === "") periodText += `${days}d`;
 
-        let statusClass = "normal";
-        if (diffDays <= 30) statusClass = "critical";
+        // Savings always show as normal (positive)
+        if (category === "savings") {
+          return { text: periodText.trim(), class: "normal" };
+        }
+
+        let statusClass = "critical";
+        if (diffDays <= 30) statusClass = "normal";
         else if (diffDays <= 90) statusClass = "warning";
 
         return { text: periodText.trim(), class: statusClass };
@@ -974,6 +1183,145 @@
         });
       }
 
+      // Load sort preferences
+      function loadSortPrefs() {
+        const prefs = localStorage.getItem(SORT_PREFS_KEY);
+        return prefs
+          ? JSON.parse(prefs)
+          : { sortBy: "entry", sortDirection: "asc", groupBy: "none" };
+      }
+
+      // Save sort preferences
+      function saveSortPrefs(prefs) {
+        localStorage.setItem(SORT_PREFS_KEY, JSON.stringify(prefs));
+      }
+
+      // Toggle sort direction
+      function toggleSortDirection() {
+        const btn = document.getElementById("sortDirection");
+        const prefs = loadSortPrefs();
+        prefs.sortDirection = prefs.sortDirection === "asc" ? "desc" : "asc";
+        btn.textContent = prefs.sortDirection === "asc" ? "↑" : "↓";
+        saveSortPrefs(prefs);
+        renderTable();
+      }
+
+      // Apply sort and group
+      function applySortAndGroup() {
+        const sortBy = document.getElementById("sortBy").value;
+        const groupBy = document.getElementById("groupBy").value;
+        const prefs = loadSortPrefs();
+        prefs.sortBy = sortBy;
+        prefs.groupBy = groupBy;
+        saveSortPrefs(prefs);
+        renderTable();
+      }
+
+      // Get period left in days for sorting
+      function getPeriodInDays(endDate) {
+        if (!endDate) return Infinity; // Ongoing items go last
+        const today = new Date();
+        const end = new Date(endDate);
+        return Math.ceil((end - today) / (1000 * 60 * 60 * 24));
+      }
+
+      // Sort EMIs based on criteria
+      function sortEMIs(emis, sortBy, direction) {
+        const sorted = [...emis];
+        const dir = direction === "asc" ? 1 : -1;
+
+        sorted.sort((a, b) => {
+          let compareA, compareB;
+
+          switch (sortBy) {
+            case "dueDate":
+              compareA = a.dueDate;
+              compareB = b.dueDate;
+              break;
+            case "amount":
+              compareA = a.emiAmount;
+              compareB = b.emiAmount;
+              break;
+            case "endDate":
+              compareA = a.emiEndDate
+                ? new Date(a.emiEndDate).getTime()
+                : Infinity;
+              compareB = b.emiEndDate
+                ? new Date(b.emiEndDate).getTime()
+                : Infinity;
+              break;
+            case "periodLeft":
+              compareA = getPeriodInDays(a.emiEndDate);
+              compareB = getPeriodInDays(b.emiEndDate);
+              break;
+            case "name":
+              compareA = a.emiName.toLowerCase();
+              compareB = b.emiName.toLowerCase();
+              return dir * compareA.localeCompare(compareB);
+            case "type":
+              compareA = a.type;
+              compareB = b.type;
+              return dir * compareA.localeCompare(compareB);
+            case "category":
+              compareA = a.emiCategory || "expense";
+              compareB = b.emiCategory || "expense";
+              return dir * compareA.localeCompare(compareB);
+            case "entry":
+            default:
+              return 0; // Keep original order
+          }
+
+          if (compareA < compareB) return -1 * dir;
+          if (compareA > compareB) return 1 * dir;
+          return 0;
+        });
+
+        return sorted;
+      }
+
+      // Group EMIs based on criteria
+      function groupEMIs(emis, groupBy) {
+        if (groupBy === "none") return { "All Items": emis };
+
+        const groups = {};
+
+        emis.forEach((emi) => {
+          let groupKey;
+
+          switch (groupBy) {
+            case "category":
+              const cat = emi.emiCategory || "expense";
+              groupKey = cat === "savings" ? "💰 Savings" : "💳 Loan/Debt";
+              break;
+            case "type":
+              groupKey = emi.type === "emi" ? "💳 EMI" : "🏠 Constant Expense";
+              break;
+            case "dueDateRange":
+              const day = emi.dueDate;
+              if (day <= 10) groupKey = "📅 Early Month (1-10)";
+              else if (day <= 20) groupKey = "📅 Mid Month (11-20)";
+              else groupKey = "📅 Late Month (21-31)";
+              break;
+            case "status":
+              if (!emi.emiEndDate) {
+                groupKey = "🔄 Ongoing";
+              } else {
+                const days = getPeriodInDays(emi.emiEndDate);
+                if (days < 0) groupKey = "✅ Completed";
+                else groupKey = "⏳ Active";
+              }
+              break;
+            default:
+              groupKey = "All Items";
+          }
+
+          if (!groups[groupKey]) groups[groupKey] = [];
+          groups[groupKey].push(emi);
+        });
+
+        return groups;
+      }
+
       // Render EMI table
       function renderTable() {
         const emis = loadEMIs();
@@ -989,56 +1337,106 @@
 
         emptyState.style.display = "none";
 
-        tbody.innerHTML = emis
-          .map((emi, index) => {
-            const periodLeft = calculatePeriodLeft(emi.emiEndDate, emi.type);
-            const typeIcon = emi.type === "expense" ? "🏠" : "💳";
-            const typeText = emi.type === "expense" ? "Expense" : "EMI";
-            const isExpense = emi.type === "expense";
+        // Apply sorting and grouping
+        const prefs = loadSortPrefs();
+        const sorted = sortEMIs(emis, prefs.sortBy, prefs.sortDirection);
+        const grouped = groupEMIs(sorted, prefs.groupBy);
 
-            return `
-                    <tr>
-                        <td><span style="font-size: 18px;" title="${typeText}">${typeIcon}</span></td>
-                        <td><strong>${emi.emiName}</strong></td>
-                        <td class="amount">${formatCurrency(emi.emiAmount)}</td>
-                        <td class="date">${emi.dueDate}${getDaySuffix(
-              emi.dueDate
-            )} of every month</td>
-                        <td class="date">${
-                          emi.emiEndDate
-                            ? formatDate(emi.emiEndDate)
-                            : '<span class="na-value">Ongoing</span>'
-                        }</td>
-                        <td><span class="period-left ${periodLeft.class}">${
-              periodLeft.text
-            }</span></td>
-                        <td class="${
-                          !emi.totalAmount || isExpense ? "na-value" : ""
-                        }">${
-              isExpense ? "—" : formatCurrency(emi.totalAmount)
-            }</td>
-                        <td class="${
-                          !emi.principalPaid || isExpense ? "na-value" : ""
-                        }">${
-              isExpense ? "—" : formatCurrency(emi.principalPaid)
-            }</td>
-                        <td class="${
-                          !emi.interestPaid || isExpense ? "na-value" : ""
-                        }">${
-              isExpense ? "—" : formatCurrency(emi.interestPaid)
-            }</td>
-                        <td>
-                            <div class="actions">
-                                <button class="btn-icon edit" onclick="editEMI(${index})" aria-label="Edit">✏️</button>
-                                <button class="btn-icon delete" onclick="deleteEMI(${index})" aria-label="Delete">🗑️</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-          })
-          .join("");
+        let html = "";
+        let globalIndex = 0;
 
+        Object.keys(grouped).forEach((groupName) => {
+          // Add group header if grouping is enabled
+          if (prefs.groupBy !== "none") {
+            html += `
+              <tr class="group-header">
+                <td colspan="10">${groupName} (${grouped[groupName].length})</td>
+              </tr>
+            `;
+          }
+
+          // Add rows for this group
+          grouped[groupName].forEach((emi) => {
+            const originalIndex = emis.findIndex(
+              (e) =>
+                e.emiName === emi.emiName &&
+                e.emiAmount === emi.emiAmount &&
+                e.dueDate === emi.dueDate
+            );
+
+            html += generateRowHTML(emi, originalIndex);
+          });
+        });
+
+        tbody.innerHTML = html;
         updateSummary(emis);
+      }
+
+      // Generate HTML for a single row
+      function generateRowHTML(emi, index) {
+        const emis = loadEMIs();
+        const isEMI = emi.type === "emi";
+
+        // Default to expense for backward compatibility (old items without category)
+        const category = emi.emiCategory || "expense";
+
+        const periodLeft = calculatePeriodLeft(
+          emi.emiEndDate,
+          emi.type,
+          category
+        );
+
+        // Determine icon, text, and row class based on category
+        let typeIcon, typeText, rowClass;
+        if (category === "savings") {
+          typeIcon = "💰";
+          typeText = isEMI ? "Savings EMI" : "Savings";
+          rowClass = "savings-row";
+        } else {
+          // expense/loan/debt category
+          if (isEMI) {
+            typeIcon = "💳";
+            typeText = "Loan/Debt EMI";
+          } else {
+            typeIcon = "🏠";
+            typeText = "Expense";
+          }
+          rowClass = "loan-row";
+        }
+
+        return `
+          <tr class="${rowClass}">
+            <td><span style="font-size: 18px;" title="${typeText}">${typeIcon}</span></td>
+            <td><strong>${emi.emiName}</strong></td>
+            <td class="amount">${formatCurrency(emi.emiAmount)}</td>
+            <td class="date">${emi.dueDate}${getDaySuffix(
+          emi.dueDate
+        )} of every month</td>
+            <td class="date">${
+              emi.emiEndDate
+                ? formatDate(emi.emiEndDate)
+                : '<span class="na-value">Ongoing</span>'
+            }</td>
+            <td><span class="period-left ${periodLeft.class}">${
+          periodLeft.text
+        }</span></td>
+            <td class="${!emi.totalAmount || !isEMI ? "na-value" : ""}">${
+          !isEMI ? "—" : formatCurrency(emi.totalAmount)
+        }</td>
+            <td class="${!emi.principalPaid || !isEMI ? "na-value" : ""}">${
+          !isEMI ? "—" : formatCurrency(emi.principalPaid)
+        }</td>
+            <td class="${!emi.interestPaid || !isEMI ? "na-value" : ""}">${
+          !isEMI ? "—" : formatCurrency(emi.interestPaid)
+        }</td>
+            <td>
+              <div class="actions">
+                <button class="btn-icon edit" onclick="editEMI(${index})" aria-label="Edit">✏️</button>
+                <button class="btn-icon delete" onclick="deleteEMI(${index})" aria-label="Delete">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `;
       }
 
       // Get day suffix (st, nd, rd, th)
@@ -1063,9 +1461,16 @@
           (sum, emi) => sum + parseFloat(emi.emiAmount || 0),
           0
         );
+        // Only count Expense/Debt category items (exclude Savings)
         const totalDebt = emis.reduce((sum, emi) => {
-          const remaining = (emi.totalAmount || 0) - (emi.principalPaid || 0);
-          return sum + Math.max(remaining, 0);
+          // Default to expense for backward compatibility
+          const category = emi.emiCategory || "expense";
+          // Only count non-savings items that are EMIs with total amount
+          if (emi.type === "emi" && category !== "savings") {
+            const remaining = (emi.totalAmount || 0) - (emi.principalPaid || 0);
+            return sum + Math.max(remaining, 0);
+          }
+          return sum;
         }, 0);
 
         document.getElementById("totalEMIs").textContent = totalEMIs;
@@ -1100,6 +1505,10 @@
             document.getElementById("typeEMI").checked = true;
           }
           toggleFormFields();
+
+          // Set category (default to expense for backward compatibility)
+          const category = emi.emiCategory || "expense";
+          document.getElementById("emiCategory").value = category;
 
           document.getElementById("emiName").value = emi.emiName;
           document.getElementById("emiAmount").value = emi.emiAmount;
@@ -1154,8 +1563,12 @@
           ).value;
           const endDateValue = document.getElementById("emiEndDate").value;
 
+          // Get category from dropdown
+          const emiCategory = document.getElementById("emiCategory").value;
+
           const emiData = {
             type: itemType,
+            emiCategory: emiCategory,
             emiName: document.getElementById("emiName").value,
             emiAmount: parseFloat(document.getElementById("emiAmount").value),
             dueDate: parseInt(document.getElementById("dueDate").value),
@@ -1199,38 +1612,26 @@
           }
         });
 
+      // Initialize sort controls
+      function initSortControls() {
+        const prefs = loadSortPrefs();
+        document.getElementById("sortBy").value = prefs.sortBy;
+        document.getElementById("groupBy").value = prefs.groupBy;
+        document.getElementById("sortDirection").textContent =
+          prefs.sortDirection === "asc" ? "↑" : "↓";
+      }
+
       // Initialize app
+      initSortControls();
       renderTable();
 
       // Auto-refresh period left every minute
       setInterval(renderTable, 60000);
     </script>
-   <script>
-let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  console.log('beforeinstallprompt fired'); // <-- check if it fires
-  e.preventDefault();
-  deferredPrompt = e;
-
-  // Create a manual Install button
-  const btn = document.createElement('button');
-  btn.innerText = 'Install App';
-  btn.style.position = 'fixed';
-  btn.style.bottom = '20px';
-  btn.style.left = '20px';
-  btn.style.padding = '10px';
-  btn.style.zIndex = '999';
-  document.body.appendChild(btn);
-
-  btn.addEventListener('click', async () => {
-    deferredPrompt.prompt();
-    const choice = await deferredPrompt.userChoice;
-    console.log('User choice: ', choice.outcome);
-    deferredPrompt = null;
-    btn.remove();
-  });
-});
-</script>
   </body>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js");
+    }
+  </script>
 </html>
