@@ -1704,29 +1704,20 @@
   </script>
   <script>
     let deferredPrompt;
+    const installButton = document.getElementById("installButton");
 
     window.addEventListener("beforeinstallprompt", (e) => {
-      // Prevent Chrome from showing the default prompt
       e.preventDefault();
       deferredPrompt = e;
+      installButton.style.display = "inline-flex";
+    });
 
-      // Optionally, show your own install button
-      const btn = document.createElement("button");
-      btn.innerText = "Install App";
-      btn.style.position = "fixed";
-      btn.style.bottom = "20px";
-      btn.style.left = "20px";
-      btn.style.padding = "10px";
-      btn.style.zIndex = "999";
-      document.body.appendChild(btn);
-
-      btn.addEventListener("click", async () => {
-        deferredPrompt.prompt();
-        const choiceResult = await deferredPrompt.userChoice;
-        console.log(choiceResult.outcome);
-        deferredPrompt = null;
-        btn.remove(); // remove the button after install
-      });
+    installButton.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const choiceResult = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installButton.style.display = "none";
     });
   </script>
 </html>
