@@ -1694,65 +1694,38 @@
 
       // Auto-refresh period left every minute
       setInterval(renderTable, 60000);
-
-      // PWA Install Button Logic
-      let deferredPrompt;
-      const installButton = document.getElementById("installButton");
-
-      // Capture the beforeinstallprompt event
-      window.addEventListener("beforeinstallprompt", (e) => {
-        console.log("✅ beforeinstallprompt event fired");
-        // Prevent the mini-infobar from appearing on mobile
-        e.preventDefault();
-        // Store the event so it can be triggered later
-        deferredPrompt = e;
-        // Show the install button
-        if (installButton) {
-          installButton.style.display = "inline-flex";
-          console.log("✅ Install button shown");
-
-          // Update button text for mobile
-          const isMobile = /Android|iPhone|iPad|iPod/i.test(
-            navigator.userAgent
-          );
-          if (isMobile) {
-            installButton.querySelector("span:last-child").textContent =
-              "Install App";
-          }
-        }
-      });
-
-      // Handle install button click
-      if (installButton) {
-        installButton.addEventListener("click", async () => {
-          if (deferredPrompt) {
-            // Show the install prompt
-            deferredPrompt.prompt();
-            // Wait for the user to respond to the prompt
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User response to install prompt: ${outcome}`);
-
-            // Clear the deferredPrompt for garbage collection
-            deferredPrompt = null;
-            // Hide the install button
-            installButton.style.display = "none";
-          }
-        });
-      }
-
-      // Handle successful installation
-      window.addEventListener("appinstalled", (evt) => {
-        console.log("PWA was installed successfully");
-        // Hide the install button after successful installation
-        if (installButton) {
-          installButton.style.display = "none";
-        }
-      });
     </script>
   </body>
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/EMI-And-Expense-calculator/sw.js");
     }
+  </script>
+  <script>
+    let deferredPrompt;
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      // Prevent Chrome from showing the default prompt
+      e.preventDefault();
+      deferredPrompt = e;
+
+      // Optionally, show your own install button
+      const btn = document.createElement("button");
+      btn.innerText = "Install App";
+      btn.style.position = "fixed";
+      btn.style.bottom = "20px";
+      btn.style.left = "20px";
+      btn.style.padding = "10px";
+      btn.style.zIndex = "999";
+      document.body.appendChild(btn);
+
+      btn.addEventListener("click", async () => {
+        deferredPrompt.prompt();
+        const choiceResult = await deferredPrompt.userChoice;
+        console.log(choiceResult.outcome);
+        deferredPrompt = null;
+        btn.remove(); // remove the button after install
+      });
+    });
   </script>
 </html>
