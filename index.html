@@ -76,6 +76,39 @@
         font-weight: 400;
       }
 
+      /* Install Button */
+      .install-btn {
+        margin-top: 12px;
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 8px;
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+      }
+
+      .install-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.8);
+        transform: translateY(-2px);
+      }
+
+      .install-btn:active {
+        transform: translateY(0);
+        opacity: 0.8;
+      }
+
+      .install-icon {
+        font-size: 18px;
+      }
+
       /* Summary Cards */
       .summary-section {
         padding: 16px;
@@ -754,6 +787,10 @@
         <div class="header-subtitle">
           Manage your EMIs and expenses offline, securely
         </div>
+        <button id="installButton" class="install-btn" style="display: none;">
+          <span class="install-icon">📲</span>
+          <span>Install App</span>
+        </button>
       </div>
     </div>
 
@@ -1627,6 +1664,49 @@
 
       // Auto-refresh period left every minute
       setInterval(renderTable, 60000);
+
+      // PWA Install Button Logic
+      let deferredPrompt;
+      const installButton = document.getElementById('installButton');
+
+      // Capture the beforeinstallprompt event
+      window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+        // Store the event so it can be triggered later
+        deferredPrompt = e;
+        // Show the install button
+        if (installButton) {
+          installButton.style.display = 'inline-flex';
+        }
+      });
+
+      // Handle install button click
+      if (installButton) {
+        installButton.addEventListener('click', async () => {
+          if (deferredPrompt) {
+            // Show the install prompt
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to install prompt: ${outcome}`);
+            
+            // Clear the deferredPrompt for garbage collection
+            deferredPrompt = null;
+            // Hide the install button
+            installButton.style.display = 'none';
+          }
+        });
+      }
+
+      // Handle successful installation
+      window.addEventListener('appinstalled', (evt) => {
+        console.log('PWA was installed successfully');
+        // Hide the install button after successful installation
+        if (installButton) {
+          installButton.style.display = 'none';
+        }
+      });
     </script>
   </body>
   <script>
