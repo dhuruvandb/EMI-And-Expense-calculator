@@ -1710,10 +1710,17 @@
       // Update summary cards
       function updateSummary(emis) {
         const totalEMIs = emis.length;
-        const totalMonthly = emis.reduce(
-          (sum, emi) => sum + parseFloat(emi.emiAmount || 0),
-          0
-        );
+        const totalMonthly = emis.reduce((sum, emi) => {
+          // Skip if completed (end date has passed)
+          if (emi.emiEndDate) {
+            const today = new Date();
+            const end = new Date(emi.emiEndDate);
+            if (end < today) {
+              return sum; // Don't add completed items to monthly payment
+            }
+          }
+          return sum + parseFloat(emi.emiAmount || 0);
+        }, 0);
         // Only count Expense/Debt category items (exclude Savings)
         const totalDebt = emis.reduce((sum, emi) => {
           // Default to expense for backward compatibility
