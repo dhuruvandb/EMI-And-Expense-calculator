@@ -1,4 +1,4 @@
-const CACHE_NAME = 'emi-tracker-v1';
+const CACHE_NAME = 'emi-tracker';
 const urlsToCache = [
   '/',
   '/index.html',
