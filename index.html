@@ -7,21 +7,37 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <meta name="theme-color" content="#6366f1" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#4f46e5" />
-    
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#4f46e5"
+    />
+
     <!-- PWA Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="EMI Tracker" />
-    
+
     <!-- Manifest -->
     <link rel="manifest" href="/EMI-And-Expense-calculator/manifest.json" />
-    
+
     <!-- Favicon and Apple Touch Icons -->
-    <link rel="icon" type="image/jpeg" sizes="192x192" href="/EMI-And-Expense-calculator/icon-192.jpg" />
-    <link rel="apple-touch-icon" sizes="192x192" href="/EMI-And-Expense-calculator/icon-192.jpg" />
-    
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/EMI-And-Expense-calculator/icon-192.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="192x192"
+      href="/EMI-And-Expense-calculator/icon-192.png"
+    />
+
     <title>EMI & Expense Tracker</title>
     <style>
       * {
@@ -801,7 +817,7 @@
         <div class="header-subtitle">
           Manage your EMIs and expenses offline, securely
         </div>
-        <button id="installButton" class="install-btn" style="display: none;">
+        <button id="installButton" class="install-btn" style="display: none">
           <span class="install-icon">📲</span>
           <span>Install App</span>
         </button>
@@ -1681,65 +1697,62 @@
 
       // PWA Install Button Logic
       let deferredPrompt;
-      const installButton = document.getElementById('installButton');
+      const installButton = document.getElementById("installButton");
 
       // Capture the beforeinstallprompt event
-      window.addEventListener('beforeinstallprompt', (e) => {
-        console.log('✅ beforeinstallprompt event fired');
+      window.addEventListener("beforeinstallprompt", (e) => {
+        console.log("✅ beforeinstallprompt event fired");
         // Prevent the mini-infobar from appearing on mobile
         e.preventDefault();
         // Store the event so it can be triggered later
         deferredPrompt = e;
         // Show the install button
         if (installButton) {
-          installButton.style.display = 'inline-flex';
-          console.log('✅ Install button shown');
-          
+          installButton.style.display = "inline-flex";
+          console.log("✅ Install button shown");
+
           // Update button text for mobile
-          const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+          const isMobile = /Android|iPhone|iPad|iPod/i.test(
+            navigator.userAgent
+          );
           if (isMobile) {
-            installButton.querySelector('span:last-child').textContent = 'Install App';
+            installButton.querySelector("span:last-child").textContent =
+              "Install App";
           }
         }
       });
 
       // Handle install button click
       if (installButton) {
-        installButton.addEventListener('click', async () => {
+        installButton.addEventListener("click", async () => {
           if (deferredPrompt) {
             // Show the install prompt
             deferredPrompt.prompt();
             // Wait for the user to respond to the prompt
             const { outcome } = await deferredPrompt.userChoice;
             console.log(`User response to install prompt: ${outcome}`);
-            
+
             // Clear the deferredPrompt for garbage collection
             deferredPrompt = null;
             // Hide the install button
-            installButton.style.display = 'none';
+            installButton.style.display = "none";
           }
         });
       }
 
       // Handle successful installation
-      window.addEventListener('appinstalled', (evt) => {
-        console.log('PWA was installed successfully');
+      window.addEventListener("appinstalled", (evt) => {
+        console.log("PWA was installed successfully");
         // Hide the install button after successful installation
         if (installButton) {
-          installButton.style.display = 'none';
+          installButton.style.display = "none";
         }
       });
     </script>
   </body>
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/EMI-And-Expense-calculator/sw.js")
-        .then(reg => {
-          console.log('✅ Service Worker registered:', reg.scope);
-        })
-        .catch(err => {
-          console.error('❌ Service Worker registration failed:', err);
-        });
+      navigator.serviceWorker.register("/EMI-And-Expense-calculator/sw.js");
     }
   </script>
 </html>

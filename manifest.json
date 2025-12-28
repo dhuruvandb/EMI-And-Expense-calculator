@@ -1,55 +1,20 @@
 {
-  "id": "/EMI-And-Expense-calculator/",
   "name": "EMI & Expense Tracker",
   "short_name": "EMI Tracker",
-  "description": "Track your EMIs and expenses offline - A privacy-first Progressive Web App",
   "start_url": "/EMI-And-Expense-calculator/",
-  "scope": "/EMI-And-Expense-calculator/",
   "display": "standalone",
-  "orientation": "portrait-primary",
   "background_color": "#6366f1",
   "theme_color": "#6366f1",
-  "categories": ["finance", "productivity"],
-  "lang": "en-US",
-  "dir": "ltr",
   "icons": [
     {
-      "src": "/EMI-And-Expense-calculator/icon-192.jpg",
+      "src": "/EMI-And-Expense-calculator/icon-192.png",
       "sizes": "192x192",
-      "type": "image/jpeg",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
-      "src": "/EMI-And-Expense-calculator/icon-512.jpg",
+      "src": "/EMI-And-Expense-calculator/icon-512.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any"
-    },
-    {
-      "src": "/EMI-And-Expense-calculator/icon-192.jpg",
-      "sizes": "192x192",
-      "type": "image/jpeg",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/EMI-And-Expense-calculator/icon-512.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "https://via.placeholder.com/540x720/6366f1/ffffff?text=EMI+Tracker",
-      "sizes": "540x720",
-      "type": "image/png",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "https://via.placeholder.com/1280x720/6366f1/ffffff?text=EMI+Tracker",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
+      "type": "image/png"
     }
   ]
 }
