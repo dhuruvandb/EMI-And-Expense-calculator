@@ -23,20 +23,11 @@
     <meta name="apple-mobile-web-app-title" content="EMI Tracker" />
 
     <!-- Manifest -->
-    <link rel="manifest" href="/EMI-And-Expense-calculator/manifest.json" />
+    <link rel="manifest" href="./manifest.json" />
 
     <!-- Favicon and Apple Touch Icons -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="192x192"
-      href="/EMI-And-Expense-calculator/icon-192.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="192x192"
-      href="/EMI-And-Expense-calculator/icon-192.png"
-    />
+    <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png" />
 
     <title>EMI & Expense Tracker</title>
     <style>
@@ -1698,7 +1689,17 @@
   </body>
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/EMI-And-Expense-calculator/sw.js");
+      navigator.serviceWorker
+        .register("./sw.js")
+        .then(function (registration) {
+          console.log(
+            "Service Worker registered with scope:",
+            registration.scope
+          );
+        })
+        .catch(function (error) {
+          console.log("Service Worker registration failed:", error);
+        });
     }
   </script>
   <script>

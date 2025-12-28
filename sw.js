@@ -1,17 +1,21 @@
-const CACHE_NAME = "emi-tracker-v1";
-
 self.addEventListener("install", (event) => {
-  event.waitUntil(self.skipWaiting());
-});
-
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.open("cache").then((cache) => {
+      return cache.addAll([
+        "./",
+        "./index.html",
+        "./manifest.json",
+        "./icon-192.png",
+        "./icon-512.png",
+      ]);
+    })
+  );
 });
 
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches
-      .match(event.request)
-      .then((response) => response || fetch(event.request))
+    caches.match(event.request).then((cachedRes) => {
+      return cachedRes || fetch(event.request);
+    })
   );
 });
