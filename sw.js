@@ -1,8 +1,8 @@
-const CACHE_NAME = 'emi-tracker';
+const CACHE_NAME = 'emi-tracker-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  '/EMI-And-Expense-calculator/',
+  '/EMI-And-Expense-calculator/index.html',
+  '/EMI-And-Expense-calculator/manifest.json'
 ];
 
 // Install event - cache resources
@@ -12,9 +12,16 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('[SW] Caching app shell');
-        return cache.addAll(urlsToCache);
+        return cache.addAll(urlsToCache).catch(err => {
+          console.error('[SW] Cache addAll failed:', err);
+          // Continue even if caching fails
+          return Promise.resolve();
+        });
       })
-      .then(() => self.skipWaiting()) // Activate immediately
+      .then(() => {
+        console.log('[SW] Install complete');
+        return self.skipWaiting();
+      })
   );
 });
 
@@ -40,29 +47,11 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Cache hit - return response from cache
+        // Cache hit - return response
         if (response) {
-          console.log('[SW] Serving from cache:', event.request. url);
           return response;
         }
-        
-        // Not in cache - fetch from network
-        console.log('[SW] Fetching from network:', event.request. url);
-        return fetch(event.request).then((response) => {
-          // Don't cache if not a valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          
-          // Clone the response (can only be consumed once)
-          const responseToCache = response.clone();
-          
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-          
-          return response;
-        });
+        return fetch(event.request);
       })
   );
 });
