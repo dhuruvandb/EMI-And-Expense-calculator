@@ -4,10 +4,24 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <meta name="theme-color" content="#6366f1" />
-    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#4f46e5" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="EMI Tracker" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/EMI-And-Expense-calculator/manifest.json" />
+    
+    <!-- Favicon and Apple Touch Icons -->
+    <link rel="icon" type="image/jpeg" sizes="192x192" href="/EMI-And-Expense-calculator/icon-192.jpg" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/EMI-And-Expense-calculator/icon-192.jpg" />
+    
     <title>EMI & Expense Tracker</title>
     <style>
       * {
@@ -1671,6 +1685,7 @@
 
       // Capture the beforeinstallprompt event
       window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('✅ beforeinstallprompt event fired');
         // Prevent the mini-infobar from appearing on mobile
         e.preventDefault();
         // Store the event so it can be triggered later
@@ -1678,6 +1693,13 @@
         // Show the install button
         if (installButton) {
           installButton.style.display = 'inline-flex';
+          console.log('✅ Install button shown');
+          
+          // Update button text for mobile
+          const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+          if (isMobile) {
+            installButton.querySelector('span:last-child').textContent = 'Install App';
+          }
         }
       });
 
