@@ -174,14 +174,59 @@ function markAsPaid(index) {
     emis[index].currentMonth = currentMonth;
     saveEMIs(emis);
 
-    // Show toast
+    // Get item category
+    const category = emis[index].emiCategory || "expense";
+
+    // Show toast based on category
     const toast = document.getElementById("paymentToast");
+    if (category === "savings") {
+      toast.textContent = "Thanks for Saving!  💰";
+    } else {
+      toast.textContent = "Thanks for paying! 🎉";
+    }
     toast.classList.add("show");
     setTimeout(() => {
       toast.classList.remove("show");
     }, 3000);
 
+    // Check if all items are paid
+    checkAllPaidAndCelebrate();
+
     renderTable();
+  }
+}
+
+// Check if all items are paid and show celebration
+function checkAllPaidAndCelebrate() {
+  const emis = loadEMIs();
+  const currentMonth = getCurrentMonth();
+
+  if (emis.length === 0) return;
+
+  // Count active items (exclude completed/archived)
+  const today = new Date();
+  const activeItems = emis.filter((emi) => {
+    if (emi.emiEndDate) {
+      const endDate = new Date(emi.emiEndDate);
+      return endDate >= today;
+    }
+    return true; // Ongoing items
+  });
+
+  if (activeItems.length === 0) return;
+
+  // Count paid items
+  const paidItems = activeItems.filter(
+    (emi) => emi.isPaidThisMonth && emi.currentMonth === currentMonth
+  );
+
+  // All items paid?
+  if (paidItems.length === activeItems.length) {
+    const superToast = document.getElementById("superToast");
+    superToast.classList.add("show");
+    setTimeout(() => {
+      superToast.classList.remove("show");
+    }, 6000);
   }
 }
 

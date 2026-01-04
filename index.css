@@ -677,13 +677,13 @@ tbody tr:last-child td {
   bottom: 100px;
   left: 50%;
   transform: translateX(-50%) translateY(100px);
-  background: var(--success-color);
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
   color: white;
   padding: 16px 24px;
   border-radius: 12px;
   font-size: 16px;
   font-weight: 600;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
   z-index: 3000;
   opacity: 0;
   transition: all 0.3s ease;
@@ -693,6 +693,44 @@ tbody tr:last-child td {
 .payment-toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+/* Super Celebration Toast */
+.super-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #c4b5fd 100%);
+  color: white;
+  padding: 24px 32px;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.4);
+  z-index: 3001;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  pointer-events: none;
+  max-width: 90%;
+  line-height: 1.6;
+}
+
+.super-toast.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Dark Mode Toast Adjustments */
+body.dark-mode.payment-toast {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%);
+  box-shadow: 0 8px 16px rgba(5, 150, 105, 0.4);
+}
+
+body.dark-mode .super-toast {
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%);
+  box-shadow: 0 20px 40px rgba(124, 58, 237, 0.5);
 }
 
 /* Empty State */
