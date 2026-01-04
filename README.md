@@ -4,18 +4,28 @@
 
 ### **Know exactly how much you must pay every month — nothing more, nothing less.**
 
+---
+
+> **📌 NOTICE: This repository is READ-ONLY**  
+> This project is shared as-is for you to use, learn from, and enjoy! 🎉  
+> **Feel free to fork it** and make it your own, but contributions/PRs won't be accepted here.  
+> **Share it, use it, customize it — it's yours!** ⭐
+
+---
+
 </div>
 
 ---
+
 ## ❗ The Problem This Solves (Real & Personal)
 
 I wanted **one simple number** that tells me:
 
-> **“This is the amount I *must* pay every month (for example: $4000).  
-Spend whatever is left — freely.”**
+> **"This is the amount I _must_ pay every month (for example: $4000).  
+> Spend whatever is left — freely."**
 
-I **don’t track salary** because salary changes.  
-What *doesn’t* change are **constant spendings**:
+I **don't track salary** because salary changes.  
+What _doesn't_ change are **constant spendings**:
 
 - EMIs
 - Loans
@@ -25,20 +35,23 @@ What *doesn’t* change are **constant spendings**:
 - Subscriptions
 
 I was tired of:
+
 - Re-adding the same expenses every month
 - Remembering which EMIs are still active
 - Manually excluding EMIs after they end
+- Tracking which payments I've already made this month
 
 **Once an EMI ends, it should automatically stop affecting my monthly total.**
 
-That’s it.  
-That’s the core problem.
+That's it.  
+That's the core problem.
 
 ---
 
-## ⚠️ Important: What This App Is *Not* For
+## ⚠️ Important: What This App Is _Not_ For
 
-**Please don’t use this app if you are looking for:**
+**Please don't use this app if you are looking for:**
+
 - Daily expense tracking
 - Per-transaction budgeting
 - Categorizing every coffee or grocery purchase
@@ -46,9 +59,10 @@ That’s the core problem.
 👉 **This app is NOT built for daily budgeting.**
 
 It is designed **only** for:
+
 - Fixed monthly expenses
 - EMIs with clear end dates
-- Knowing your *mandatory monthly payment* — fast and reliably
+- Knowing your _mandatory monthly payment_ — fast and reliably
 
 ---
 
@@ -56,10 +70,11 @@ It is designed **only** for:
 
 I care deeply about **privacy**.
 
-I don’t want:
-- My financial data on someone else’s server
+I don't want:
+
+- My financial data on someone else's server
 - Accounts, logins, or cloud syncs
-- “Insights”, tracking, or analytics watching my money
+- "Insights", tracking, or analytics watching my money
 
 **My finances are mine.**  
 They should stay **on my device, offline, and private**.
@@ -78,6 +93,7 @@ Almost every finance app today:
 I hated all of that.
 
 I just wanted to:
+
 > **Open the app → add my EMIs and fixed expenses → see my mandatory monthly payment.**
 
 No friction.  
@@ -100,16 +116,18 @@ A **simple, privacy-first, offline Progressive Web App** that:
 - Requires **zero sign-up**
 - Stores data **only on your device**
 
-### **Simple.  Private. Yours.**
+### **Simple. Private. Yours.**
 
 A lightweight, privacy-first Progressive Web App for tracking EMIs, loans, and recurring expenses — **100% offline, 100% yours.**
+
+<div align="center">
 
 [![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-6366f1?style=for-the-badge)](https://dhuruvandb.github.io/EMI-And-Expense-calculator/)
 [![PWA Ready](https://img.shields.io/badge/📱_PWA-Ready-10b981?style=for-the-badge)]()
 [![Zero Dependencies](https://img.shields.io/badge/📦_Zero-Dependencies-f59e0b?style=for-the-badge)]()
 [![100% Offline](https://img.shields.io/badge/⚡_100%25-Offline-ef4444?style=for-the-badge)]()
 
-[Try it Now →](https://dhuruvandb.github.io/EMI-And-Expense-calculator/) · [Report Bug](https://github.com/dhuruvandb/EMI-And-Expense-calculator/issues) · [Request Feature](https://github.com/dhuruvandb/EMI-And-Expense-calculator/issues)
+[Try it Now →](https://dhuruvandb.github.io/EMI-And-Expense-calculator/)
 
 </div>
 
@@ -121,7 +139,7 @@ A lightweight, privacy-first Progressive Web App for tracking EMIs, loans, and r
 > ❌ Creating accounts  
 > ❌ Uploading data to someone's server  
 > ❌ Paying subscription fees  
-> ❌ Trusting "AI insights" with their money  
+> ❌ Trusting "AI insights" with their money
 
 If you want a **simple, transparent tool** that calculates what matters and **stays out of your way**, this is it.
 
@@ -130,21 +148,67 @@ If you want a **simple, transparent tool** that calculates what matters and **st
 ## ✨ What It Does
 
 ### **Core Features**
+
 ✅ Track unlimited EMIs, loans, and recurring expenses  
+✅ **Monthly payment tracking** — Check off items as you pay them  
+✅ **Auto-archive system** — Completed EMIs automatically move to archive  
+✅ **Smart search** — Instant search by name or amount  
 ✅ Works **100% offline** after first load  
-✅ **Export/Import** your data (JSON backup)  
+✅ **Export/Import** your data (JSON backup with archive support)  
 ✅ Dark mode for late-night budgeting  
 ✅ Install as native app (PWA)  
 ✅ Auto-save — never lose your data  
-✅ Smart sorting, filtering, and grouping  
+✅ **8 sorting options** + **4 grouping modes**
+
+### **Advanced Features**
+
+🎯 **Payment Status Tracking**
+
+- Check off items as you pay them each month
+- Automatic monthly reset (payment status clears at month start)
+- Visual strikethrough for paid items
+- Smart calculation excludes paid items from monthly total
+
+🗃️ **Intelligent Archive Management**
+
+- Completed EMIs automatically archive when end date passes
+- Separate archive view to review past items
+- Archive items included in export/import backups
+- Clean interface showing only active items
+
+📊 **Category Separation**
+
+- **Loan/Debt tracking** — EMIs, loans, credit cards
+- **Savings tracking** — SIPs, RDs, investment commitments
+- Separate totals for debt vs savings in dashboard
+- Color-coded rows (red for debt, green for savings)
+
+🎉 **Celebration Mode**
+
+- Get rewarded when all monthly payments are complete!
+- Encouraging messages for savings contributions
+- "Financial peace of mind" celebration toast
+
+🔍 **Smart Search & Organization**
+
+- Instant search by name or amount (300ms debounce)
+- **8 Sort Options**: Entry order, due date, amount, end date, period left, name, type, category
+- **4 Grouping Modes**: Category, type, due date range, status
+- Bidirectional sorting (ascending/descending)
+- Group totals displayed in headers
 
 ### **Real-Time Dashboard**
-- 📊 Total monthly payments
-- 💰 Outstanding debt tracker
-- 🎯 Active items count
-- 🚨 Color-coded alerts (≤30 days = critical)
+
+- 📊 Total active items count
+- 💰 Monthly payment breakdown (Debt + Savings)
+- 💳 Outstanding debt tracker (principal remaining)
+- 🚨 Color-coded period alerts:
+  - 🟢 Critical (≤30 days remaining)
+  - 🟡 Warning (31-90 days)
+  - 🔴 Normal (>90 days)
 
 ### **Privacy by Design**
+
 - 🔒 **No backend servers** — your data never leaves your device
 - 🔒 **No user accounts** — nothing to sign up for
 - 🔒 **No tracking** — zero analytics, cookies, or pixels
@@ -152,20 +216,34 @@ If you want a **simple, transparent tool** that calculates what matters and **st
 
 ---
 
+## 🎯 How It Works
+
+1. **Add Your Items** — EMIs, loans, rent, subscriptions, savings goals
+2. **Mark as Paid** — Check off items as you pay them throughout the month
+3. **Auto-Reset** — Payment status automatically resets each month
+4. **Get Celebrated** — Complete all payments? We'll celebrate with you! 🎉
+5. **Auto-Archive** — Completed EMIs automatically move to archive
+6. **Track Your Progress** — Real-time dashboard shows what you owe vs what you're saving
+
+---
+
 ## 🚀 Quick Start
 
 ### **Option 1: Use It Now (Web App)**
-1. Visit:  **[https://dhuruvandb.github.io/EMI-And-Expense-calculator/](https://dhuruvandb.github.io/EMI-And-Expense-calculator/)**
+
+1. Visit: **[https://dhuruvandb.github.io/EMI-And-Expense-calculator/](https://dhuruvandb.github.io/EMI-And-Expense-calculator/)**
 2. Click **"Install App"** button (optional)
-3. Start tracking! 
+3. Start tracking!
 
 ### **Option 2: Self-Host**
+
 ```bash
 git clone https://github.com/dhuruvandb/EMI-And-Expense-calculator.git
 # Open index.html in any browser — that's it!
 ```
 
 ### **Option 3: Embed in Android Apps**
+
 ```java
 WebView webView = findViewById(R.id.webView);
 webView.getSettings().setJavaScriptEnabled(true);
@@ -178,23 +256,27 @@ webView.loadUrl("file:///android_asset/index.html");
 ## 🛠️ Technical Details
 
 ### **Stack**
-- **Frontend**:  Vanilla HTML5 + CSS3 + JavaScript (no frameworks)
-- **Storage**: Browser localStorage API
-- **Size**: ~50KB total (95. 8% HTML, 4.2% JS)
-- **Dependencies**: **Zero**
+
+- **Frontend**: Vanilla HTML5 + CSS3 + JavaScript (no frameworks)
+- **Storage**: Browser localStorage API (3 separate keys for active/archived/preferences)
+- **Size**: ~60KB total (HTML + CSS + JS combined)
+- **Dependencies**: **Zero** — Pure vanilla JavaScript
 
 ### **Browser Support**
-| Browser | Minimum Version |
-|---------|----------------|
-| Chrome/Edge | 60+ |
-| Safari | 12+ |
-| Firefox | 60+ |
-| Android WebView | 60+ |
+
+| Browser         | Minimum Version |
+| --------------- | --------------- |
+| Chrome/Edge     | 60+             |
+| Safari          | 12+             |
+| Firefox         | 60+             |
+| Android WebView | 60+             |
 
 ### **Performance**
+
 - ⚡ Loads in <100ms
-- 🪶 30KB uncompressed
+- 🪶 Lightweight codebase
 - 📱 Works on 2G networks
+- 🔄 Auto-refresh every minute for monthly reset detection
 
 ---
 
@@ -203,41 +285,53 @@ webView.loadUrl("file:///android_asset/index.html");
 ### **What You Can Track**
 
 #### **EMIs & Loans**
+
 - Home loans, car loans, personal loans
 - Credit card EMIs
 - Education loans
 - Any installment-based purchase
+- Principal paid, interest paid, total amount tracking
 
 #### **Recurring Expenses**
+
 - Rent, subscriptions (Netflix, Spotify, etc.)
 - Utility bills (electricity, internet)
 - Insurance premiums
 - Gym memberships
+- Any ongoing monthly expense (no end date required)
 
 #### **Savings Goals**
+
 - Monthly savings commitments
-- Investment SIPs
+- Investment SIPs (Systematic Investment Plans)
+- Recurring deposits (RDs)
 - Emergency fund contributions
 
 ### **Smart Features**
-- **Period Left Alerts**:  🟢 Normal (≤30 days), 🟡 Warning (≤90 days), 🔴 Critical
-- **Flexible Sorting**: By date, amount, name, category, period left
-- **Grouping**: Category, type, due date range, status
-- **Export/Import**: JSON backup for data portability
-- **Dark Mode**: Easy on the eyes during late-night budgeting
+
+- **Payment Tracking**: Check off items as paid, auto-reset monthly
+- **Period Left Alerts**: 🔴 >90 days, 🟡 31-90 days, 🟢 ≤30 days
+- **Flexible Sorting**: Entry order, due date, amount, end date, period left, name, type, category
+- **Smart Grouping**: Category, type, due date range (early/mid/late month), status (active/ongoing/completed)
+- **Export/Import**: JSON backup with active + archived items, merge or replace options
+- **Dark Mode**: System-aware, manually toggleable, persistent preference
+- **Archive View**: Toggle between active items and completed/archived items
 
 ---
 
 ## 🔒 Privacy & Data Ownership
 
 ### **Where Your Data Lives**
-Your data is stored **only in your browser's localStorage**: 
+
+Your data is stored **only in your browser's localStorage**:
+
 - ✅ Remains on YOUR device
 - ✅ Not transmitted anywhere
 - ✅ Not accessible by anyone else
 - ✅ You control export/delete
 
 ### **What We DON'T Collect**
+
 - ❌ Names, emails, phone numbers
 - ❌ Financial data
 - ❌ IP addresses or location
@@ -245,23 +339,82 @@ Your data is stored **only in your browser's localStorage**:
 - ❌ **Literally nothing**
 
 ### **Open Source = Verifiable**
-Every line of code is open for inspection.  No hidden trackers, no backdoors.
+
+Every line of code is open for inspection. No hidden trackers, no backdoors.
 
 ---
 
 ## 💾 Backup Your Data
 
 ### **Export (Recommended)**
-1. Click **"Export Backup"** button
-2. Saves as `emi-backup-YYYY-MM-DD.json`
-3. Store in cloud (Google Drive, Dropbox, etc.)
+
+1. Click **"📥 Export"** button in header
+2. Saves as `emi-tracker-backup-YYYY-MM-DD.json`
+3. Includes both active AND archived items
+4. Store in cloud (Google Drive, Dropbox, etc.)
 
 ### **Import**
-1. Click **"Import Backup"**
-2. Select your `.json` file
-3. Data restored instantly
 
-**⚠️ Important**: Browser cache clears can delete data. **Export regularly! **
+1. Click **"📤 Import"** button
+2. Select your `.json` file
+3. Choose to merge with existing data or replace
+4. Handles both old format (array) and new format (active/archived split)
+5. Auto-archives completed items during import
+
+**⚠️ Important**: Browser cache clears can delete data. **Export regularly!**
+
+---
+
+## ❓ FAQ
+
+### **Q: What happens to my data if I clear browser cache?**
+
+A: Your data will be lost. Always export your data regularly to avoid losing it. Store backups in cloud storage or email them to yourself.
+
+### **Q: Can I access my data on multiple devices?**
+
+A: Yes! Export from one device, then import to another. The app works entirely offline, so data doesn't sync automatically.
+
+### **Q: How does auto-archive work?**
+
+A: When an EMI's end date passes, it automatically moves to the archive on next app load. You can view archived items by clicking "📦 View Archive".
+
+### **Q: What's the difference between EMI and Constant Expense?**
+
+A: **EMI** has a fixed end date (like a car loan ending in 2027). **Constant Expense** is ongoing with no end date (like rent or Netflix).
+
+### **Q: What happens to payment tracking each month?**
+
+A: All payment checkboxes automatically reset at the start of each month. This ensures you track payments fresh every month.
+
+### **Q: How does the celebration mode work?**
+
+A: When you mark all active items as paid for the month, you'll see a special celebration message: "Financial peace of mind" 🎉
+
+### **Q: Can I track savings separately from debts?**
+
+A: Yes! When adding items, choose **Savings** category. The dashboard shows separate totals for debt vs savings.
+
+### **Q: How secure is my financial data?**
+
+A: Completely secure. Your data never leaves your device. No server, no cloud, no transmission. It's 100% local storage.
+
+---
+
+## 🆚 Why Choose This Over Other Apps?
+
+| Feature                  | Other Apps | EMI Tracker |
+| ------------------------ | ---------- | ----------- |
+| Requires Account         | ✅ Yes     | ❌ No       |
+| Cloud Sync Required      | ✅ Yes     | ❌ No       |
+| Works Offline            | ❌ No      | ✅ Yes      |
+| Monthly Payment Tracking | Sometimes  | ✅ Yes      |
+| Auto-Archive Completed   | ❌ No      | ✅ Yes      |
+| Auto-Reset Monthly       | ❌ No      | ✅ Yes      |
+| Privacy First            | ❌ No      | ✅ Yes      |
+| 100% Free                | ❌ No      | ✅ Yes      |
+| Zero Dependencies        | ❌ No      | ✅ Yes      |
+| Open Source              | ❌ No      | ✅ Yes      |
 
 ---
 
@@ -269,50 +422,65 @@ Every line of code is open for inspection.  No hidden trackers, no backdoors.
 
 <div align="center">
 
-| Dashboard | Add Item | Dark Mode |
-|:---------:|:--------:|:---------:|
+|                                      Dashboard                                       |                                       Add Item                                       |                                      Dark Mode                                       |
+| :----------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: |
 | ![](https://github.com/user-attachments/assets/acbf882b-9c9a-4dbc-98a8-7e5d2d899b38) | ![](https://github.com/user-attachments/assets/9a2e01a9-7cf6-4e83-9dca-2365a9665e85) | ![](https://github.com/user-attachments/assets/d12b9662-da09-43f9-a9a0-a12b840e979f) |
 
 </div>
 
 ---
 
-## 🚀 Roadmap
+## 👤 User Journey
 
-### **Completed ✅**
-- [x] Export/Import JSON backups
-- [x] Dark mode
-- [x] Input validation
-- [x] PWA offline support
-- [x] Smart sorting & grouping
-
-**Want a feature?** [Open an issue](https://github.com/dhuruvandb/EMI-And-Expense-calculator/issues)
+**Day 1**: Add all your EMIs and recurring expenses (home loan, car EMI, rent, Netflix)  
+**Day 5**: Mark "Home Loan" as paid ✓ — monthly total updates automatically  
+**Day 10**: Mark "Car EMI" as paid ✓  
+**Day 15**: All items paid! 🎉 Get celebration message  
+**Next Month**: Payment status auto-resets on the 1st, start fresh  
+**6 Months Later**: Car EMI completed → Auto-archived to keep dashboard clean  
+**1 Year Later**: Export backup, see your full financial history
 
 ---
 
-## 🤝 Contributing
+## 🚀 Roadmap
 
-This project is built **for users like you**.  Contributions welcome! 
+### **Completed ✅**
+
+- [x] Export/Import JSON backups (with archive support)
+- [x] Dark mode (system-aware + manual toggle)
+- [x] Input validation
+- [x] PWA offline support
+- [x] Smart sorting (8 options) & grouping (4 modes)
+- [x] Search functionality (name/amount)
+- [x] Payment tracking with monthly reset
+- [x] Auto-archive system
+- [x] Category-based separation (Debt/Savings)
+- [x] Celebration mode for completed payments
+- [x] Period left color-coded alerts
+- [x] Group totals in table headers
+- [x] Archive view toggle
+- [x] EMI detail tracking (principal/interest/total)
+
+---
 
 ### **How to Help**
+
 1. ⭐ **Star this repo** — helps others discover it
-2. 🐛 **Report bugs** — [open an issue](https://github.com/dhuruvandb/EMI-And-Expense-calculator/issues)
-3. 💡 **Suggest features** — what would make this better for YOU? 
-4. 🔧 **Submit PRs** — bug fixes and improvements
-5. 📢 **Share** — tell privacy-conscious friends
+2. 📢 **Share** — tell privacy-conscious friends
 
 ### **Development**
+
 ```bash
 git clone https://github.com/dhuruvandb/EMI-And-Expense-calculator.git
-# Edit index.html — no build process needed
-# Open in browser to test
+# Edit files — no build process needed
+# Open index.html in browser to test
 ```
 
 ---
 
 ## 📄 License
 
-**MIT License** — Free to use, modify, and distribute. 
+**MIT License** — Free to use, modify, and distribute.
 
 ```
 Copyright (c) 2024 Dhuruvan
@@ -323,28 +491,23 @@ of this software...  [full license](LICENSE)
 
 ---
 
-## 📞 Support
-
-- 🐛 [Report Issues](https://github.com/dhuruvandb/EMI-And-Expense-calculator/issues)
-- 💬 [Discussions](https://github.com/dhuruvandb/EMI-And-Expense-calculator/discussions)
-- 🌐 [Live Demo](https://dhuruvandb.github.io/EMI-And-Expense-calculator/)
-
----
-
 ## 🎖️ Acknowledgments
 
 Inspired by:
+
 - Privacy-first software movement
 - Progressive Web App best practices
 - Open source community
+- Real frustrations with overcomplicated finance apps
+
 ---
 
 <div align="center">
 
 ### **Made for Privacy-Conscious Users**
 
-*No subscriptions.  No data collection. No BS.*  
-*Your finances.  Your data. Your control.*
+_No subscriptions. No data collection. No BS._  
+_Your finances. Your data. Your control._
 
 **[Try It Now →](https://dhuruvandb.github.io/EMI-And-Expense-calculator/)**
 
