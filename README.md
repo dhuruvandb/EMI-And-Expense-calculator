@@ -40,6 +40,9 @@ I was tired of:
 - Remembering which EMIs are still active
 - Manually excluding EMIs after they end
 - Tracking which payments I've already made this month
+- **Accidentally unchecking payments or changing status after I've confirmed everything**
+- **Doubting myself: "Did I really pay this? Should I double-check?"**
+- **The anxiety of accidental touches messing up my payment tracking**
 
 **Once an EMI ends, it should automatically stop affecting my monthly total.**
 
@@ -151,6 +154,7 @@ If you want a **simple, transparent tool** that calculates what matters and **st
 
 ✅ Track unlimited EMIs, loans, and recurring expenses  
 ✅ **Monthly payment tracking** — Check off items as you pay them  
+✅ **🔒 Seal Mode** — Lock your payments to prevent accidental changes  
 ✅ **Auto-archive system** — Completed EMIs automatically move to archive  
 ✅ **Smart search** — Instant search by name or amount  
 ✅ Works **100% offline** after first load  
@@ -161,6 +165,39 @@ If you want a **simple, transparent tool** that calculates what matters and **st
 ✅ **8 sorting options** + **4 grouping modes**
 
 ### **Advanced Features**
+
+🔒 **Seal Mode — Financial Peace Ritual**
+
+> **The Problem**: You've checked all your payments. But later, you accidentally tap a checkbox, or you start doubting yourself: "Did I really pay this?" The anxiety builds.
+
+**Seal Mode** solves this with a deliberate ceremony:
+
+- ✅ **Lock Your Payments** — Seal checked items to prevent accidental changes
+- ✅ **8-Second Ceremony** — 3s countdown + 5s undo period ensures intentional commitment
+- ✅ **Multiple Seals Per Month** — Seal items as you pay them, add new expenses, seal again
+- ✅ **Visual Lock Icons** — 🔒 Sealed items show lock instead of checkbox
+- ✅ **Smart Messages**:
+  - Seal 1 item: "🔒 Sealed! Forget "Rent" this month"
+  - Seal all items: "💚 Fully paid up! Financial peace of mind!"
+- ✅ **Full Protection** — Cannot edit, delete, or uncheck sealed items until next month
+- ✅ **Auto-Unlock** — Seals automatically clear on the 1st of next month
+- ✅ **Export/Import Aware** — Seal state preserved when exporting/importing same month
+
+**Why This Matters:**
+
+- **Mental Peace** — Once sealed, you KNOW it's done. No more doubting.
+- **Accident Prevention** — Locked items can't be changed by accidental touches
+- **Intentional Money Management** — The 8-second ceremony makes sealing meaningful
+- **Progressive Sealing** — Seal items as you pay them throughout the month
+
+**How It Works:**
+
+1. Check off your payments ✓
+2. Click **"🔒 Seal Month"** button
+3. Confirm in modal
+4. **3-second countdown** — Press STOP to abort
+5. **5-second undo period** — Press UNDO to reverse
+6. Done! Items locked until next month 🎉
 
 🎯 **Payment Status Tracking**
 
@@ -391,6 +428,36 @@ A: All payment checkboxes automatically reset at the start of each month. This e
 
 A: When you mark all active items as paid for the month, you'll see a special celebration message: "Financial peace of mind" 🎉
 
+### **Q: What is Seal Mode and why should I use it?**
+
+A: **Seal Mode** locks your checked payments to prevent accidental changes. Once you've confirmed all payments are done, seal them to achieve mental peace. You won't accidentally uncheck something or doubt whether you paid. Sealed items show a 🔒 lock icon and cannot be edited, deleted, or unchecked until next month.
+
+### **Q: How does the 8-second ceremony work?**
+
+A: When you click "Seal Month", you get:
+
+1. **3-second countdown** with a STOP button (last chance to abort)
+2. **5-second undo period** with an UNDO button (final safety net)
+3. After 8 seconds total, items are permanently sealed for the month
+
+This deliberate process ensures you're intentional about sealing.
+
+### **Q: Can I seal items multiple times in one month?**
+
+A: Yes! Seal items as you pay them. For example:
+
+- Day 5: Pay rent, seal it → "🔒 Sealed! Forget Rent this month"
+- Day 10: Pay Netflix, seal it → Adds to sealed list
+- Day 20: Pay all remaining → "💚 Fully paid up! Financial peace!"
+
+### **Q: What happens to sealed items when exported/imported?**
+
+A: If you export and import in the **same month**, seal status is preserved. If you import in a **different month**, everything resets automatically with a notification: "📅 Month changed! Data imported with payments and seal reset for new entries"
+
+### **Q: Can I edit or delete a sealed item?**
+
+A: No. Sealed items are locked until the 1st of next month. This is intentional — it prevents accidental changes and gives you peace of mind that your payment tracking is final.
+
 ### **Q: Can I track savings separately from debts?**
 
 A: Yes! When adding items, choose **Savings** category. The dashboard shows separate totals for debt vs savings.
@@ -409,6 +476,7 @@ A: Completely secure. Your data never leaves your device. No server, no cloud, n
 | Cloud Sync Required      | ✅ Yes     | ❌ No       |
 | Works Offline            | ❌ No      | ✅ Yes      |
 | Monthly Payment Tracking | Sometimes  | ✅ Yes      |
+| Seal Mode (Lock Status)  | ❌ No      | ✅ Yes      |
 | Auto-Archive Completed   | ❌ No      | ✅ Yes      |
 | Auto-Reset Monthly       | ❌ No      | ✅ Yes      |
 | Privacy First            | ❌ No      | ✅ Yes      |
@@ -434,11 +502,13 @@ A: Completely secure. Your data never leaves your device. No server, no cloud, n
 
 **Day 1**: Add all your EMIs and recurring expenses (home loan, car EMI, rent, Netflix)  
 **Day 5**: Mark "Home Loan" as paid ✓ — monthly total updates automatically  
-**Day 10**: Mark "Car EMI" as paid ✓  
-**Day 15**: All items paid! 🎉 Get celebration message  
-**Next Month**: Payment status auto-resets on the 1st, start fresh  
+**Day 6**: Seal "Home Loan" 🔒 — Now it's locked, no accidental unchecking  
+**Day 10**: Mark "Car EMI" as paid ✓, seal it 🔒  
+**Day 15**: All items paid! Seal remaining → 🎉 "Financial peace of mind!"  
+**Day 20**: Try to edit sealed item → Blocked with message "🔒 Cannot edit sealed payments"  
+**Next Month (1st)**: All seals auto-unlock, payment status resets, start fresh  
 **6 Months Later**: Car EMI completed → Auto-archived to keep dashboard clean  
-**1 Year Later**: Export backup, see your full financial history
+**1 Year Later**: Export backup (with seal state), import to new device, seals preserved
 
 ---
 
@@ -453,6 +523,9 @@ A: Completely secure. Your data never leaves your device. No server, no cloud, n
 - [x] Smart sorting (8 options) & grouping (4 modes)
 - [x] Search functionality (name/amount)
 - [x] Payment tracking with monthly reset
+- [x] **Seal Mode with 8-second ceremony (lock payments)**
+- [x] **Multi-seal support (seal items progressively)**
+- [x] **Seal state export/import with month awareness**
 - [x] Auto-archive system
 - [x] Category-based separation (Debt/Savings)
 - [x] Celebration mode for completed payments

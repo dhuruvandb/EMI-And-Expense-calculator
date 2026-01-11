@@ -2,10 +2,15 @@
 const STORAGE_KEY = "emi_tracker_data";
 const SORT_PREFS_KEY = "emi_tracker_sort_prefs";
 const ARCHIVED_KEY = "emi_tracker_archived";
+const SEAL_STATE_KEY = "emi_tracker_seal_state";
 
 // Global state
 let searchQuery = "";
 let showArchived = false;
+let isSealCountdownActive = false;
+let sealCountdownTimer = null;
+let undoGracePeriodTimer = null;
+let lastSealedItems = []; // Track items sealed in current seal operation
 
 // Get current month in YYYY-MM format
 function getCurrentMonth() {
@@ -108,10 +113,397 @@ function saveArchived(archived) {
   localStorage.setItem(ARCHIVED_KEY, JSON.stringify(archived));
 }
 
+// ========== SEAL STATE MANAGEMENT ==========
+
+// Load seal state from localStorage
+function loadSealState() {
+  const data = localStorage.getItem(SEAL_STATE_KEY);
+  return data ? JSON.parse(data) : {
+    isSealed: false,
+    sealedMonth: null,
+    sealedDate: null,
+    sealedItems: []
+  };
+}
+
+// Save seal state to localStorage
+function saveSealState(state) {
+  localStorage.setItem(SEAL_STATE_KEY, JSON.stringify(state));
+}
+
+// Check if current month is sealed
+function isSealedThisMonth() {
+  const sealState = loadSealState();
+  const currentMonth = getCurrentMonth();
+  return sealState.isSealed && sealState.sealedMonth === currentMonth;
+}
+
+// Check if sealing process is currently active (countdown or undo period)
+function isSealingInProgress() {
+  return sealCountdownTimer !== null || undoGracePeriodTimer !== null;
+}
+
+// Check if a specific item was sealed (not just if month is sealed)
+function wasItemSealed(emi) {
+  const sealState = loadSealState();
+  const currentMonth = getCurrentMonth();
+  
+  if (!sealState.isSealed || sealState.sealedMonth !== currentMonth) {
+    return false;
+  }
+  
+  // Check if this item exists in the sealed snapshot
+  return sealState.sealedItems.some(sealed => 
+    sealed.emiName === emi.emiName && 
+    sealed.emiAmount === emi.emiAmount && 
+    sealed.dueDate === emi.dueDate
+  );
+}
+
+// Check if all current active items are sealed
+function areAllActiveItemsSealed() {
+  const emis = loadEMIs();
+  const sealState = loadSealState();
+  const currentMonth = getCurrentMonth();
+  
+  if (!sealState.isSealed || sealState.sealedMonth !== currentMonth) {
+    return false;
+  }
+  
+  const today = new Date();
+  const activeItems = emis.filter(emi => {
+    if (emi.emiEndDate) {
+      const endDate = new Date(emi.emiEndDate);
+      return endDate >= today;
+    }
+    return true;
+  });
+  
+  if (activeItems.length === 0) return false;
+  
+  // Check if ALL active items are in sealed list
+  return activeItems.every(emi => wasItemSealed(emi));
+}
+
+// Check if seal button should be enabled (at least 1 payment checked)
+function checkSealButtonState() {
+  const emis = loadEMIs();
+  const currentMonth = getCurrentMonth();
+  
+  // Filter active items only
+  const today = new Date();
+  const activeItems = emis.filter(emi => {
+    if (emi.emiEndDate) {
+      const endDate = new Date(emi.emiEndDate);
+      return endDate >= today;
+    }
+    return true; // Ongoing items
+  });
+  
+  // No items?
+  if (activeItems.length === 0) {
+    return { enabled: false, reason: "No active items to seal" };
+  }
+  
+  // Find unsealed items (items not in the sealed snapshot)
+  const unsealedItems = activeItems.filter(emi => !wasItemSealed(emi));
+  
+  if (unsealedItems.length === 0) {
+    // All items already sealed
+    return { enabled: false, reason: "All items already sealed" };
+  }
+  
+  // Check if at least one UNSEALED item is paid
+  const unsealedPaidItems = unsealedItems.filter(emi =>
+    emi.isPaidThisMonth && emi.currentMonth === currentMonth
+  );
+  
+  if (unsealedPaidItems.length === 0) {
+    return { enabled: false, reason: "Check at least one payment to enable" };
+  }
+  
+  return { enabled: true, reason: "" };
+}
+
+// Get next month's first date
+function getNextMonthDate() {
+  const now = new Date();
+  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+                      "July", "August", "September", "October", "November", "December"];
+  return `${monthNames[nextMonth.getMonth()]} ${nextMonth.getDate()}, ${nextMonth.getFullYear()}`;
+}
+
+// Check and unlock if new month started
+function checkAndUnlockNewMonth() {
+  const sealState = loadSealState();
+  const currentMonth = getCurrentMonth();
+  
+  if (sealState.isSealed && sealState.sealedMonth !== currentMonth) {
+    // New month - unlock!
+    saveSealState({
+      isSealed: false,
+      sealedMonth: null,
+      sealedDate: null,
+      sealedItems: []
+    });
+    
+    removeSealedUI();
+    
+    // Show toast
+    const toast = document.getElementById("paymentToast");
+    toast.textContent = "🎊 New month started! Payment status reset.";
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 4000);
+  }
+}
+
+// ========== SEAL WORKFLOW FUNCTIONS ==========
+
+// Update seal button state (enabled/disabled)
+function updateSealButton() {
+  const btn = document.getElementById('sealControlBtn');
+  
+  const state = checkSealButtonState();
+  
+  if (state.enabled) {
+    btn.disabled = false;
+    btn.title = "Lock all payments for this month";
+  } else {
+    btn.disabled = true;
+    btn.title = state.reason;
+  }
+}
+
+// Step 1: User clicks "SEAL MONTH" button
+function initiateSeal() {
+  const modal = document.getElementById('sealModal');
+  const nextMonth = getNextMonthDate();
+  document.getElementById('sealUntilDate').textContent = `📅 ${nextMonth}`;
+  modal.classList.add('active');
+}
+
+// Close seal confirmation modal
+function closeSealModal() {
+  const modal = document.getElementById('sealModal');
+  modal.classList.remove('active');
+}
+
+// Step 2: User confirms - start countdown
+function confirmSeal() {
+  closeSealModal();
+  startSealCountdown();
+}
+
+// Step 3: 3-second countdown with abort option
+function startSealCountdown() {
+  isSealCountdownActive = true;
+  let countdown = 3;
+  
+  const toast = document.getElementById('countdownToast');
+  const text = document.getElementById('countdownText');
+  const overlay = document.getElementById('sealingOverlay');
+  
+  // Show overlay to disable background
+  overlay.classList.add('active');
+  
+  toast.classList.add('show');
+  text.textContent = `⏳ Sealing... (${countdown}s)`;
+  
+  sealCountdownTimer = setInterval(() => {
+    countdown--;
+    text.textContent = `⏳ Sealing... (${countdown}s)`;
+    
+    if (countdown <= 0) {
+      clearInterval(sealCountdownTimer);
+      sealCountdownTimer = null;
+      toast.classList.remove('show');
+      // Keep overlay active for undo period
+      executeSeal();
+    }
+  }, 1000);
+}
+
+// Abort seal during countdown
+function abortSeal() {
+  if (sealCountdownTimer) {
+    clearInterval(sealCountdownTimer);
+    sealCountdownTimer = null;
+  }
+  
+  isSealCountdownActive = false;
+  
+  const toast = document.getElementById('countdownToast');
+  const overlay = document.getElementById('sealingOverlay');
+  
+  toast.classList.remove('show');
+  overlay.classList.remove('active'); // Hide overlay
+}
+
+// Step 4: Execute seal and start grace period
+function executeSeal() {
+  const emis = loadEMIs();
+  const currentMonth = getCurrentMonth();
+  const existingSealState = loadSealState();
+  
+  // Get existing sealed items or empty array
+  const existingSealedItems = (existingSealState.isSealed && existingSealState.sealedMonth === currentMonth)
+    ? existingSealState.sealedItems
+    : [];
+  
+  // Add new items to sealed list (only unsealed AND PAID ones)
+  const newItemsToSeal = emis
+    .filter(emi => 
+      !wasItemSealed(emi) && 
+      emi.isPaidThisMonth && 
+      emi.currentMonth === currentMonth
+    )
+    .map(emi => ({
+      emiName: emi.emiName,
+      emiAmount: emi.emiAmount,
+      dueDate: emi.dueDate
+    }));
+  
+  // Combine existing sealed items with new ones
+  const allSealedItems = [...existingSealedItems, ...newItemsToSeal];
+  
+  // Store newly sealed items for finalizeSeal message
+  lastSealedItems = newItemsToSeal;
+  
+  const sealState = {
+    isSealed: true,
+    sealedMonth: currentMonth,
+    sealedDate: new Date().toISOString(),
+    sealedItems: allSealedItems
+  };
+  
+  saveSealState(sealState);
+  applySealedUI();
+  startUndoGracePeriod();
+}
+
+// Step 5: 5-second undo grace period
+function startUndoGracePeriod() {
+  let countdown = 5;
+  
+  const toast = document.getElementById('undoToast');
+  const text = document.getElementById('undoText');
+  const overlay = document.getElementById('sealingOverlay');
+  
+  // Overlay should already be active from countdown
+  toast.classList.add('show');
+  text.textContent = `✅ Sealed! (${countdown}s)`;
+  
+  undoGracePeriodTimer = setInterval(() => {
+    countdown--;
+    text.textContent = `✅ Sealed! (${countdown}s)`;
+    
+    if (countdown <= 0) {
+      clearInterval(undoGracePeriodTimer);
+      undoGracePeriodTimer = null;
+      toast.classList.remove('show');
+      overlay.classList.remove('active'); // Hide overlay when done
+      finalizeSeal();
+    }
+  }, 1000);
+}
+
+// Undo seal during grace period
+function undoSeal() {
+  if (undoGracePeriodTimer) {
+    clearInterval(undoGracePeriodTimer);
+    undoGracePeriodTimer = null;
+  }
+  
+  const toast = document.getElementById('undoToast');
+  const overlay = document.getElementById('sealingOverlay');
+  
+  toast.classList.remove('show');
+  overlay.classList.remove('active'); // Hide overlay
+  
+  // Remove seal
+  saveSealState({
+    isSealed: false,
+    sealedMonth: null,
+    sealedDate: null,
+    sealedItems: []
+  });
+  
+  removeSealedUI();
+  renderTable();
+}
+
+// Finalize seal after grace period
+function finalizeSeal() {
+  const toast = document.getElementById('paymentToast');
+  
+  // Check if ALL active items are now sealed
+  if (areAllActiveItemsSealed()) {
+    // All items sealed - show superToast for financial peace
+    const superToast = document.getElementById('superToast');
+    superToast.classList.add('show');
+    setTimeout(() => superToast.classList.remove('show'), 6000);
+  } else {
+    // Partial seal - show which items were sealed
+    if (lastSealedItems.length === 1) {
+      // Single item sealed
+      toast.textContent = `🔒 Sealed! Forget "${lastSealedItems[0].emiName}" this month`;
+    } else if (lastSealedItems.length === 2) {
+      // Two items sealed
+      toast.textContent = `🔒 Sealed! Forget "${lastSealedItems[0].emiName}" and "${lastSealedItems[1].emiName}" this month`;
+    } else {
+      // Multiple items sealed
+      const names = lastSealedItems.slice(0, 2).map(item => item.emiName).join('", "');
+      const remaining = lastSealedItems.length - 2;
+      toast.textContent = `🔒 Sealed! Forget "${names}" and ${remaining} more this month`;
+    }
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 5000);
+  }
+  
+  // Clear last sealed items
+  lastSealedItems = [];
+}
+
+// ========== SEAL UI TRANSFORMATIONS ==========
+
+// Apply sealed UI state
+function applySealedUI() {
+  const tableWrapper = document.getElementById('tableWrapper');
+  
+  // Only show banner if ALL current items are sealed
+  if (areAllActiveItemsSealed()) {
+    tableWrapper.classList.add('sealed');
+  } else {
+    tableWrapper.classList.remove('sealed');
+  }
+  
+  renderTable(); // Re-render with locks
+}
+
+// Remove sealed UI state
+function removeSealedUI() {
+  const tableWrapper = document.getElementById('tableWrapper');
+  const badge = document.getElementById('sealedBadge');
+  
+  tableWrapper.classList.remove('sealed');
+  badge.style.display = 'none'; // Ensure badge is hidden
+}
+
 // Check and auto-archive completed items
 function autoArchiveCompleted() {
   const emis = loadEMIs();
+  const exportBtn = document.getElementById("export");
+  
   const archived = loadArchived();
+
+  if (exportBtn) {
+    if (emis.length === 0 && archived.length === 0) {
+      exportBtn.disabled = true;
+    } else {
+      exportBtn.disabled = false;
+    }
+  }
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -163,7 +555,17 @@ function toggleArchivedView() {
 
 // Mark item as paid
 function markAsPaid(index) {
+  if (isSealingInProgress()) {
+    return; // Silently block when sealing in progress
+  }
+  
   const emis = loadEMIs();
+  
+  // Block if THIS specific item is sealed
+  if (wasItemSealed(emis[index])) {
+    return; // Can't mark a sealed item
+  }
+  
   const currentMonth = getCurrentMonth();
 
   if (
@@ -215,24 +617,37 @@ function checkAllPaidAndCelebrate() {
 
   if (activeItems.length === 0) return;
 
-  // Count paid items
-  const paidItems = activeItems.filter(
+  // Filter to only UNSEALED items (so we don't count already sealed items)
+  const unsealedItems = activeItems.filter(emi => !wasItemSealed(emi));
+  
+  if (unsealedItems.length === 0) return; // All items already sealed
+
+  // Count paid items among unsealed items
+  const paidItems = unsealedItems.filter(
     (emi) => emi.isPaidThisMonth && emi.currentMonth === currentMonth
   );
 
-  // All items paid?
-  if (paidItems.length === activeItems.length) {
-    const superToast = document.getElementById("superToast");
-    superToast.classList.add("show");
-    setTimeout(() => {
-      superToast.classList.remove("show");
-    }, 6000);
+  // All unsealed items paid?
+  if (paidItems.length === unsealedItems.length) {
+    const toast = document.getElementById("paymentToast");
+    toast.textContent = "🎉 Super! Now seal it to preserve from accidental touches, doubts and all";
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 5000); // Longer display
   }
 }
 
 // Unmark item as paid
 function unmarkAsPaid(index) {
+  if (isSealingInProgress()) {
+    return; // Silently block when sealing in progress
+  }
+  
   const emis = loadEMIs();
+  
+  // Block if THIS specific item is sealed
+  if (wasItemSealed(emis[index])) {
+    return; // Can't unmark a sealed item
+  }
   emis[index].isPaidThisMonth = false;
   emis[index].currentMonth = "";
   saveEMIs(emis);
@@ -535,6 +950,17 @@ function renderTable() {
   if (!showArchived) {
     updateSummary(loadEMIs());
   }
+  
+  // Update sealed banner state based on current items
+  const tableWrapper = document.getElementById('tableWrapper');
+  if (isSealedThisMonth() && areAllActiveItemsSealed()) {
+    tableWrapper.classList.add('sealed');
+  } else {
+    tableWrapper.classList.remove('sealed');
+  }
+  
+  // Update seal button state
+  updateSealButton();
 }
 
 // Generate HTML for a single row
@@ -544,6 +970,7 @@ function generateRowHTML(emi, index) {
   const currentMonth = getCurrentMonth();
   const isPaid = emi.isPaidThisMonth && emi.currentMonth === currentMonth;
   const periodLeft = calculatePeriodLeft(emi.emiEndDate, emi.type, category);
+  const sealed = wasItemSealed(emi); // Check if THIS specific item was sealed
 
   let typeIcon, typeText, rowClass;
   if (category === "savings") {
@@ -564,15 +991,24 @@ function generateRowHTML(emi, index) {
   if (isPaid) {
     rowClass += " paid-row";
   }
+  
+  if (sealed) {
+    rowClass += " sealed-row";
+  }
 
+  // Show lock icon instead of checkbox when sealed
   const checkboxHtml = showArchived
     ? `<td><input type="checkbox" disabled class="payment-checkbox" /></td>`
+    : sealed
+    ? `<td><span class="lock-icon">🔒</span></td>`
     : `<td><input type="checkbox" ${isPaid ? "checked" : ""} onchange="${
         isPaid ? `unmarkAsPaid(${index})` : `markAsPaid(${index})`
       }" class="payment-checkbox" /></td>`;
 
   const actionsHtml = showArchived
     ? `<td><div class="actions"><button class="btn-icon" disabled>📦</button></div></td>`
+    : sealed
+    ? `<td><div class="actions sealed"><button class="btn-icon" disabled>🔒</button></div></td>`
     : `<td>
             <div class="actions">
               <button class="btn-icon edit" onclick="editEMI(${index})" aria-label="Edit">✏️</button>
@@ -684,6 +1120,10 @@ function updateSummary(emis) {
 
 // Open modal
 function openModal(editIndex = null) {
+  if (isSealingInProgress()) {
+    return; // Silently block during sealing process
+  }
+  
   const modal = document.getElementById("emiModal");
   const form = document.getElementById("emiForm");
   const modalTitle = document.getElementById("modalTitle");
@@ -739,11 +1179,33 @@ function closeModal() {
 
 // Edit EMI
 function editEMI(index) {
+  if (isSealingInProgress()) {
+    return; // Silently block during sealing process
+  }
+  
+  const emis = loadEMIs();
+  const emi = emis[index];
+  
+  if (wasItemSealed(emi)) {
+    alert('🔒 Cannot edit sealed payments. Wait until next month.');
+    return;
+  }
   openModal(index);
 }
 
 // Delete EMI
 function deleteEMI(index) {
+  if (isSealingInProgress()) {
+    return; // Silently block during sealing process
+  }
+  
+  const emis = loadEMIs();
+  const emi = emis[index];
+  
+  if (wasItemSealed(emi)) {
+    alert('🔒 Cannot delete sealed payments. Wait until next month.');
+    return;
+  }
   if (confirm("Are you sure you want to delete this item?")) {
     const emis = loadEMIs();
     emis.splice(index, 1);
@@ -810,6 +1272,31 @@ document.getElementById("emiModal").addEventListener("click", function (e) {
   }
 });
 
+// Close seal modal on outside click
+document.getElementById("sealModal").addEventListener("click", function (e) {
+  if (e.target === this) {
+    closeSealModal();
+  }
+});
+
+// Info modal functions
+function showSealInfo() {
+  const modal = document.getElementById('sealInfoModal');
+  modal.classList.add('active');
+}
+
+function closeSealInfoModal() {
+  const modal = document.getElementById('sealInfoModal');
+  modal.classList.remove('active');
+}
+
+// Close info modal on outside click
+document.getElementById("sealInfoModal").addEventListener("click", function (e) {
+  if (e.target === this) {
+    closeSealInfoModal();
+  }
+});
+
 // Initialize sort controls
 function initSortControls() {
   const prefs = loadSortPrefs();
@@ -839,6 +1326,7 @@ function resetPaymentStatusIfNewMonth() {
 }
 
 // Initialize app
+checkAndUnlockNewMonth(); // Check if new month started
 resetPaymentStatusIfNewMonth();
 initSortControls();
 renderTable();
@@ -846,6 +1334,7 @@ loadTheme();
 
 // Auto-refresh every minute
 setInterval(() => {
+  checkAndUnlockNewMonth();
   resetPaymentStatusIfNewMonth();
   renderTable();
 }, 60000);
@@ -881,9 +1370,12 @@ function loadTheme() {
 function exportData() {
   const emis = loadEMIs();
   const archived = loadArchived();
+  const sealState = loadSealState();
+  
   const exportData = {
     active: emis,
     archived: archived,
+    sealState: sealState, // Include seal state
     exportDate: new Date().toISOString(),
   };
   const dataStr = JSON.stringify(exportData, null, 2);
@@ -911,11 +1403,20 @@ function importData(event) {
 
       let activeData = [];
       let archivedData = [];
+      let importedSealState = null;
+      let exportMonth = null;
 
       // Handle new export format (with active/archived split)
       if (importedData.active && Array.isArray(importedData.active)) {
         activeData = importedData.active;
         archivedData = importedData.archived || [];
+        importedSealState = importedData.sealState || null;
+        
+        // Extract month from export date
+        if (importedData.exportDate) {
+          const exportDate = new Date(importedData.exportDate);
+          exportMonth = `${exportDate.getFullYear()}-${String(exportDate.getMonth() + 1).padStart(2, "0")}`;
+        }
       }
       // Handle old export format (just array)
       else if (Array.isArray(importedData)) {
@@ -926,14 +1427,25 @@ function importData(event) {
         return;
       }
 
-      // Process active data
+      // Check if export month matches current month
+      const isSameMonth = exportMonth === currentMonth;
+      let resetMessage = "";
+
+      // Process active data based on month
       activeData = activeData.map((item) => {
-        // Handle payment status
-        if (item.isPaidThisMonth && item.currentMonth === currentMonth) {
-          // Keep paid status if it's the same month
-          return item;
+        if (isSameMonth) {
+          // Same month: preserve payment status for this month
+          if (item.isPaidThisMonth && item.currentMonth === currentMonth) {
+            return item;
+          } else {
+            return {
+              ...item,
+              isPaidThisMonth: false,
+              currentMonth: "",
+            };
+          }
         } else {
-          // Reset payment status
+          // Different month: reset all payment status
           return {
             ...item,
             isPaidThisMonth: false,
@@ -962,11 +1474,14 @@ function importData(event) {
         }
       });
 
-      if (
-        confirm(
-          `Import ${stillActive.length} active items and ${archivedData.length} archived items?  This will add to your existing data. `
-        )
-      ) {
+      // Prepare confirmation message
+      let confirmMsg = `Import ${stillActive.length} active items and ${archivedData.length} archived items?`;
+      if (!isSameMonth && exportMonth) {
+        confirmMsg += "\n\n⚠️ Note: Export is from a different month. All payments and seal status will be reset for the new month.";
+      }
+      confirmMsg += "  This will add to your existing data.";
+
+      if (confirm(confirmMsg)) {
         const existingActive = loadEMIs();
         const existingArchived = loadArchived();
 
@@ -975,8 +1490,42 @@ function importData(event) {
 
         saveEMIs(mergedActive);
         saveArchived(mergedArchived);
+
+        // Handle seal state import
+        if (isSameMonth && importedSealState && importedSealState.isSealed) {
+          // Same month: import seal state as-is
+          saveSealState(importedSealState);
+          applySealedUI();
+          resetMessage = "✅ Data imported with seal status preserved!";
+        } else if (!isSameMonth && exportMonth) {
+          // Different month: clear seal state
+          saveSealState({
+            isSealed: false,
+            sealedMonth: null,
+            sealedDate: null,
+            sealedItems: []
+          });
+          removeSealedUI();
+          resetMessage = "📅 Month changed! Data imported with payments and seal reset for new entries";
+        } else {
+          // Old format or no seal: clear seal
+          saveSealState({
+            isSealed: false,
+            sealedMonth: null,
+            sealedDate: null,
+            sealedItems: []
+          });
+          removeSealedUI();
+          resetMessage = "✅ Data imported successfully!";
+        }
+
         renderTable();
-        alert("Data imported successfully!");
+        
+        // Show appropriate toast message
+        const toast = document.getElementById("paymentToast");
+        toast.textContent = resetMessage;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 4000);
       }
     } catch (error) {
       alert("Error reading file: " + error.message);

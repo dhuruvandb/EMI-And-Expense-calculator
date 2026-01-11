@@ -35,7 +35,7 @@
     <!-- Header -->
     <div class="header">
       <div class="header-content">
-        <h1>💳 EMI & Expense Tracker</h1>
+        <h1>💳 EMI & Expense Tracker<span id="sealedBadge" class="sealed-badge" style="display: none;">🔒 SEALED</span></h1>
         <div class="header-subtitle">
           Manage your EMIs and expenses offline, securely
         </div>
@@ -48,7 +48,7 @@
             <span id="themeIcon">🌙</span>
             <span id="themeText">Dark</span>
           </button>
-          <button class="data-btn" onclick="exportData()">📥 Export</button>
+          <button class="data-btn" onclick="exportData()" id="export">📥 Export</button>
           <button
             class="data-btn"
             onclick="document.getElementById('importFile').click()"
@@ -143,6 +143,17 @@
             <span id="viewToggleText">📦 View Archive</span>
           </button>
         </div>
+        <div class="sort-group">
+          <button class="seal-control-btn" id="sealControlBtn" 
+                  onclick="initiateSeal()" disabled 
+                  title="Check at least one payment to enable">
+            🔒 Seal
+          </button>
+          <button class="info-btn" onclick="showSealInfo()" 
+                  title="Learn about Seal Mode">
+            ℹ️
+          </button>
+        </div>
       </div>
     </div>
 
@@ -181,6 +192,84 @@
 
     <!-- FAB Button -->
     <button class="fab" onclick="openModal()" aria-label="Add Item">+</button>
+
+    <!-- Seal Confirmation Modal -->
+    <div id="sealModal" class="modal">
+      <div class="modal-content seal-modal">
+        <div class="modal-header">
+          <h2>⚠️ Seal Monthly Payments?</h2>
+          <button class="close-btn" onclick="closeSealModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="seal-warning-box">
+            <p class="seal-warning-title">This will LOCK all payments until:</p>
+            <p class="seal-date" id="sealUntilDate">📅 February 1, 2026</p>
+          </div>
+          <ul class="seal-consequences">
+            <li>✅ Payments cannot be edited</li>
+            <li>✅ Checkboxes cannot be changed</li>
+            <li>✅ Status is permanent this month</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeSealModal()">Cancel</button>
+          <button class="btn btn-danger" onclick="confirmSeal()">CONFIRM SEAL</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seal Info Modal -->
+    <div id="sealInfoModal" class="modal">
+      <div class="modal-content info-modal">
+        <div class="modal-header">
+          <h2>ℹ️ About Seal Mode</h2>
+          <button class="close-btn" onclick="closeSealInfoModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="info-warning">
+            <p>⚠️ <strong>This is a serious commitment</strong></p>
+          </div>
+          
+          <div class="info-section">
+            <h3>⏱️ What Happens When You Seal:</h3>
+            <ol class="info-steps">
+              <li><strong>3-second countdown</strong> - Last chance to press STOP</li>
+              <li><strong>5-second undo period</strong> - Final window to press UNDO</li>
+              <li><strong>Total: 8 seconds of deliberation</strong></li>
+            </ol>
+          </div>
+          
+          <div class="info-section">
+            <h3>🔒 During These 8 Seconds:</h3>
+            <ul class="info-restrictions">
+              <li>❌ Cannot edit items</li>
+              <li>❌ Cannot check/uncheck payments</li>
+              <li>❌ Cannot delete items</li>
+              <li>❌ Cannot add new items</li>
+            </ul>
+          </div>
+          
+          <div class="info-section">
+            <h3>✅ After Sealing:</h3>
+            <ul class="info-benefits">
+              <li>🔒 All payments locked until next month</li>
+              <li>🛡️ Protected from accidental touches</li>
+              <li>🧘 Financial peace of mind achieved</li>
+              <li>📅 Auto-unlocks on the 1st of next month</li>
+            </ul>
+          </div>
+          
+          <div class="info-caution">
+            <p><strong>Use wisely. This is a one-way action for this month.</strong></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" onclick="closeSealInfoModal()">
+            Got It!
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Modal -->
     <div id="emiModal" class="modal">
@@ -378,6 +467,20 @@
       💚 Fully paid up! No stress, no worries, no surprises. This is what
       financial peace feels like. Well done! ☮️
     </div>
+
+    <!-- Seal Toast Notifications -->
+    <div id="countdownToast" class="seal-toast countdown-toast">
+      <span id="countdownText">⏳ Sealing... (3s)</span>
+      <button class="toast-btn" onclick="abortSeal()">STOP</button>
+    </div>
+
+    <div id="undoToast" class="seal-toast undo-toast">
+      <span id="undoText">✅ Sealed! (5s)</span>
+      <button class="toast-btn" onclick="undoSeal()">UNDO</button>
+    </div>
+    
+    <!-- Sealing Overlay -->
+    <div id="sealingOverlay" class="sealing-overlay"></div>
 
     <script src="./script.js"></script>
   </body>

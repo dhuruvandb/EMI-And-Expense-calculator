@@ -168,6 +168,68 @@ body.dark-mode .summary-breakdown {
   color: #94a3b8;
 }
 
+/* Seal Banner */
+.seal-banner {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  padding: 16px;
+  margin: 0 16px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  animation: slideDown 0.4s ease;
+}
+
+.seal-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.seal-banner-icon {
+  font-size: 32px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.seal-banner-text {
+  flex: 1;
+  color: white;
+}
+
+.seal-banner-text strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.seal-banner-text span {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.seal-btn {
+  padding: 12px 24px;
+  background: white;
+  color: #059669;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.seal-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.seal-btn:active {
+  transform: translateY(0);
+  opacity: 0.9;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
@@ -297,6 +359,22 @@ body {
 .data-btn:active {
   transform: translateY(0);
   opacity: 0.8;
+}
+
+.data-btn:disabled {
+  background: #ccc !important;
+  border-color: #999 !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  opacity: 0.6 !important;
+  transform: none !important;
+}
+
+body.dark-mode .data-btn:disabled {
+  background: #334155 !important;
+  border-color: #475569 !important;
+  color: #64748b !important;
 }
 
 /* Summary Cards */
@@ -475,6 +553,81 @@ body {
 
 .view-toggle-btn:active {
   transform: scale(0.98);
+}
+
+/* Seal Control Button */
+.seal-control-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.seal-control-btn:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+  border-color: #e5e7eb;
+}
+
+.seal-control-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.seal-control-btn:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* Info Button */
+.info-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: white;
+  color: var(--primary-color);
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.info-btn:hover {
+  background: var(--primary-color);
+  color: white;
+  transform: scale(1.1);
+}
+
+.info-btn:active {
+  transform: scale(0.95);
+}
+
+body.dark-mode .seal-control-btn:disabled {
+  background: #374151;
+  color: #6b7280;
+  border-color: #4b5563;
+}
+
+body.dark-mode .info-btn {
+  background: #1e293b;
+  color: #818cf8;
+  border-color: #475569;
+}
+
+body.dark-mode .info-btn:hover {
+  background: #818cf8;
+  color: white;
 }
 
 .group-header {
@@ -671,6 +824,108 @@ tbody tr:last-child td {
   opacity: 0.7;
 }
 
+/* Sealed State Styles */
+.sealed-badge {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-left: 12px;
+  animation: glow 2s ease-in-out infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+@keyframes glow {
+  0%, 100% { 
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+  }
+  50% { 
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
+  }
+}
+
+.table-wrapper.sealed {
+  opacity: 0.85;
+  pointer-events: none;
+  position: relative;
+}
+
+.table-wrapper.sealed::before {
+  content: "✅ Well done! You're now free from the burden";
+  display: block;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  border-radius: 12px 12px 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 15;
+}
+
+tbody tr.sealed-row {
+  opacity: 0.7;
+}
+
+tbody tr.sealed-row .payment-checkbox {
+  display: none;
+}
+
+tbody tr.sealed-row td:first-child {
+  text-align: center;
+}
+
+.lock-icon {
+  font-size: 16px;
+  color: #ef4444;
+}
+
+.actions.sealed {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.fab.sealed {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+body.dark-mode .table-wrapper.sealed::before {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+}
+
+body.dark-mode .lock-icon {
+  color: #fca5a5;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1); 
+  }
+  50% { 
+    transform: scale(1.1); 
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Payment Toast */
 .payment-toast {
   position: fixed;
@@ -731,6 +986,22 @@ body.dark-mode.payment-toast {
 body.dark-mode .super-toast {
   background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%);
   box-shadow: 0 20px 40px rgba(124, 58, 237, 0.5);
+}
+
+body.dark-mode .seal-banner {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+}
+
+body.dark-mode .seal-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+body.dark-mode .seal-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Empty State */
@@ -849,6 +1120,98 @@ body.dark-mode .super-toast {
   font-weight: 700;
 }
 
+/* Info Modal Specific Styles */
+.info-modal {
+  max-width: 520px;
+}
+
+.info-warning {
+  background: #fef3c7;
+  border: 2px solid #f59e0b;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.info-warning p {
+  margin: 0;
+  color: #92400e;
+  font-size: 14px;
+}
+
+.info-section {
+  margin-bottom: 20px;
+}
+
+.info-section h3 {
+  font-size: 15px;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.info-steps {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.info-steps li {
+  padding: 6px 0;
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.info-restrictions,
+.info-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-restrictions li,
+.info-benefits li {
+  padding: 6px 0;
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.info-caution {
+  background: #fee2e2;
+  border: 2px solid #ef4444;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.info-caution p {
+  margin: 0;
+  color: #991b1b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+body.dark-mode .info-warning {
+  background: #78350f;
+  border-color: #f59e0b;
+}
+
+body.dark-mode .info-warning p {
+  color: #fde68a;
+}
+
+body.dark-mode .info-caution {
+  background: #7f1d1d;
+  border-color: #ef4444;
+}
+
+body.dark-mode .info-caution p {
+  color: #fca5a5;
+}
+
 .close-btn {
   background: transparent;
   border: none;
@@ -868,6 +1231,69 @@ body.dark-mode .super-toast {
 
 .close-btn:active {
   background: var(--border-color);
+}
+
+/* Seal Modal Specific Styles */
+.seal-modal {
+  max-width: 450px;
+}
+
+.seal-warning-box {
+  background: #fef3c7;
+  border: 2px solid #f59e0b;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.seal-warning-title {
+  font-size: 14px;
+  color: #92400e;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.seal-date {
+  font-size: 18px;
+  font-weight: 700;
+  color: #78350f;
+}
+
+.seal-consequences {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.seal-consequences li {
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.btn-danger:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+body.dark-mode .seal-warning-box {
+  background: #78350f;
+  border-color: #f59e0b;
+}
+
+body.dark-mode .seal-warning-title {
+  color: #fde68a;
+}
+
+body.dark-mode .seal-date {
+  color: #fef3c7;
 }
 
 .modal-body {
@@ -1052,6 +1478,130 @@ select:focus {
 
 .btn-secondary:active {
   opacity: 0.7;
+}
+
+/* Seal Toast Notifications */
+.seal-toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: white;
+  color: var(--text-primary);
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 3001;
+  opacity: 0;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-width: 300px;
+}
+
+.seal-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.countdown-toast {
+  border: 2px solid #f59e0b;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.undo-toast {
+  border: 2px solid #10b981;
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.toast-btn {
+  padding: 8px 16px;
+  background: var(--text-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.toast-btn:hover {
+  transform: scale(1.05);
+}
+
+.toast-btn:active {
+  transform: scale(0.95);
+}
+
+body.dark-mode .seal-toast {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
+body.dark-mode .countdown-toast {
+  background: #78350f;
+  border-color: #f59e0b;
+  color: #fde68a;
+}
+
+body.dark-mode .undo-toast {
+  background: #065f46;
+  border-color: #10b981;
+  color: #d1fae5;
+}
+
+body.dark-mode .toast-btn {
+  background: #1e293b;
+  color: #f1f5f9;
+  border: 1px solid #475569;
+}
+
+body.dark-mode .countdown-toast .toast-btn {
+  background: #92400e;
+  color: #fef3c7;
+  border-color: #f59e0b;
+}
+
+body.dark-mode .countdown-toast .toast-btn:hover {
+  background: #78350f;
+}
+
+body.dark-mode .undo-toast .toast-btn {
+  background: #065f46;
+  color: #d1fae5;
+  border-color: #10b981;
+}
+
+body.dark-mode .undo-toast .toast-btn:hover {
+  background: #047857;
+}
+
+/* Sealing Overlay */
+.sealing-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 3000;
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.sealing-overlay.active {
+  display: block;
+}
+
+body.dark-mode .sealing-overlay {
+  background: rgba(0, 0, 0, 0.7);
 }
 
 /* Responsive Design */
