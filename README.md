@@ -466,6 +466,52 @@ A: Yes! When adding items, choose **Savings** category. The dashboard shows sepa
 
 A: Completely secure. Your data never leaves your device. No server, no cloud, no transmission. It's 100% local storage.
 
+### **Q: Why doesn't this app have push notifications?**
+
+A: **Great question — and we made this decision intentionally.**
+
+Push notifications on the web require ONE of two things:
+
+1. **Keep the app constantly active** → Battery drain, memory hogging, always listening
+2. **Connect to a backend server** → Your financial data gets stored on someone's server, sent over the internet, synced across devices
+
+Both options **destroy the privacy** we built this app around.
+
+We refused to compromise.
+
+**The Trade-Off We Chose:**
+
+✅ You check the app when YOU want  
+✅ No background processes stalking your device  
+✅ No financial data ever leaving your phone  
+✅ No battery drain from constant monitoring  
+✅ No "reminder anxiety" from notifications pestering you  
+
+**The Reality:**
+
+Your EMI tracker is simple enough that a **30-second check every few days** tells you everything:
+
+- What's due this month?
+- What's already paid?
+- Any new items to add?
+
+You don't need the app **spamming your notifications** to stay on top of it.
+
+**This Is Actually a Feature:**
+
+In a world where apps are constantly fighting for your attention, this app respects your focus. You're in control. No notifications. No pressure. Just open it when you decide.
+
+**The Wisdom Here:**
+
+We could have added notifications by:
+- Storing your data on our servers ❌
+- Adding a backend API ❌
+- Selling you "premium notification features" ❌
+
+Instead, we chose to keep your data 100% private, even if it meant saying "no" to a feature users expect.
+
+**That's the trade-off between convenience and privacy. We picked privacy.** 🔒
+
 ---
 
 ## 🆚 Why Choose This Over Other Apps?
@@ -479,6 +525,7 @@ A: Completely secure. Your data never leaves your device. No server, no cloud, n
 | Seal Mode (Lock Status)  | ❌ No      | ✅ Yes      |
 | Auto-Archive Completed   | ❌ No      | ✅ Yes      |
 | Auto-Reset Monthly       | ❌ No      | ✅ Yes      |
+| Push Notifications       | ✅ Yes    | ❌ No     |
 | Privacy First            | ❌ No      | ✅ Yes      |
 | 100% Free                | ❌ No      | ✅ Yes      |
 | Zero Dependencies        | ❌ No      | ✅ Yes      |
