@@ -193,7 +193,7 @@ If you want a **simple, transparent tool** that calculates what matters and **st
 **How It Works:**
 
 1. Check off your payments ✓
-2. Click **"🔒 Seal Month"** button
+2. Click **"🔒 Seal"** button
 3. Confirm in modal
 4. **3-second countdown** — Press STOP to abort
 5. **5-second undo period** — Press UNDO to reverse
@@ -434,7 +434,7 @@ A: **Seal Mode** locks your checked payments to prevent accidental changes. Once
 
 ### **Q: How does the 8-second ceremony work?**
 
-A: When you click "Seal Month", you get:
+A: When you click "Seal", you get:
 
 1. **3-second countdown** with a STOP button (last chance to abort)
 2. **5-second undo period** with an UNDO button (final safety net)
