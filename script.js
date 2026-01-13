@@ -11,6 +11,7 @@ let isSealCountdownActive = false;
 let sealCountdownTimer = null;
 let undoGracePeriodTimer = null;
 let lastSealedItems = []; // Track items sealed in current seal operation
+let previousSealState = null; // Store seal state before adding new items (for UNDO)
 
 // Get current month in YYYY-MM format
 function getCurrentMonth() {
@@ -346,6 +347,9 @@ function executeSeal() {
   const currentMonth = getCurrentMonth();
   const existingSealState = loadSealState();
   
+  // Store previous seal state for UNDO functionality
+  previousSealState = JSON.parse(JSON.stringify(existingSealState));
+  
   // Get existing sealed items or empty array
   const existingSealedItems = (existingSealState.isSealed && existingSealState.sealedMonth === currentMonth)
     ? existingSealState.sealedItems
@@ -421,13 +425,19 @@ function undoSeal() {
   toast.classList.remove('show');
   overlay.classList.remove('active'); // Hide overlay
   
-  // Remove seal
-  saveSealState({
-    isSealed: false,
-    sealedMonth: null,
-    sealedDate: null,
-    sealedItems: []
-  });
+  // Restore previous seal state (UNDO only the newly added items)
+  if (previousSealState) {
+    saveSealState(previousSealState);
+    previousSealState = null;
+  } else {
+    // Fallback: if no previous state, clear everything
+    saveSealState({
+      isSealed: false,
+      sealedMonth: null,
+      sealedDate: null,
+      sealedItems: []
+    });
+  }
   
   removeSealedUI();
   renderTable();
@@ -463,6 +473,7 @@ function finalizeSeal() {
   
   // Clear last sealed items
   lastSealedItems = [];
+  previousSealState = null;
 }
 
 // ========== SEAL UI TRANSFORMATIONS ==========
