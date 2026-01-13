@@ -155,7 +155,7 @@ body.dark-mode .payment-toast {
   color: #d1fae5;
 }
 
-body.dark-mode tbody tr.paid-row {
+body.dark-mode tbody tr.paid-row td:not(:first-child) {
   opacity: 0.6;
   background-color: #1e293b;
 }
@@ -733,7 +733,7 @@ tbody tr.savings-row:hover {
   background-color: #a7f3d0;
 }
 
-tbody tr.paid-row {
+tbody tr.paid-row td:not(:first-child){
   opacity: 0.5;
   text-decoration: line-through;
   background-color: #f1f5f9;

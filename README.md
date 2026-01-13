@@ -1,5 +1,8 @@
 <div align="center">
 
+![GitHub](https://img.shields.io/github/license/dhuruvandb/EMI-And-Expense-calculator)
+![GitHub stars](https://img.shields.io/github/stars/dhuruvandb/EMI-And-Expense-calculator)
+
 # 💳 EMI & Expense Tracker
 
 ### **Know exactly how much you must pay every month — nothing more, nothing less.**
@@ -13,11 +16,28 @@
 
 ---
 
+## 📋 **TL;DR**
+**Privacy-first, 100% offline expense tracker. No accounts, no cloud. Track EMIs, subscriptions, recurring payments. Auto-archives completed items. Seal Mode locks payments for financial certainty. PWA, open source, free.**
+
+[Try it Now →](https://dhuruvandb.github.io/EMI-And-Expense-calculator/)
+
 </div>
 
 ---
 
-## ❗ The Problem This Solves (Real & Personal)
+## 🎯 **Why This Exists**
+
+> **Built for people who want to track their finances without:**  
+> ❌ Creating accounts  
+> ❌ Uploading data to someone's server  
+> ❌ Paying subscription fees  
+> ❌ Trusting "AI insights" with their money
+
+If you want a **simple, transparent tool** that calculates what matters and **stays out of your way**, this is it.
+
+---
+
+## ❗ **The Problem This Solves (Real & Personal)**
 
 I wanted **one simple number** that tells me:
 
@@ -51,61 +71,7 @@ That's the core problem.
 
 ---
 
-## ⚠️ Important: What This App Is _Not_ For
-
-**Please don't use this app if you are looking for:**
-
-- Daily expense tracking
-- Per-transaction budgeting
-- Categorizing every coffee or grocery purchase
-
-👉 **This app is NOT built for daily budgeting.**
-
-It is designed **only** for:
-
-- Fixed monthly expenses
-- EMIs with clear end dates
-- Knowing your _mandatory monthly payment_ — fast and reliably
-
----
-
-## 🔒 Privacy Matters More Than Features
-
-I care deeply about **privacy**.
-
-I don't want:
-
-- My financial data on someone else's server
-- Accounts, logins, or cloud syncs
-- "Insights", tracking, or analytics watching my money
-
-**My finances are mine.**  
-They should stay **on my device, offline, and private**.
-
----
-
-## 😤 Why Existing Apps Frustrated Me
-
-Almost every finance app today:
-
-- Forces you to **sign up**
-- Requires an **account**
-- Adds unnecessary complexity
-- Tries to track income, goals, AI insights, and ads
-
-I hated all of that.
-
-I just wanted to:
-
-> **Open the app → add my EMIs and fixed expenses → see my mandatory monthly payment.**
-
-No friction.  
-No login.  
-No repeating the same work every month.
-
----
-
-## ✅ The Solution
+## ✨ **What It Does (Overview)**
 
 ### **EMI & Expense Tracker**
 
@@ -136,135 +102,19 @@ A lightweight, privacy-first Progressive Web App for tracking EMIs, loans, and r
 
 ---
 
-## 🎯 Why This Exists
-
-> **Built for people who want to track their finances without:**  
-> ❌ Creating accounts  
-> ❌ Uploading data to someone's server  
-> ❌ Paying subscription fees  
-> ❌ Trusting "AI insights" with their money
-
-If you want a **simple, transparent tool** that calculates what matters and **stays out of your way**, this is it.
-
----
-
-## ✨ What It Does
-
-### **Core Features**
-
-✅ Track unlimited EMIs, loans, and recurring expenses  
-✅ **Monthly payment tracking** — Check off items as you pay them  
-✅ **🔒 Seal Mode** — Lock your payments to prevent accidental changes  
-✅ **Auto-archive system** — Completed EMIs automatically move to archive  
-✅ **Smart search** — Instant search by name or amount  
-✅ Works **100% offline** after first load  
-✅ **Export/Import** your data (JSON backup with archive support)  
-✅ Dark mode for late-night budgeting  
-✅ Install as native app (PWA)  
-✅ Auto-save — never lose your data  
-✅ **8 sorting options** + **4 grouping modes**
-
-### **Advanced Features**
-
-🔒 **Seal Mode — Financial Peace Ritual**
-
-> **The Problem**: You've checked all your payments. But later, you accidentally tap a checkbox, or you start doubting yourself: "Did I really pay this?" The anxiety builds.
-
-**Seal Mode** solves this with a deliberate ceremony:
-
-- ✅ **Lock Your Payments** — Seal checked items to prevent accidental changes
-- ✅ **8-Second Ceremony** — 3s countdown + 5s undo period ensures intentional commitment
-- ✅ **Multiple Seals Per Month** — Seal items as you pay them, add new expenses, seal again
-- ✅ **Visual Lock Icons** — 🔒 Sealed items show lock instead of checkbox
-- ✅ **Smart Messages**:
-  - Seal 1 item: "🔒 Sealed! Forget "Rent" this month"
-  - Seal all items: "💚 Fully paid up! Financial peace of mind!"
-- ✅ **Full Protection** — Cannot edit, delete, or uncheck sealed items until next month
-- ✅ **Auto-Unlock** — Seals automatically clear on the 1st of next month
-- ✅ **Export/Import Aware** — Seal state preserved when exporting/importing same month
-
-**Why This Matters:**
-
-- **Mental Peace** — Once sealed, you KNOW it's done. No more doubting.
-- **Accident Prevention** — Locked items can't be changed by accidental touches
-- **Intentional Money Management** — The 8-second ceremony makes sealing meaningful
-- **Progressive Sealing** — Seal items as you pay them throughout the month
-
-**How It Works:**
-
-1. Check off your payments ✓
-2. Click **"🔒 Seal"** button
-3. Confirm in modal
-4. **3-second countdown** — Press STOP to abort
-5. **5-second undo period** — Press UNDO to reverse
-6. Done! Items locked until next month 🎉
-
-🎯 **Payment Status Tracking**
-
-- Check off items as you pay them each month
-- Automatic monthly reset (payment status clears at month start)
-- Visual strikethrough for paid items
-- Smart calculation excludes paid items from monthly total
-
-🗃️ **Intelligent Archive Management**
-
-- Completed EMIs automatically archive when end date passes
-- Separate archive view to review past items
-- Archive items included in export/import backups
-- Clean interface showing only active items
-
-📊 **Category Separation**
-
-- **Loan/Debt tracking** — EMIs, loans, credit cards
-- **Savings tracking** — SIPs, RDs, investment commitments
-- Separate totals for debt vs savings in dashboard
-- Color-coded rows (red for debt, green for savings)
-
-🎉 **Celebration Mode**
-
-- Get rewarded when all monthly payments are complete!
-- Encouraging messages for savings contributions
-- "Financial peace of mind" celebration toast
-
-🔍 **Smart Search & Organization**
-
-- Instant search by name or amount (300ms debounce)
-- **8 Sort Options**: Entry order, due date, amount, end date, period left, name, type, category
-- **4 Grouping Modes**: Category, type, due date range, status
-- Bidirectional sorting (ascending/descending)
-- Group totals displayed in headers
-
-### **Real-Time Dashboard**
-
-- 📊 Total active items count
-- 💰 Monthly payment breakdown (Debt + Savings)
-- 💳 Outstanding debt tracker (principal remaining)
-- 🚨 Color-coded period alerts:
-  - 🟢 Critical (≤30 days remaining)
-  - 🟡 Warning (31-90 days)
-  - 🔴 Normal (>90 days)
-
-### **Privacy by Design**
-
-- 🔒 **No backend servers** — your data never leaves your device
-- 🔒 **No user accounts** — nothing to sign up for
-- 🔒 **No tracking** — zero analytics, cookies, or pixels
-- 🔒 **100% client-side** — auditable source code
-
----
-
-## 🎯 How It Works
+## 🎯 **How It Works**
 
 1. **Add Your Items** — EMIs, loans, rent, subscriptions, savings goals
 2. **Mark as Paid** — Check off items as you pay them throughout the month
-3. **Auto-Reset** — Payment status automatically resets each month
-4. **Get Celebrated** — Complete all payments? We'll celebrate with you! 🎉
-5. **Auto-Archive** — Completed EMIs automatically move to archive
-6. **Track Your Progress** — Real-time dashboard shows what you owe vs what you're saving
+3. **🔒 Seal Payments** — Lock checked items to prevent accidental changes
+4. **Auto-Reset** — Payment status automatically resets each month
+5. **Get Celebrated** — Complete all payments? We'll celebrate with you! 🎉
+6. **Auto-Archive** — Completed EMIs automatically move to archive
+7. **Track Your Progress** — Real-time dashboard shows what you owe vs what you're saving
 
 ---
 
-## 🚀 Quick Start
+## 🚀 **Quick Start**
 
 ### **Option 1: Use It Now (Web App)**
 
@@ -290,17 +140,21 @@ webView.loadUrl("file:///android_asset/index.html");
 
 ---
 
-## 🛠️ Technical Details
+## 🛠️ **Built With & Technical Details**
 
-### **Stack**
+### **Technology Stack**
+- **Vanilla JavaScript** (Zero dependencies, no frameworks)
+- **Progressive Web App (PWA)** technology (installable, works offline)
+- **LocalStorage API** (100% offline operation, your data stays on your device)
+- **Modern Web APIs** (100% client-side, no backend required)
 
+### **Technical Specifications**
 - **Frontend**: Vanilla HTML5 + CSS3 + JavaScript (no frameworks)
 - **Storage**: Browser localStorage API (3 separate keys for active/archived/preferences)
 - **Size**: ~60KB total (HTML + CSS + JS combined)
 - **Dependencies**: **Zero** — Pure vanilla JavaScript
 
 ### **Browser Support**
-
 | Browser         | Minimum Version |
 | --------------- | --------------- |
 | Chrome/Edge     | 60+             |
@@ -309,7 +163,6 @@ webView.loadUrl("file:///android_asset/index.html");
 | Android WebView | 60+             |
 
 ### **Performance**
-
 - ⚡ Loads in <100ms
 - 🪶 Lightweight codebase
 - 📱 Works on 2G networks
@@ -317,46 +170,113 @@ webView.loadUrl("file:///android_asset/index.html");
 
 ---
 
-## 📋 Features Breakdown
+## 📋 **Detailed Features Breakdown**
 
-### **What You Can Track**
+### **Core Features**
 
-#### **EMIs & Loans**
+✅ Track unlimited EMIs, loans, and recurring expenses  
+✅ **Monthly payment tracking** — Check off items as you pay them  
+✅ **🔒 Seal Mode** — Lock your payments to prevent accidental changes  
+✅ **Auto-archive system** — Completed EMIs automatically move to archive  
+✅ **Smart search** — Instant search by name or amount  
+✅ Works **100% offline** after first load  
+✅ **Export/Import** your data (JSON backup with archive support)  
+✅ Dark mode for late-night budgeting  
+✅ Install as native app (PWA)  
+✅ Auto-save — never lose your data  
+✅ **8 sorting options** + **4 grouping modes**
 
-- Home loans, car loans, personal loans
-- Credit card EMIs
-- Education loans
-- Any installment-based purchase
-- Principal paid, interest paid, total amount tracking
+### **🔒 Seal Mode — Financial Peace Ritual**
+> **The Problem**: You've checked all your payments. But later, you accidentally tap a checkbox, or you start doubting yourself: "Did I really pay this?" The anxiety builds.
 
-#### **Recurring Expenses**
+**Seal Mode solves this with a deliberate ceremony:**
 
-- Rent, subscriptions (Netflix, Spotify, etc.)
-- Utility bills (electricity, internet)
-- Insurance premiums
-- Gym memberships
-- Any ongoing monthly expense (no end date required)
+- ✅ **Lock Your Payments** — Seal checked items to prevent accidental changes
+- ✅ **8-Second Ceremony** — 3s countdown + 5s undo period ensures intentional commitment
+- ✅ **Multiple Seals Per Month** — Seal items as you pay them, add new expenses, seal again
+- ✅ **Visual Lock Icons** — 🔒 Sealed items show lock instead of checkbox
+- ✅ **Smart Messages**:
+  - Seal 1 item: "🔒 Sealed! Forget "Rent" this month"
+  - Seal all items: "💚 Fully paid up! Financial peace of mind!"
+- ✅ **Full Protection** — Cannot edit, delete, or uncheck sealed items until next month
+- ✅ **Auto-Unlock** — Seals automatically clear on the 1st of next month
+- ✅ **Export/Import Aware** — Seal state preserved when exporting/importing same month
 
-#### **Savings Goals**
+**How Seal Mode Works:**
+1. Check off your payments ✓
+2. Click **"🔒 Seal"** button
+3. Confirm in modal
+4. **3-second countdown** — Press STOP to abort
+5. **5-second undo period** — Press UNDO to reverse
+6. Done! Items locked until next month 🎉
 
-- Monthly savings commitments
-- Investment SIPs (Systematic Investment Plans)
-- Recurring deposits (RDs)
-- Emergency fund contributions
+### **🎯 Payment Status Tracking**
+- Check off items as you pay them each month
+- Automatic monthly reset (payment status clears at month start)
+- Visual strikethrough for paid items
+- Smart calculation excludes paid items from monthly total
 
-### **Smart Features**
+### **🗃️ Intelligent Archive Management**
+- Completed EMIs automatically archive when end date passes
+- Separate archive view to review past items
+- Archive items included in export/import backups
+- Clean interface showing only active items
 
-- **Payment Tracking**: Check off items as paid, auto-reset monthly
-- **Period Left Alerts**: 🔴 >90 days, 🟡 31-90 days, 🟢 ≤30 days
-- **Flexible Sorting**: Entry order, due date, amount, end date, period left, name, type, category
-- **Smart Grouping**: Category, type, due date range (early/mid/late month), status (active/ongoing/completed)
-- **Export/Import**: JSON backup with active + archived items, merge or replace options
-- **Dark Mode**: System-aware, manually toggleable, persistent preference
-- **Archive View**: Toggle between active items and completed/archived items
+### **📊 Category Separation**
+- **Loan/Debt tracking** — EMIs, loans, credit cards
+- **Savings tracking** — SIPs, RDs, investment commitments
+- Separate totals for debt vs savings in dashboard
+- Color-coded rows (red for debt, green for savings)
+
+### **🎉 Celebration Mode**
+- Get rewarded when all monthly payments are complete!
+- Encouraging messages for savings contributions
+- "Financial peace of mind" celebration toast
+
+### **🔍 Smart Search & Organization**
+- Instant search by name or amount (300ms debounce)
+- **8 Sort Options**: Entry order, due date, amount, end date, period left, name, type, category
+- **4 Grouping Modes**: Category, type, due date range, status
+- Bidirectional sorting (ascending/descending)
+- Group totals displayed in headers
+
+### **📊 Real-Time Dashboard**
+- 📊 Total active items count
+- 💰 Monthly payment breakdown (Debt + Savings)
+- 💳 Outstanding debt tracker (principal remaining)
+- 🚨 Color-coded period alerts:
+  - 🟢 Normal (≤30 days remaining)
+  - 🟡 Warning (31-90 days)
+  - 🔴 Critical (>90 days)
+
+### **🔒 Privacy by Design**
+- 🔒 **No backend servers** — your data never leaves your device
+- 🔒 **No user accounts** — nothing to sign up for
+- 🔒 **No tracking** — zero analytics, cookies, or pixels
+- 🔒 **100% client-side** — auditable source code
 
 ---
 
-## 🔒 Privacy & Data Ownership
+## ⚠️ **Important: What This App Is _Not_ For**
+
+**Please don't use this app if you are looking for:**
+
+- Daily expense tracking
+- Per-transaction budgeting
+- Categorizing every coffee or grocery purchase
+- **Push notifications** (we intentionally don't have them — see FAQ)
+
+👉 **This app is NOT built for daily budgeting.**
+
+It is designed **only** for:
+
+- Fixed monthly expenses
+- EMIs with clear end dates
+- Knowing your _mandatory monthly payment_ — fast and reliably
+
+---
+
+## 🔒 **Privacy & Data Ownership**
 
 ### **Where Your Data Lives**
 
@@ -381,7 +301,7 @@ Every line of code is open for inspection. No hidden trackers, no backdoors.
 
 ---
 
-## 💾 Backup Your Data
+## 💾 **Backup Your Data**
 
 ### **Export (Recommended)**
 
@@ -402,11 +322,11 @@ Every line of code is open for inspection. No hidden trackers, no backdoors.
 
 ---
 
-## ❓ FAQ
+## ❓ **FAQ**
 
 ### **Q: What happens to my data if I clear browser cache?**
 
-A: Your data will be lost. Always export your data regularly to avoid losing it. Store backups in cloud storage or email them to yourself.
+A: Your data will be **lost forever**. Always export your data regularly to avoid losing it. Store backups in cloud storage or email them to yourself.
 
 ### **Q: Can I access my data on multiple devices?**
 
@@ -435,20 +355,17 @@ A: **Seal Mode** locks your checked payments to prevent accidental changes. Once
 ### **Q: How does the 8-second ceremony work?**
 
 A: When you click "Seal", you get:
-
-1. **3-second countdown** with a STOP button (last chance to abort)
-2. **5-second undo period** with an UNDO button (final safety net)
-3. After 8 seconds total, items are permanently sealed for the month
-
-This deliberate process ensures you're intentional about sealing.
+   1. **3-second countdown** with a STOP button (last chance to abort)
+   2. **5-second undo period** with an UNDO button (final safety net)
+   3. After 8 seconds total, items are permanently sealed for the month
+   This deliberate process ensures you're intentional about sealing.
 
 ### **Q: Can I seal items multiple times in one month?**
 
 A: Yes! Seal items as you pay them. For example:
-
-- Day 5: Pay rent, seal it → "🔒 Sealed! Forget Rent this month"
-- Day 10: Pay Netflix, seal it → Adds to sealed list
-- Day 20: Pay all remaining → "💚 Fully paid up! Financial peace!"
+   - Day 5: Pay rent, seal it → "🔒 Sealed! Forget Rent this month"
+   - Day 10: Pay Netflix, seal it → Adds to sealed list
+   - Day 20: Pay all remaining → "💚 Fully paid up! Financial peace!"
 
 ### **Q: What happens to sealed items when exported/imported?**
 
@@ -466,8 +383,7 @@ A: Yes! When adding items, choose **Savings** category. The dashboard shows sepa
 
 A: Completely secure. Your data never leaves your device. No server, no cloud, no transmission. It's 100% local storage.
 
-### **Q: Why doesn't this app have push notifications?**
-
+### **Q: ❓ Why doesn't this app have push notifications?**
 A: **Great question — and we made this decision intentionally.**
 
 Push notifications on the web require ONE of two things:
@@ -514,7 +430,7 @@ Instead, we chose to keep your data 100% private, even if it meant saying "no" t
 
 ---
 
-## 🆚 Why Choose This Over Other Apps?
+## 🆚 **Why Choose This Over Other Apps?**
 
 | Feature                  | Other Apps | EMI Tracker |
 | ------------------------ | ---------- | ----------- |
@@ -533,19 +449,19 @@ Instead, we chose to keep your data 100% private, even if it meant saying "no" t
 
 ---
 
-## 🎨 Screenshots
+## 🎨 **Screenshots**
 
 <div align="center">
 
 |                                      Dashboard                                       |                                       Add Item                                       |                                      Dark Mode                                       |
 | :----------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: |
-| ![](https://github.com/user-attachments/assets/acbf882b-9c9a-4dbc-98a8-7e5d2d899b38) | ![](https://github.com/user-attachments/assets/9a2e01a9-7cf6-4e83-9dca-2365a9665e85) | ![](https://github.com/user-attachments/assets/d12b9662-da09-43f9-a9a0-a12b840e979f) |
+| ![](https://github.com/user-attachments/assets/581aafb0-eb56-496d-84a9-86592ec3cba4) | ![](https://github.com/user-attachments/assets/9a2e01a9-7cf6-4e83-9dca-2365a9665e85) | ![](https://github.com/user-attachments/assets/044e1efd-3aaa-465f-8260-72cecd5f26e9) |
 
 </div>
 
 ---
 
-## 👤 User Journey
+## 👤 **User Journey**
 
 **Day 1**: Add all your EMIs and recurring expenses (home loan, car EMI, rent, Netflix)  
 **Day 5**: Mark "Home Loan" as paid ✓ — monthly total updates automatically  
@@ -559,9 +475,7 @@ Instead, we chose to keep your data 100% private, even if it meant saying "no" t
 
 ---
 
-## 🚀 Roadmap
-
-### **Completed ✅**
+## 🚀 **Roadmap (Completed ✅)**
 
 - [x] Export/Import JSON backups (with archive support)
 - [x] Dark mode (system-aware + manual toggle)
@@ -583,7 +497,7 @@ Instead, we chose to keep your data 100% private, even if it meant saying "no" t
 
 ---
 
-### **How to Help**
+## 🤝 **How to Help**
 
 1. ⭐ **Star this repo** — helps others discover it
 2. 📢 **Share** — tell privacy-conscious friends
@@ -598,7 +512,7 @@ git clone https://github.com/dhuruvandb/EMI-And-Expense-calculator.git
 
 ---
 
-## 📄 License
+## 📄 **License**
 
 **MIT License** — Free to use, modify, and distribute.
 
@@ -611,7 +525,7 @@ of this software...  [full license](LICENSE)
 
 ---
 
-## 🎖️ Acknowledgments
+## 🎖️ **Acknowledgments**
 
 Inspired by:
 
