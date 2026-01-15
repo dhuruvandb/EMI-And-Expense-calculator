@@ -850,7 +850,6 @@ tbody tr:last-child td {
 
 .table-wrapper.sealed {
   opacity: 0.85;
-  pointer-events: none;
   position: relative;
 }
 
