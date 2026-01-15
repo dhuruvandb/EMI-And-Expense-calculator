@@ -3,7 +3,7 @@
 ![GitHub](https://img.shields.io/github/license/dhuruvandb/EMI-And-Expense-calculator)
 ![GitHub stars](https://img.shields.io/github/stars/dhuruvandb/EMI-And-Expense-calculator)
 
-# 💳 EMI & Expense Tracker
+# 💳 EMI & Expense Tracker 
 
 ### **Know exactly how much you must pay every month — nothing more, nothing less.**
 
