@@ -16,6 +16,21 @@
 
 ---
 
+> **🏁 PROJECT STATUS: COMPLETE & STABLE**
+> 
+> This project is **feature-complete**. No new features will be added.
+> 
+> **Why?** Adding more features would compromise the core values:
+> - **Simplicity** (the #1 priority)
+> - **Privacy** (100% offline, no accounts)
+> - **Focus** (one number, one problem solved)
+> 
+> If you want additional features, **please fork the repository** and customize it to your needs. That's the beauty of open source!
+> 
+> I'm archiving this project to preserve its perfection. Use it, fork it, enjoy it — but its development journey is complete. ✨
+
+---
+
 ## 📋 **TL;DR**
 **Privacy-first, 100% offline expense tracker. No accounts, no cloud. Track EMIs, subscriptions, recurring payments. Auto-archives completed items. Seal Mode locks payments for financial certainty. PWA, open source, free.**
 
