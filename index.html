@@ -48,12 +48,26 @@
             <span id="themeIcon">🌙</span>
             <span id="themeText">Dark</span>
           </button>
-          <button class="data-btn" onclick="exportData()" id="export">📤 Export</button>
           <button
             class="data-btn"
             onclick="document.getElementById('importFile').click()"
           >
             📥 Import
+          </button>
+          <button class="data-btn" onclick="showExportWarning()" id="export">📤 Export</button>
+          <button class="info-btn" onclick="showExportInfo()" 
+                  title="Important: Backup Information">
+            ?
+          </button>
+          <button class="info-btn" onclick="showDataConsistencyInfo()" 
+                  title="Important: Data Consistency Notice"
+                  style="margin-left: 4px;">
+            ⚠️
+          </button>
+          <button class="info-btn" onclick="showAppGuide()" 
+                  title="App Guide & Limitations"
+                  style="margin-right: 8px;">
+            📖
           </button>
           <input
             type="file"
@@ -81,6 +95,44 @@
         <div class="summary-card success">
           <div class="summary-label">Total Debt</div>
           <div class="summary-value" id="totalDebt">₹0</div>
+        </div>
+        <div class="summary-card freedom" id="freedomCard" style="display: none;" onclick="openFreedomModal()">
+          <div class="summary-label">🎯 Debt-Free Date</div>
+          <div class="summary-value freedom-date" id="freedomDateSummary">-</div>
+          <div class="freedom-countdown-badge-summary">
+            <span id="freedomCountdownSummary">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Freedom Timeline Modal -->
+    <div id="freedomModal" class="modal">
+      <div class="modal-content freedom-modal">
+        <div class="modal-header">
+          <h2>🎯 Financial Freedom Timeline</h2>
+          <button class="close-btn" onclick="closeFreedomModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="freedom-modal-highlight">
+            <div class="freedom-modal-card">
+              <div class="freedom-modal-label">FREEDOM DATE</div>
+              <div class="freedom-modal-date" id="freedomDateModal">-</div>
+              <div class="freedom-modal-countdown" id="freedomCountdownModal">-</div>
+            </div>
+          </div>
+          
+          <div class="freedom-modal-section">
+            <h3 class="freedom-modal-title">📅 Upcoming Milestones</h3>
+            <div class="freedom-milestones-list" id="freedomMilestonesList">
+              <!-- Milestones will be inserted here -->
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" onclick="closeFreedomModal()">
+            Close
+          </button>
         </div>
       </div>
     </div>
@@ -151,7 +203,7 @@
           </button>
           <button class="info-btn" onclick="showSealInfo()" 
                   title="Learn about Seal Mode">
-            ℹ️
+            ?
           </button>
         </div>
       </div>
@@ -266,6 +318,354 @@
         <div class="modal-footer">
           <button class="btn btn-primary" onclick="closeSealInfoModal()">
             Got It!
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Warning Modal -->
+    <div id="exportWarningModal" class="modal">
+      <div class="modal-content info-modal">
+        <div class="modal-header">
+          <h2>⚠️ Important: Before Exporting</h2>
+          <button class="close-btn" onclick="closeExportWarning()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="info-warning">
+            <p>⚠️ <strong>DO NOT edit the exported backup file!</strong></p>
+          </div>
+          
+          <div class="info-section">
+            <h3>🚨 Critical Rules:</h3>
+            <ul class="info-restrictions">
+              <li>❌ <strong>Never open in text editor</strong> - Don't modify the JSON file</li>
+              <li>❌ <strong>Never change file extension</strong> - Keep it as .json</li>
+              <li>❌ <strong>Never rename incorrectly</strong> - Original name is best</li>
+              <li>❌ <strong>Edited/corrupted files WILL FAIL import</strong> - You'll lose data!</li>
+            </ul>
+          </div>
+          
+          <div class="info-section">
+            <h3>✅ What You SHOULD Do:</h3>
+            <ul class="info-steps">
+              <li><strong>Download and store safely</strong> - Don't touch the file contents</li>
+              <li><strong>Email to yourself</strong> - Multiple copies = safer</li>
+              <li><strong>Upload to cloud storage</strong> - Google Drive, Dropbox, etc.</li>
+              <li><strong>Keep multiple backups</strong> - Export monthly for safety</li>
+            </ul>
+          </div>
+          
+          <div class="info-caution">
+            <p><strong>💡 The file works perfectly as-is. Leave it alone and you're safe!</strong></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeExportWarning()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="closeExportWarning(); exportData();">
+            📤 I Understand, Export Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Info Modal -->
+    <div id="exportInfoModal" class="modal">
+      <div class="modal-content info-modal">
+        <div class="modal-header">
+          <h2>⚠️ Data Backup Warning</h2>
+          <button class="close-btn" onclick="closeExportInfoModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="info-warning">
+            <p>⚠️ <strong>Your data is stored locally in your browser!</strong></p>
+          </div>
+          
+          <div class="info-section">
+            <h3>🚨 Risk of Data Loss:</h3>
+            <ul class="info-restrictions">
+              <li>❌ Clearing browser cache/data will delete everything</li>
+              <li>❌ Browser updates may reset local storage</li>
+              <li>❌ Using incognito/private mode won't save data</li>
+              <li>❌ Switching devices means starting fresh</li>
+              <li>❌ Uninstalling the app removes all records</li>
+            </ul>
+          </div>
+          
+          <div class="info-section">
+            <h3>✅ How to Protect Your Data:</h3>
+            <ul class="info-benefits">
+              <li>💾 <strong>Export regularly</strong> - Click "📤 Export" to save a backup</li>
+              <li>📧 Email the backup file to yourself</li>
+              <li>☁️ Store it in cloud storage (Google Drive, Dropbox, etc.)</li>
+              <li>📱 Keep backups on multiple devices</li>
+              <li>🔄 Make it a monthly habit after sealing payments</li>
+            </ul>
+          </div>
+          
+          <div class="info-section">
+            <h3>🚫 Critical: DO NOT Edit the Backup File!</h3>
+            <p style="color: var(--text-secondary); line-height: 1.6; margin: 0;">
+              <strong style="color: #ef4444;">⚠️ Never modify the exported JSON file at any cost!</strong> Even a single character change will corrupt it and make import fail. The file works perfectly as-is - store it safely without opening or editing it.
+            </p>
+          </div>
+          
+          <div class="info-caution">
+            <p><strong>💡 Pro Tip: Export after every major update or at month-end!</strong></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeExportInfoModal()">
+            Got It
+          </button>
+          <button class="btn btn-primary" onclick="closeExportInfoModal(); exportData();">
+            📤 Export Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Consistency Info Modal -->
+    <div id="dataConsistencyModal" class="modal">
+      <div class="modal-content info-modal">
+        <div class="modal-header">
+          <h2>⚠️ Data Consistency Notice</h2>
+          <button class="close-btn" onclick="closeDataConsistencyInfo()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="info-warning">
+            <p>⚠️ <strong>This app stores data locally for your privacy</strong></p>
+          </div>
+          
+          <div class="info-section">
+            <h3>🔒 Privacy by Design:</h3>
+            <ul class="info-benefits">
+              <li>✅ No servers - your data never leaves your device</li>
+              <li>✅ No cloud sync - complete privacy control</li>
+              <li>✅ No accounts - no sign-up required</li>
+              <li>✅ 100% offline - works without internet FOREVER</li>
+            </ul>
+          </div>
+          
+          <div class="info-section">
+            <h3>⚠️ Important Implications:</h3>
+            <ul class="info-restrictions">
+              <li>❌ <strong>No automatic sync across devices</strong> - Use Export/Import</li>
+              <li>❌ <strong>No server-side validation</strong> - You're responsible for accuracy</li>
+              <li>❌ <strong>No automatic backups</strong> - Export regularly yourself</li>
+              <li>❌ <strong>No data recovery</strong> - If deleted, it's gone forever</li>
+            </ul>
+          </div>
+          
+          <div class="info-section">
+            <h3>✅ Your Responsibility:</h3>
+            <ul class="info-steps">
+              <li><strong>Verify your entries</strong> - Double-check amounts and dates every month</li>
+              <li><strong>Export regularly</strong> - Keep backups safe</li>
+              <li><strong>Reconcile manually</strong> - Cross-check with bank statements</li>
+              <li><strong>Accept the trade-off</strong> - Privacy means self-management</li>
+            </ul>
+          </div>
+          
+          <div class="info-caution">
+            <p><strong>💡 We chose privacy over convenience. Your data stays yours, always.</strong></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" onclick="closeDataConsistencyInfo()">
+            I Understand
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Guide Modal -->
+    <div id="appGuideModal" class="modal">
+      <div class="modal-content info-modal">
+        <div class="modal-header">
+          <h2>📖 App Guide & Philosophy</h2>
+          <button class="close-btn" onclick="closeAppGuide()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="info-section" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1)); padding: 16px; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+            <h3>📲 Install as Native App (Highly Recommended!)</h3>
+            <p style="color: var(--text-secondary); line-height: 1.6; margin: 10px 0;">
+              Get the best experience by installing this app on your device:
+            </p>
+            <ul class="info-benefits">
+              <li>⚡ <strong>Lightning fast</strong> - Loads instantly, no browser overhead</li>
+              <li>📱 <strong>Works like a native app</strong> - Full-screen, no browser UI clutter</li>
+              <li>💾 <strong>Ultra lightweight</strong> - Under 1 MB total size (yes, really!)</li>
+              <li>🔒 <strong>More secure</strong> - Isolated from browser cookies and trackers</li>
+              <li>📴 <strong>True offline</strong> - Works perfectly without internet, forever</li>
+              <li>🎯 <strong>Quick access</strong> - Launch from home screen like any app</li>
+            </ul>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px; font-style: italic;">
+              💡 <strong>Pro tip:</strong> Click the "📲 Install" button in the header (if available) or use your browser's "Add to Home Screen" option. Takes 5 seconds, worth it forever!
+            </p>
+          </div>
+          
+          <div class="info-section">
+            <h3>✅ What This App IS For:</h3>
+            <ul class="info-benefits">
+              <li>💳 <strong>Fixed monthly expenses</strong> - EMIs, loans, rent, subscriptions</li>
+              <li>📊 <strong>One clear number</strong> - "How much MUST I pay this month?"</li>
+              <li>🎯 <strong>Debt freedom tracking</strong> - See when your last EMI ends</li>
+              <li>🔒 <strong>Payment certainty</strong> - Seal mode locks confirmed payments</li>
+              <li>🗃️ <strong>Auto-archive</strong> - Completed EMIs move out automatically</li>
+            </ul>
+          </div>
+          
+          <div class="info-section">
+            <h3>❌ What This App is NOT For:</h3>
+            <ul class="info-restrictions">
+              <li>❌ <strong>Daily expense tracking</strong> - Not for coffee or groceries</li>
+              <li>❌ <strong>Per-transaction budgeting</strong> - Not a detailed budget tool</li>
+              <li>❌ <strong>Income tracking</strong> - Only tracks mandatory outflows</li>
+              <li>❌ <strong>Push notifications</strong> - We chose privacy over reminders</li>
+              <li>❌ <strong>Automatic sync</strong> - No cloud means manual export/import</li>
+            </ul>
+          </div>
+          
+          <div class="info-section">
+            <h3>🚀 Quick Start Guide:</h3>
+            <ol class="info-steps">
+              <li><strong>Add Items</strong> - Click + button, enter EMI/expense details</li>
+              <li><strong>Check Off Payments</strong> - Mark items as paid throughout the month</li>
+              <li><strong>Seal for Peace</strong> - Lock confirmed payments to prevent accidents</li>
+              <li><strong>Auto-Reset</strong> - Everything resets on the 1st of next month</li>
+              <li><strong>Export Regularly</strong> - Backup your data monthly (privacy = responsibility)</li>
+            </ol>
+          </div>
+          
+          <div class="info-section">
+            <h3>💡 The Core Philosophy:</h3>
+            <p style="color: var(--text-secondary); line-height: 1.6; margin: 0;">
+              This app answers <strong>one question</strong>: "What MUST I pay this month?"
+              <br><br>
+              <strong>Not:</strong> "Where did my money go?"<br>
+              <strong>Not:</strong> "Should I buy this coffee?"<br>
+              <strong>But:</strong> "These are my mandatory payments. Everything else is optional."
+              <br><br>
+              <strong>Simplicity is the #1 priority.</strong> Every feature serves this single goal.
+            </p>
+          </div>
+          
+          <div class="info-caution">
+            <p><strong>💚 Simple. Private. Focused. That's the whole point.</strong></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" onclick="closeAppGuide()">
+            Got It!
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Import Confirmation Modal -->
+    <div id="importConfirmModal" class="modal">
+      <div class="modal-content info-modal">
+        <div class="modal-header">
+          <h2>📥 Confirm Import</h2>
+          <button class="close-btn" onclick="closeImportConfirmModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="info-section">
+            <h3>📦 Import Summary:</h3>
+            <div style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; margin: 12px 0;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="color: var(--text-secondary);">Active Items:</span>
+                <strong id="importActiveCount" style="color: var(--primary-color); font-size: 1.1rem;">0</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-secondary);">Archived Items:</span>
+                <strong id="importArchivedCount" style="color: var(--text-secondary); font-size: 1.1rem;">0</strong>
+              </div>
+            </div>
+          </div>
+          
+          <div class="info-warning" id="importMonthWarning" style="display: none;">
+            <p>⚠️ <strong>Export is from a different month</strong></p>
+            <p style="margin-top: 8px; font-size: 0.9rem;">All payments and seal status will be reset for the new month.</p>
+          </div>
+          
+          <div class="info-section">
+            <h3>ℹ️ What Will Happen:</h3>
+            <ul class="info-steps">
+              <li><strong>Data will be added</strong> - Merges with your existing data</li>
+              <li><strong>No data loss</strong> - Your current items remain untouched</li>
+              <li><strong>Duplicates possible</strong> - Check for duplicate entries after import</li>
+            </ul>
+          </div>
+          
+          <div class="info-caution">
+            <p><strong>💡 You can always export a backup before proceeding!</strong></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeImportConfirmModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="confirmImport()">
+            📥 Import Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Import Error Modal -->
+    <div id="importErrorModal" class="modal">
+      <div class="modal-content info-modal">
+        <div class="modal-header">
+          <h2>🚨 Cannot Import Backup File</h2>
+          <button class="close-btn" onclick="closeImportErrorModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="info-warning">
+            <p id="importErrorTitle">⚠️ <strong>The backup file appears to be corrupted or invalid</strong></p>
+          </div>
+          
+          <div class="info-section">
+            <h3>📋 Common Causes:</h3>
+            <ul class="info-restrictions" id="importErrorCauses">
+              <li>❌ File was downloaded incompletely</li>
+              <li>❌ Manually edited in text editor</li>
+              <li>❌ Wrong file selected (not from this app)</li>
+              <li>❌ File corrupted during transfer</li>
+            </ul>
+          </div>
+          
+          <div class="info-section">
+            <h3>✅ What to Do:</h3>
+            <ul class="info-steps">
+              <li><strong>Try a different backup file</strong> - Use an older backup</li>
+              <li><strong>Export fresh backup</strong> - From a working device</li>
+              <li><strong>Check file size</strong> - Should be at least 100 bytes</li>
+              <li><strong>Don't manually edit</strong> - JSON files are fragile</li>
+            </ul>
+          </div>
+          
+          <div class="info-section" id="technicalDetailsSection" style="display: none;">
+            <h3>🔧 Technical Details:</h3>
+            <div style="background: var(--bg-secondary); padding: 12px; border-radius: 6px; font-family: monospace; font-size: 0.85rem; overflow-x: auto;">
+              <div><strong>Error Type:</strong> <span id="errorType">-</span></div>
+              <div><strong>Error Message:</strong> <span id="errorMessage">-</span></div>
+              <div><strong>File Size:</strong> <span id="fileSize">-</span></div>
+            </div>
+          </div>
+          
+          <div class="info-caution">
+            <p><strong>💡 Your existing data (if any) is safe - nothing was changed.</strong></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="toggleTechnicalDetails()">
+            <span id="techDetailsToggle">Show Technical Details ▼</span>
+          </button>
+          <button class="btn btn-primary" onclick="closeImportErrorModal()">
+            Close
           </button>
         </div>
       </div>
