@@ -960,6 +960,7 @@ function renderTable() {
   tbody.innerHTML = html;
   if (!showArchived) {
     updateSummary(loadEMIs());
+    renderFreedomTimeline(); // Update freedom timeline when table updates
   }
   
   // Update sealed banner state based on current items
@@ -1308,6 +1309,78 @@ document.getElementById("sealInfoModal").addEventListener("click", function (e) 
   }
 });
 
+// Export info modal functions
+function showExportInfo() {
+  const modal = document.getElementById('exportInfoModal');
+  modal.classList.add('active');
+}
+
+function closeExportInfoModal() {
+  const modal = document.getElementById('exportInfoModal');
+  modal.classList.remove('active');
+}
+
+// Close export info modal on outside click
+document.getElementById("exportInfoModal").addEventListener("click", function (e) {
+  if (e.target === this) {
+    closeExportInfoModal();
+  }
+});
+
+// Export warning modal functions
+function showExportWarning() {
+  const modal = document.getElementById('exportWarningModal');
+  modal.classList.add('active');
+}
+
+function closeExportWarning() {
+  const modal = document.getElementById('exportWarningModal');
+  modal.classList.remove('active');
+}
+
+// Close export warning modal on outside click
+document.getElementById("exportWarningModal").addEventListener("click", function (e) {
+  if (e.target === this) {
+    closeExportWarning();
+  }
+});
+
+// Data consistency info modal functions
+function showDataConsistencyInfo() {
+  const modal = document.getElementById('dataConsistencyModal');
+  modal.classList.add('active');
+}
+
+function closeDataConsistencyInfo() {
+  const modal = document.getElementById('dataConsistencyModal');
+  modal.classList.remove('active');
+}
+
+// Close data consistency modal on outside click
+document.getElementById("dataConsistencyModal").addEventListener("click", function (e) {
+  if (e.target === this) {
+    closeDataConsistencyInfo();
+  }
+});
+
+// App guide modal functions
+function showAppGuide() {
+  const modal = document.getElementById('appGuideModal');
+  modal.classList.add('active');
+}
+
+function closeAppGuide() {
+  const modal = document.getElementById('appGuideModal');
+  modal.classList.remove('active');
+}
+
+// Close app guide modal on outside click
+document.getElementById("appGuideModal").addEventListener("click", function (e) {
+  if (e.target === this) {
+    closeAppGuide();
+  }
+});
+
 // Initialize sort controls
 function initSortControls() {
   const prefs = loadSortPrefs();
@@ -1336,11 +1409,201 @@ function resetPaymentStatusIfNewMonth() {
   }
 }
 
+// ========== FINANCIAL FREEDOM TIMELINE ==========
+
+// Calculate Freedom Timeline data
+function calculateFreedomTimeline() {
+  const emis = loadEMIs();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // Filter active EMIs with end dates (exclude ongoing expenses and savings for freedom calc)
+  const activeEMIs = emis.filter(emi => {
+    if (!emi.emiEndDate) return false;
+    const endDate = new Date(emi.emiEndDate);
+    if (endDate < today) return false;
+    // Include only debt/expense category for freedom calculation
+    return emi.emiCategory === 'expense';
+  });
+  
+  if (activeEMIs.length === 0) {
+    return null;
+  }
+  
+  // Sort by end date
+  activeEMIs.sort((a, b) => new Date(a.emiEndDate) - new Date(b.emiEndDate));
+  
+  // Calculate freedom date (last EMI end date)
+  const freedomDate = new Date(activeEMIs[activeEMIs.length - 1].emiEndDate);
+  
+  // Calculate current monthly total
+  const currentMonthly = activeEMIs.reduce((sum, emi) => sum + parseFloat(emi.emiAmount || 0), 0);
+  
+  // Calculate milestones (when each EMI ends)
+  const milestones = activeEMIs.map(emi => ({
+    date: new Date(emi.emiEndDate),
+    name: emi.emiName,
+    amount: parseFloat(emi.emiAmount || 0),
+    type: emi.type
+  }));
+  
+  // Calculate year-by-year breakdown
+  const yearBreakdown = {};
+  activeEMIs.forEach(emi => {
+    const year = new Date(emi.emiEndDate).getFullYear();
+    if (!yearBreakdown[year]) {
+      yearBreakdown[year] = { count: 0, items: [] };
+    }
+    yearBreakdown[year].count++;
+    yearBreakdown[year].items.push(emi.emiName);
+  });
+  
+  // Calculate monthly payment over time for graph
+  const graphData = [];
+  let currentYear = today.getFullYear();
+  const lastYear = freedomDate.getFullYear();
+  
+  for (let year = currentYear; year <= lastYear; year++) {
+    // Calculate monthly payment for this year
+    let yearlyPayment = activeEMIs
+      .filter(emi => new Date(emi.emiEndDate).getFullYear() >= year)
+      .reduce((sum, emi) => sum + parseFloat(emi.emiAmount || 0), 0);
+    
+    graphData.push({
+      year: year,
+      amount: yearlyPayment
+    });
+  }
+  
+  return {
+    freedomDate,
+    currentMonthly,
+    milestones,
+    yearBreakdown,
+    graphData
+  };
+}
+
+// Render Freedom Timeline
+function renderFreedomTimeline() {
+  const freedomCard = document.getElementById('freedomCard');
+  const freedomDateSummary = document.getElementById('freedomDateSummary');
+  const freedomCountdownSummary = document.getElementById('freedomCountdownSummary');
+  
+  const data = calculateFreedomTimeline();
+  
+  if (!data) {
+    freedomCard.style.display = 'none';
+    return;
+  }
+  
+  freedomCard.style.display = 'flex';
+  
+  // Format freedom date
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  freedomDateSummary.textContent = `${monthNames[data.freedomDate.getMonth()]} ${data.freedomDate.getDate()}, ${data.freedomDate.getFullYear()}`;
+  
+  // Calculate countdown
+  const today = new Date();
+  const diffTime = data.freedomDate - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffYears = Math.floor(diffDays / 365);
+  const diffMonths = Math.floor((diffDays % 365) / 30);
+  
+  let countdownText = '';
+  if (diffYears > 0) {
+    countdownText = `${diffYears}y ${diffMonths}m away`;
+  } else if (diffMonths > 0) {
+    countdownText = `${diffMonths} months away`;
+  } else {
+    countdownText = `${diffDays} days away`;
+  }
+  
+  freedomCountdownSummary.textContent = countdownText;
+}
+
+// Open Freedom Modal
+function openFreedomModal() {
+  const data = calculateFreedomTimeline();
+  if (!data) return;
+  
+  const modal = document.getElementById('freedomModal');
+  const freedomDateModal = document.getElementById('freedomDateModal');
+  const freedomCountdownModal = document.getElementById('freedomCountdownModal');
+  const milestonesList = document.getElementById('freedomMilestonesList');
+  
+  // Format freedom date
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  freedomDateModal.textContent = `${monthNames[data.freedomDate.getMonth()]} ${data.freedomDate.getDate()}, ${data.freedomDate.getFullYear()}`;
+  
+  // Calculate countdown
+  const today = new Date();
+  const diffTime = data.freedomDate - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffYears = Math.floor(diffDays / 365);
+  const diffMonths = Math.floor((diffDays % 365) / 30);
+  
+  let countdownText = '';
+  if (diffYears > 0) {
+    const remainingMonths = diffMonths;
+    countdownText = `${diffYears} year${diffYears > 1 ? 's' : ''}`;
+    if (remainingMonths > 0) {
+      countdownText += `, ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}`;
+    }
+    countdownText += ' to freedom';
+  } else if (diffMonths > 0) {
+    countdownText = `${diffMonths} month${diffMonths > 1 ? 's' : ''} to freedom`;
+  } else {
+    countdownText = `${diffDays} day${diffDays > 1 ? 's' : ''} to freedom`;
+  }
+  
+  freedomCountdownModal.textContent = countdownText;
+  
+  // Render milestones (next 5)
+  milestonesList.innerHTML = '';
+  if (data.milestones.length > 0) {
+    const nextMilestones = data.milestones.slice(0, 5);
+    nextMilestones.forEach((milestone, index) => {
+      const monthYear = `${monthNames[milestone.date.getMonth()]} ${milestone.date.getFullYear()}`;
+      const isLast = index === data.milestones.length - 1;
+      
+      const item = document.createElement('div');
+      item.className = 'freedom-milestone-item';
+      item.innerHTML = `
+        <div class="milestone-info">
+          <div class="milestone-name">${milestone.name} ends</div>
+          <div class="milestone-date">${monthYear}${isLast ? ' 🎉 (Last EMI!)' : ''}</div>
+        </div>
+        <div class="milestone-relief">+${formatCurrency(milestone.amount)}/mo</div>
+      `;
+      milestonesList.appendChild(item);
+    });
+    
+    if (data.milestones.length > 5) {
+      const moreText = document.createElement('div');
+      moreText.style.textAlign = 'center';
+      moreText.style.padding = '12px';
+      moreText.style.color = 'var(--text-secondary)';
+      moreText.style.fontSize = '0.85rem';
+      moreText.textContent = `+ ${data.milestones.length - 5} more EMI${data.milestones.length - 5 > 1 ? 's' : ''} ending later`;
+      milestonesList.appendChild(moreText);
+    }
+  }
+  
+  modal.classList.add('active');
+}
+
+// Close Freedom Modal
+function closeFreedomModal() {
+  document.getElementById('freedomModal').classList.remove('active');
+}
+
 // Initialize app
 checkAndUnlockNewMonth(); // Check if new month started
 resetPaymentStatusIfNewMonth();
 initSortControls();
 renderTable();
+renderFreedomTimeline(); // Add freedom timeline
 loadTheme();
 
 // Auto-refresh every minute
@@ -1348,6 +1611,7 @@ setInterval(() => {
   checkAndUnlockNewMonth();
   resetPaymentStatusIfNewMonth();
   renderTable();
+  renderFreedomTimeline(); // Update freedom timeline
 }, 60000);
 
 // Theme toggle
@@ -1359,8 +1623,8 @@ function toggleTheme() {
   body.classList.toggle("dark-mode");
   const isDark = body.classList.contains("dark-mode");
 
-  icon.textContent = isDark ? "☀️" : "🌙";
-  text.textContent = isDark ? "Light" : "Dark";
+  icon.textContent = isDark ? "🌙" : "☀️";
+  text.textContent = isDark ? "Dark" : "Light";
 
   localStorage.setItem("theme", isDark ? "dark" : "light");
 }
@@ -1372,8 +1636,8 @@ function loadTheme() {
 
   if (theme === "dark") {
     document.body.classList.add("dark-mode");
-    icon.textContent = "☀️";
-    text.textContent = "Light";
+    icon.textContent = "🌙";
+    text.textContent = "Dark";
   }
 }
 
@@ -1406,10 +1670,60 @@ function importData(event) {
   const file = event.target.files[0];
   if (!file) return;
 
+  // Pre-validate file size
+  if (file.size === 0) {
+    showImportError('empty', 'File is empty (0 bytes)', file.size);
+    event.target.value = "";
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) { // 10MB limit
+    showImportError('too-large', 'File is too large (max 10MB)', file.size);
+    event.target.value = "";
+    return;
+  }
+
   const reader = new FileReader();
   reader.onload = function (e) {
     try {
-      const importedData = JSON.parse(e.target.result);
+      const fileContent = e.target.result;
+      
+      // Pre-validate file content
+      if (!fileContent || typeof fileContent !== 'string') {
+        showImportError('invalid', 'File content is not text', file.size);
+        event.target.value = "";
+        return;
+      }
+
+      if (fileContent.trim().length < 10) {
+        showImportError('empty', 'File is too short to be valid', file.size);
+        event.target.value = "";
+        return;
+      }
+
+      // Try to parse JSON
+      let importedData;
+      try {
+        importedData = JSON.parse(fileContent);
+      } catch (parseError) {
+        // Categorize JSON syntax errors
+        const errorMsg = parseError.message || '';
+        if (errorMsg.includes('position') || errorMsg.includes('line') || errorMsg.includes('Unexpected')) {
+          showImportError('syntax', parseError.message, file.size);
+        } else {
+          showImportError('corrupted', parseError.message, file.size);
+        }
+        event.target.value = "";
+        return;
+      }
+
+      // Validate data type
+      if (typeof importedData !== 'object' || importedData === null) {
+        showImportError('wrong-format', 'File is not a valid JSON object', file.size);
+        event.target.value = "";
+        return;
+      }
+
       const currentMonth = getCurrentMonth();
 
       let activeData = [];
@@ -1433,7 +1747,7 @@ function importData(event) {
       else if (Array.isArray(importedData)) {
         activeData = importedData;
       } else {
-        alert("Invalid file format");
+        showImportError('wrong-app', "File structure doesn't match this app's format", file.size);
         event.target.value = "";
         return;
       }
@@ -1485,63 +1799,219 @@ function importData(event) {
         }
       });
 
-      // Prepare confirmation message
-      let confirmMsg = `Import ${stillActive.length} active items and ${archivedData.length} archived items?`;
-      if (!isSameMonth && exportMonth) {
-        confirmMsg += "\n\n⚠️ Note: Export is from a different month. All payments and seal status will be reset for the new month.";
-      }
-      confirmMsg += "  This will add to your existing data.";
+      // Store import data for confirmation
+      window.pendingImportData = {
+        stillActive,
+        archivedData,
+        isSameMonth,
+        exportMonth,
+        importedSealState
+      };
 
-      if (confirm(confirmMsg)) {
-        const existingActive = loadEMIs();
-        const existingArchived = loadArchived();
-
-        const mergedActive = [...existingActive, ...stillActive];
-        const mergedArchived = [...existingArchived, ...archivedData];
-
-        saveEMIs(mergedActive);
-        saveArchived(mergedArchived);
-
-        // Handle seal state import
-        if (isSameMonth && importedSealState && importedSealState.isSealed) {
-          // Same month: import seal state as-is
-          saveSealState(importedSealState);
-          applySealedUI();
-          resetMessage = "✅ Data imported with seal status preserved!";
-        } else if (!isSameMonth && exportMonth) {
-          // Different month: clear seal state
-          saveSealState({
-            isSealed: false,
-            sealedMonth: null,
-            sealedDate: null,
-            sealedItems: []
-          });
-          removeSealedUI();
-          resetMessage = "📅 Month changed! Data imported with payments and seal reset for new entries";
-        } else {
-          // Old format or no seal: clear seal
-          saveSealState({
-            isSealed: false,
-            sealedMonth: null,
-            sealedDate: null,
-            sealedItems: []
-          });
-          removeSealedUI();
-          resetMessage = "✅ Data imported successfully!";
-        }
-
-        renderTable();
-        
-        // Show appropriate toast message
-        const toast = document.getElementById("paymentToast");
-        toast.textContent = resetMessage;
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 4000);
-      }
+      // Show confirmation modal
+      showImportConfirmModal(stillActive.length, archivedData.length, isSameMonth, exportMonth);
     } catch (error) {
-      alert("Error reading file: " + error.message);
+      showImportError('unknown', error.message, file.size);
     }
     event.target.value = "";
   };
   reader.readAsText(file);
+}
+
+// Show import confirmation modal
+function showImportConfirmModal(activeCount, archivedCount, isSameMonth, exportMonth) {
+  const modal = document.getElementById('importConfirmModal');
+  document.getElementById('importActiveCount').textContent = activeCount;
+  document.getElementById('importArchivedCount').textContent = archivedCount;
+  
+  const monthWarning = document.getElementById('importMonthWarning');
+  if (!isSameMonth && exportMonth) {
+    monthWarning.style.display = 'block';
+  } else {
+    monthWarning.style.display = 'none';
+  }
+  
+  modal.classList.add('active');
+}
+
+function closeImportConfirmModal() {
+  const modal = document.getElementById('importConfirmModal');
+  modal.classList.remove('active');
+  window.pendingImportData = null;
+}
+
+// Close import confirm modal on outside click
+document.getElementById("importConfirmModal").addEventListener("click", function (e) {
+  if (e.target === this) {
+    closeImportConfirmModal();
+  }
+});
+
+// Execute the actual import after confirmation
+function confirmImport() {
+  closeImportConfirmModal();
+  
+  if (!window.pendingImportData) return;
+  
+  const { stillActive, archivedData, isSameMonth, exportMonth, importedSealState } = window.pendingImportData;
+  
+  let resetMessage = "";
+  
+  try {
+    const existingActive = loadEMIs();
+    const existingArchived = loadArchived();
+
+    const mergedActive = [...existingActive, ...stillActive];
+    const mergedArchived = [...existingArchived, ...archivedData];
+
+    saveEMIs(mergedActive);
+    saveArchived(mergedArchived);
+
+    // Handle seal state import
+    if (isSameMonth && importedSealState && importedSealState.isSealed) {
+      // Same month: import seal state as-is
+      saveSealState(importedSealState);
+      applySealedUI();
+      resetMessage = "✅ Data imported with seal status preserved!";
+    } else if (!isSameMonth && exportMonth) {
+      // Different month: clear seal state
+      saveSealState({
+        isSealed: false,
+        sealedMonth: null,
+        sealedDate: null,
+        sealedItems: []
+      });
+      removeSealedUI();
+      resetMessage = "📅 Month changed! Data imported with payments and seal reset for new entries";
+    } else {
+      // Old format or no seal: clear seal
+      saveSealState({
+        isSealed: false,
+        sealedMonth: null,
+        sealedDate: null,
+        sealedItems: []
+      });
+      removeSealedUI();
+      resetMessage = "✅ Data imported successfully!";
+    }
+
+    renderTable();
+    
+    // Show appropriate toast message
+    const toast = document.getElementById("paymentToast");
+    toast.textContent = resetMessage;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 4000);
+  } catch (importError) {
+    showImportError('import-failed', importError.message, 0);
+  }
+  
+  window.pendingImportData = null;
+}
+
+// Show user-friendly import error modal
+function showImportError(errorType, errorMessage, fileSize) {
+  const modal = document.getElementById('importErrorModal');
+  const titleEl = document.getElementById('importErrorTitle');
+  const causesEl = document.getElementById('importErrorCauses');
+  const errorTypeEl = document.getElementById('errorType');
+  const errorMessageEl = document.getElementById('errorMessage');
+  const fileSizeEl = document.getElementById('fileSize');
+
+  // Update technical details
+  errorTypeEl.textContent = errorType;
+  errorMessageEl.textContent = errorMessage;
+  fileSizeEl.textContent = fileSize ? `${fileSize} bytes` : 'Unknown';
+
+  // Customize message based on error type
+  switch(errorType) {
+    case 'empty':
+      titleEl.innerHTML = '⚠️ <strong>The file is empty or invalid</strong>';
+      causesEl.innerHTML = `
+        <li>❌ Downloaded file is incomplete</li>
+        <li>❌ Export process was interrupted</li>
+        <li>❌ File was cleared or corrupted</li>
+      `;
+      break;
+
+    case 'too-large':
+      titleEl.innerHTML = '⚠️ <strong>The file is too large</strong>';
+      causesEl.innerHTML = `
+        <li>❌ Not a backup file from this app</li>
+        <li>❌ File contains extra data</li>
+        <li>❌ Wrong file selected</li>
+      `;
+      break;
+
+    case 'syntax':
+      titleEl.innerHTML = '⚠️ <strong>The file has JSON syntax errors</strong>';
+      causesEl.innerHTML = `
+        <li>❌ File was manually edited in text editor</li>
+        <li>❌ Missing comma, bracket, or quote</li>
+        <li>❌ Download corrupted or incomplete</li>
+        <li>❌ Copy-paste error from browser</li>
+      `;
+      break;
+
+    case 'wrong-format':
+    case 'wrong-app':
+      titleEl.innerHTML = '⚠️ <strong>This is not a backup file from this app</strong>';
+      causesEl.innerHTML = `
+        <li>❌ Wrong file selected</li>
+        <li>❌ File from different app</li>
+        <li>❌ File structure doesn't match</li>
+        <li>❌ Very old backup format (unsupported)</li>
+      `;
+      break;
+
+    case 'corrupted':
+      titleEl.innerHTML = '⚠️ <strong>The file appears to be corrupted</strong>';
+      causesEl.innerHTML = `
+        <li>❌ File damaged during transfer</li>
+        <li>❌ Storage device error</li>
+        <li>❌ Incomplete download</li>
+        <li>❌ Cloud sync conflict</li>
+      `;
+      break;
+
+    case 'import-failed':
+      titleEl.innerHTML = '⚠️ <strong>Import process failed</strong>';
+      causesEl.innerHTML = `
+        <li>❌ Data validation failed</li>
+        <li>❌ Required fields missing</li>
+        <li>❌ Internal processing error</li>
+      `;
+      break;
+
+    default:
+      titleEl.innerHTML = '⚠️ <strong>Unknown error occurred</strong>';
+      causesEl.innerHTML = `
+        <li>❌ Unexpected error during import</li>
+        <li>❌ Please try again or use different file</li>
+      `;
+  }
+
+  // Reset technical details visibility
+  document.getElementById('technicalDetailsSection').style.display = 'none';
+  document.getElementById('techDetailsToggle').textContent = 'Show Technical Details ▼';
+
+  // Show modal
+  modal.classList.add('active');
+}
+
+function closeImportErrorModal() {
+  document.getElementById('importErrorModal').classList.remove('active');
+}
+
+function toggleTechnicalDetails() {
+  const section = document.getElementById('technicalDetailsSection');
+  const toggle = document.getElementById('techDetailsToggle');
+  
+  if (section.style.display === 'none') {
+    section.style.display = 'block';
+    toggle.textContent = 'Hide Technical Details ▲';
+  } else {
+    section.style.display = 'none';
+    toggle.textContent = 'Show Technical Details ▼';
+  }
 }
