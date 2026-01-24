@@ -119,12 +119,14 @@ function saveArchived(archived) {
 // Load seal state from localStorage
 function loadSealState() {
   const data = localStorage.getItem(SEAL_STATE_KEY);
-  return data ? JSON.parse(data) : {
-    isSealed: false,
-    sealedMonth: null,
-    sealedDate: null,
-    sealedItems: []
-  };
+  return data
+    ? JSON.parse(data)
+    : {
+        isSealed: false,
+        sealedMonth: null,
+        sealedDate: null,
+        sealedItems: [],
+      };
 }
 
 // Save seal state to localStorage
@@ -148,16 +150,17 @@ function isSealingInProgress() {
 function wasItemSealed(emi) {
   const sealState = loadSealState();
   const currentMonth = getCurrentMonth();
-  
+
   if (!sealState.isSealed || sealState.sealedMonth !== currentMonth) {
     return false;
   }
-  
+
   // Check if this item exists in the sealed snapshot
-  return sealState.sealedItems.some(sealed => 
-    sealed.emiName === emi.emiName && 
-    sealed.emiAmount === emi.emiAmount && 
-    sealed.dueDate === emi.dueDate
+  return sealState.sealedItems.some(
+    (sealed) =>
+      sealed.emiName === emi.emiName &&
+      sealed.emiAmount === emi.emiAmount &&
+      sealed.dueDate === emi.dueDate
   );
 }
 
@@ -166,63 +169,63 @@ function areAllActiveItemsSealed() {
   const emis = loadEMIs();
   const sealState = loadSealState();
   const currentMonth = getCurrentMonth();
-  
+
   if (!sealState.isSealed || sealState.sealedMonth !== currentMonth) {
     return false;
   }
-  
+
   const today = new Date();
-  const activeItems = emis.filter(emi => {
+  const activeItems = emis.filter((emi) => {
     if (emi.emiEndDate) {
       const endDate = new Date(emi.emiEndDate);
       return endDate >= today;
     }
     return true;
   });
-  
+
   if (activeItems.length === 0) return false;
-  
+
   // Check if ALL active items are in sealed list
-  return activeItems.every(emi => wasItemSealed(emi));
+  return activeItems.every((emi) => wasItemSealed(emi));
 }
 
 // Check if seal button should be enabled (at least 1 payment checked)
 function checkSealButtonState() {
   const emis = loadEMIs();
   const currentMonth = getCurrentMonth();
-  
+
   // Filter active items only
   const today = new Date();
-  const activeItems = emis.filter(emi => {
+  const activeItems = emis.filter((emi) => {
     if (emi.emiEndDate) {
       const endDate = new Date(emi.emiEndDate);
       return endDate >= today;
     }
     return true; // Ongoing items
   });
-  
+
   // No items?
   if (activeItems.length === 0) {
     return { enabled: false, reason: "No active items to seal" };
   }
-  
+
   // Find unsealed items (items not in the sealed snapshot)
-  const unsealedItems = activeItems.filter(emi => !wasItemSealed(emi));
-  
+  const unsealedItems = activeItems.filter((emi) => !wasItemSealed(emi));
+
   if (unsealedItems.length === 0) {
     // All items already sealed
     return { enabled: false, reason: "All items already sealed" };
   }
-  
+
   // Check if at least one UNSEALED item is paid
-  const unsealedPaidItems = unsealedItems.filter(emi =>
-    emi.isPaidThisMonth && emi.currentMonth === currentMonth
+  const unsealedPaidItems = unsealedItems.filter(
+    (emi) => emi.isPaidThisMonth && emi.currentMonth === currentMonth
   );
-  
+
   if (unsealedPaidItems.length === 0) {
     return { enabled: false, reason: "Check at least one payment to enable" };
   }
-  
+
   return { enabled: true, reason: "" };
 }
 
@@ -230,27 +233,41 @@ function checkSealButtonState() {
 function getNextMonthDate() {
   const now = new Date();
   const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  const monthNames = ["January", "February", "March", "April", "May", "June",
-                      "July", "August", "September", "October", "November", "December"];
-  return `${monthNames[nextMonth.getMonth()]} ${nextMonth.getDate()}, ${nextMonth.getFullYear()}`;
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  return `${
+    monthNames[nextMonth.getMonth()]
+  } ${nextMonth.getDate()}, ${nextMonth.getFullYear()}`;
 }
 
 // Check and unlock if new month started
 function checkAndUnlockNewMonth() {
   const sealState = loadSealState();
   const currentMonth = getCurrentMonth();
-  
+
   if (sealState.isSealed && sealState.sealedMonth !== currentMonth) {
     // New month - unlock!
     saveSealState({
       isSealed: false,
       sealedMonth: null,
       sealedDate: null,
-      sealedItems: []
+      sealedItems: [],
     });
-    
+
     removeSealedUI();
-    
+
     // Show toast
     const toast = document.getElementById("paymentToast");
     toast.textContent = "🎊 New month started! Payment status reset.";
@@ -263,10 +280,10 @@ function checkAndUnlockNewMonth() {
 
 // Update seal button state (enabled/disabled)
 function updateSealButton() {
-  const btn = document.getElementById('sealControlBtn');
-  
+  const btn = document.getElementById("sealControlBtn");
+
   const state = checkSealButtonState();
-  
+
   if (state.enabled) {
     btn.disabled = false;
     btn.title = "Lock all payments for this month";
@@ -278,16 +295,16 @@ function updateSealButton() {
 
 // Step 1: User clicks "SEAL MONTH" button
 function initiateSeal() {
-  const modal = document.getElementById('sealModal');
+  const modal = document.getElementById("sealModal");
   const nextMonth = getNextMonthDate();
-  document.getElementById('sealUntilDate').textContent = `📅 ${nextMonth}`;
-  modal.classList.add('active');
+  document.getElementById("sealUntilDate").textContent = `📅 ${nextMonth}`;
+  modal.classList.add("active");
 }
 
 // Close seal confirmation modal
 function closeSealModal() {
-  const modal = document.getElementById('sealModal');
-  modal.classList.remove('active');
+  const modal = document.getElementById("sealModal");
+  modal.classList.remove("active");
 }
 
 // Step 2: User confirms - start countdown
@@ -300,25 +317,25 @@ function confirmSeal() {
 function startSealCountdown() {
   isSealCountdownActive = true;
   let countdown = 3;
-  
-  const toast = document.getElementById('countdownToast');
-  const text = document.getElementById('countdownText');
-  const overlay = document.getElementById('sealingOverlay');
-  
+
+  const toast = document.getElementById("countdownToast");
+  const text = document.getElementById("countdownText");
+  const overlay = document.getElementById("sealingOverlay");
+
   // Show overlay to disable background
-  overlay.classList.add('active');
-  
-  toast.classList.add('show');
+  overlay.classList.add("active");
+
+  toast.classList.add("show");
   text.textContent = `⏳ Sealing... (${countdown}s)`;
-  
+
   sealCountdownTimer = setInterval(() => {
     countdown--;
     text.textContent = `⏳ Sealing... (${countdown}s)`;
-    
+
     if (countdown <= 0) {
       clearInterval(sealCountdownTimer);
       sealCountdownTimer = null;
-      toast.classList.remove('show');
+      toast.classList.remove("show");
       // Keep overlay active for undo period
       executeSeal();
     }
@@ -331,14 +348,14 @@ function abortSeal() {
     clearInterval(sealCountdownTimer);
     sealCountdownTimer = null;
   }
-  
+
   isSealCountdownActive = false;
-  
-  const toast = document.getElementById('countdownToast');
-  const overlay = document.getElementById('sealingOverlay');
-  
-  toast.classList.remove('show');
-  overlay.classList.remove('active'); // Hide overlay
+
+  const toast = document.getElementById("countdownToast");
+  const overlay = document.getElementById("sealingOverlay");
+
+  toast.classList.remove("show");
+  overlay.classList.remove("active"); // Hide overlay
 }
 
 // Step 4: Execute seal and start grace period
@@ -346,41 +363,43 @@ function executeSeal() {
   const emis = loadEMIs();
   const currentMonth = getCurrentMonth();
   const existingSealState = loadSealState();
-  
+
   // Store previous seal state for UNDO functionality
   previousSealState = JSON.parse(JSON.stringify(existingSealState));
-  
+
   // Get existing sealed items or empty array
-  const existingSealedItems = (existingSealState.isSealed && existingSealState.sealedMonth === currentMonth)
-    ? existingSealState.sealedItems
-    : [];
-  
+  const existingSealedItems =
+    existingSealState.isSealed && existingSealState.sealedMonth === currentMonth
+      ? existingSealState.sealedItems
+      : [];
+
   // Add new items to sealed list (only unsealed AND PAID ones)
   const newItemsToSeal = emis
-    .filter(emi => 
-      !wasItemSealed(emi) && 
-      emi.isPaidThisMonth && 
-      emi.currentMonth === currentMonth
+    .filter(
+      (emi) =>
+        !wasItemSealed(emi) &&
+        emi.isPaidThisMonth &&
+        emi.currentMonth === currentMonth
     )
-    .map(emi => ({
+    .map((emi) => ({
       emiName: emi.emiName,
       emiAmount: emi.emiAmount,
-      dueDate: emi.dueDate
+      dueDate: emi.dueDate,
     }));
-  
+
   // Combine existing sealed items with new ones
   const allSealedItems = [...existingSealedItems, ...newItemsToSeal];
-  
+
   // Store newly sealed items for finalizeSeal message
   lastSealedItems = newItemsToSeal;
-  
+
   const sealState = {
     isSealed: true,
     sealedMonth: currentMonth,
     sealedDate: new Date().toISOString(),
-    sealedItems: allSealedItems
+    sealedItems: allSealedItems,
   };
-  
+
   saveSealState(sealState);
   applySealedUI();
   startUndoGracePeriod();
@@ -389,24 +408,24 @@ function executeSeal() {
 // Step 5: 5-second undo grace period
 function startUndoGracePeriod() {
   let countdown = 5;
-  
-  const toast = document.getElementById('undoToast');
-  const text = document.getElementById('undoText');
-  const overlay = document.getElementById('sealingOverlay');
-  
+
+  const toast = document.getElementById("undoToast");
+  const text = document.getElementById("undoText");
+  const overlay = document.getElementById("sealingOverlay");
+
   // Overlay should already be active from countdown
-  toast.classList.add('show');
+  toast.classList.add("show");
   text.textContent = `✅ Sealed! (${countdown}s)`;
-  
+
   undoGracePeriodTimer = setInterval(() => {
     countdown--;
     text.textContent = `✅ Sealed! (${countdown}s)`;
-    
+
     if (countdown <= 0) {
       clearInterval(undoGracePeriodTimer);
       undoGracePeriodTimer = null;
-      toast.classList.remove('show');
-      overlay.classList.remove('active'); // Hide overlay when done
+      toast.classList.remove("show");
+      overlay.classList.remove("active"); // Hide overlay when done
       finalizeSeal();
     }
   }, 1000);
@@ -418,13 +437,13 @@ function undoSeal() {
     clearInterval(undoGracePeriodTimer);
     undoGracePeriodTimer = null;
   }
-  
-  const toast = document.getElementById('undoToast');
-  const overlay = document.getElementById('sealingOverlay');
-  
-  toast.classList.remove('show');
-  overlay.classList.remove('active'); // Hide overlay
-  
+
+  const toast = document.getElementById("undoToast");
+  const overlay = document.getElementById("sealingOverlay");
+
+  toast.classList.remove("show");
+  overlay.classList.remove("active"); // Hide overlay
+
   // Restore previous seal state (UNDO only the newly added items)
   if (previousSealState) {
     saveSealState(previousSealState);
@@ -435,24 +454,24 @@ function undoSeal() {
       isSealed: false,
       sealedMonth: null,
       sealedDate: null,
-      sealedItems: []
+      sealedItems: [],
     });
   }
-  
+
   removeSealedUI();
   renderTable();
 }
 
 // Finalize seal after grace period
 function finalizeSeal() {
-  const toast = document.getElementById('paymentToast');
-  
+  const toast = document.getElementById("paymentToast");
+
   // Check if ALL active items are now sealed
   if (areAllActiveItemsSealed()) {
     // All items sealed - show superToast for financial peace
-    const superToast = document.getElementById('superToast');
-    superToast.classList.add('show');
-    setTimeout(() => superToast.classList.remove('show'), 6000);
+    const superToast = document.getElementById("superToast");
+    superToast.classList.add("show");
+    setTimeout(() => superToast.classList.remove("show"), 6000);
   } else {
     // Partial seal - show which items were sealed
     if (lastSealedItems.length === 1) {
@@ -463,14 +482,17 @@ function finalizeSeal() {
       toast.textContent = `🔒 Sealed! Forget "${lastSealedItems[0].emiName}" and "${lastSealedItems[1].emiName}" this month`;
     } else {
       // Multiple items sealed
-      const names = lastSealedItems.slice(0, 2).map(item => item.emiName).join('", "');
+      const names = lastSealedItems
+        .slice(0, 2)
+        .map((item) => item.emiName)
+        .join('", "');
       const remaining = lastSealedItems.length - 2;
       toast.textContent = `🔒 Sealed! Forget "${names}" and ${remaining} more this month`;
     }
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 5000);
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 5000);
   }
-  
+
   // Clear last sealed items
   lastSealedItems = [];
   previousSealState = null;
@@ -480,32 +502,32 @@ function finalizeSeal() {
 
 // Apply sealed UI state
 function applySealedUI() {
-  const tableWrapper = document.getElementById('tableWrapper');
-  
+  const tableWrapper = document.getElementById("tableWrapper");
+
   // Only show banner if ALL current items are sealed
   if (areAllActiveItemsSealed()) {
-    tableWrapper.classList.add('sealed');
+    tableWrapper.classList.add("sealed");
   } else {
-    tableWrapper.classList.remove('sealed');
+    tableWrapper.classList.remove("sealed");
   }
-  
+
   renderTable(); // Re-render with locks
 }
 
 // Remove sealed UI state
 function removeSealedUI() {
-  const tableWrapper = document.getElementById('tableWrapper');
-  const badge = document.getElementById('sealedBadge');
-  
-  tableWrapper.classList.remove('sealed');
-  badge.style.display = 'none'; // Ensure badge is hidden
+  const tableWrapper = document.getElementById("tableWrapper");
+  const badge = document.getElementById("sealedBadge");
+
+  tableWrapper.classList.remove("sealed");
+  badge.style.display = "none"; // Ensure badge is hidden
 }
 
 // Check and auto-archive completed items
 function autoArchiveCompleted() {
   const emis = loadEMIs();
   const exportBtn = document.getElementById("export");
-  
+
   const archived = loadArchived();
 
   if (exportBtn) {
@@ -569,14 +591,14 @@ function markAsPaid(index) {
   if (isSealingInProgress()) {
     return; // Silently block when sealing in progress
   }
-  
+
   const emis = loadEMIs();
-  
+
   // Block if THIS specific item is sealed
   if (wasItemSealed(emis[index])) {
     return; // Can't mark a sealed item
   }
-  
+
   const currentMonth = getCurrentMonth();
 
   if (
@@ -629,8 +651,8 @@ function checkAllPaidAndCelebrate() {
   if (activeItems.length === 0) return;
 
   // Filter to only UNSEALED items (so we don't count already sealed items)
-  const unsealedItems = activeItems.filter(emi => !wasItemSealed(emi));
-  
+  const unsealedItems = activeItems.filter((emi) => !wasItemSealed(emi));
+
   if (unsealedItems.length === 0) return; // All items already sealed
 
   // Count paid items among unsealed items
@@ -641,7 +663,8 @@ function checkAllPaidAndCelebrate() {
   // All unsealed items paid?
   if (paidItems.length === unsealedItems.length) {
     const toast = document.getElementById("paymentToast");
-    toast.textContent = "🎉 Super! Now seal it to preserve from accidental touches, doubts and all";
+    toast.textContent =
+      "🎉 Super! Now seal it to preserve from accidental touches, doubts and all";
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 5000); // Longer display
   }
@@ -652,9 +675,9 @@ function unmarkAsPaid(index) {
   if (isSealingInProgress()) {
     return; // Silently block when sealing in progress
   }
-  
+
   const emis = loadEMIs();
-  
+
   // Block if THIS specific item is sealed
   if (wasItemSealed(emis[index])) {
     return; // Can't unmark a sealed item
@@ -962,15 +985,15 @@ function renderTable() {
     updateSummary(loadEMIs());
     renderFreedomTimeline(); // Update freedom timeline when table updates
   }
-  
+
   // Update sealed banner state based on current items
-  const tableWrapper = document.getElementById('tableWrapper');
+  const tableWrapper = document.getElementById("tableWrapper");
   if (isSealedThisMonth() && areAllActiveItemsSealed()) {
-    tableWrapper.classList.add('sealed');
+    tableWrapper.classList.add("sealed");
   } else {
-    tableWrapper.classList.remove('sealed');
+    tableWrapper.classList.remove("sealed");
   }
-  
+
   // Update seal button state
   updateSealButton();
 }
@@ -1003,7 +1026,7 @@ function generateRowHTML(emi, index) {
   if (isPaid) {
     rowClass += " paid-row";
   }
-  
+
   if (sealed) {
     rowClass += " sealed-row";
   }
@@ -1135,7 +1158,7 @@ function openModal(editIndex = null) {
   if (isSealingInProgress()) {
     return; // Silently block during sealing process
   }
-  
+
   const modal = document.getElementById("emiModal");
   const form = document.getElementById("emiForm");
   const modalTitle = document.getElementById("modalTitle");
@@ -1194,12 +1217,12 @@ function editEMI(index) {
   if (isSealingInProgress()) {
     return; // Silently block during sealing process
   }
-  
+
   const emis = loadEMIs();
   const emi = emis[index];
-  
+
   if (wasItemSealed(emi)) {
-    alert('🔒 Cannot edit sealed payments. Wait until next month.');
+    alert("🔒 Cannot edit sealed payments. Wait until next month.");
     return;
   }
   openModal(index);
@@ -1210,12 +1233,12 @@ function deleteEMI(index) {
   if (isSealingInProgress()) {
     return; // Silently block during sealing process
   }
-  
+
   const emis = loadEMIs();
   const emi = emis[index];
-  
+
   if (wasItemSealed(emi)) {
-    alert('🔒 Cannot delete sealed payments. Wait until next month.');
+    alert("🔒 Cannot delete sealed payments. Wait until next month.");
     return;
   }
   if (confirm("Are you sure you want to delete this item?")) {
@@ -1293,93 +1316,103 @@ document.getElementById("sealModal").addEventListener("click", function (e) {
 
 // Info modal functions
 function showSealInfo() {
-  const modal = document.getElementById('sealInfoModal');
-  modal.classList.add('active');
+  const modal = document.getElementById("sealInfoModal");
+  modal.classList.add("active");
 }
 
 function closeSealInfoModal() {
-  const modal = document.getElementById('sealInfoModal');
-  modal.classList.remove('active');
+  const modal = document.getElementById("sealInfoModal");
+  modal.classList.remove("active");
 }
 
 // Close info modal on outside click
-document.getElementById("sealInfoModal").addEventListener("click", function (e) {
-  if (e.target === this) {
-    closeSealInfoModal();
-  }
-});
+document
+  .getElementById("sealInfoModal")
+  .addEventListener("click", function (e) {
+    if (e.target === this) {
+      closeSealInfoModal();
+    }
+  });
 
 // Export info modal functions
 function showExportInfo() {
-  const modal = document.getElementById('exportInfoModal');
-  modal.classList.add('active');
+  const modal = document.getElementById("exportInfoModal");
+  modal.classList.add("active");
 }
 
 function closeExportInfoModal() {
-  const modal = document.getElementById('exportInfoModal');
-  modal.classList.remove('active');
+  const modal = document.getElementById("exportInfoModal");
+  modal.classList.remove("active");
 }
 
 // Close export info modal on outside click
-document.getElementById("exportInfoModal").addEventListener("click", function (e) {
-  if (e.target === this) {
-    closeExportInfoModal();
-  }
-});
+document
+  .getElementById("exportInfoModal")
+  .addEventListener("click", function (e) {
+    if (e.target === this) {
+      closeExportInfoModal();
+    }
+  });
 
 // Export warning modal functions
 function showExportWarning() {
-  const modal = document.getElementById('exportWarningModal');
-  modal.classList.add('active');
+  const modal = document.getElementById("exportWarningModal");
+  modal.classList.add("active");
 }
 
 function closeExportWarning() {
-  const modal = document.getElementById('exportWarningModal');
-  modal.classList.remove('active');
+  const modal = document.getElementById("exportWarningModal");
+  modal.classList.remove("active");
 }
 
 // Close export warning modal on outside click
-document.getElementById("exportWarningModal").addEventListener("click", function (e) {
-  if (e.target === this) {
-    closeExportWarning();
-  }
-});
+document
+  .getElementById("exportWarningModal")
+  .addEventListener("click", function (e) {
+    if (e.target === this) {
+      closeExportWarning();
+    }
+  });
 
 // Data consistency info modal functions
 function showDataConsistencyInfo() {
-  const modal = document.getElementById('dataConsistencyModal');
-  modal.classList.add('active');
+  const modal = document.getElementById("dataConsistencyModal");
+  modal.classList.add("active");
 }
 
 function closeDataConsistencyInfo() {
-  const modal = document.getElementById('dataConsistencyModal');
-  modal.classList.remove('active');
+  const modal = document.getElementById("dataConsistencyModal");
+  modal.classList.remove("active");
 }
 
 // Close data consistency modal on outside click
-document.getElementById("dataConsistencyModal").addEventListener("click", function (e) {
-  if (e.target === this) {
-    closeDataConsistencyInfo();
-  }
-});
+document
+  .getElementById("dataConsistencyModal")
+  .addEventListener("click", function (e) {
+    if (e.target === this) {
+      closeDataConsistencyInfo();
+    }
+  });
 
 // App guide modal functions
 function showAppGuide() {
-  const modal = document.getElementById('appGuideModal');
-  modal.classList.add('active');
+  const modal = document.getElementById("appGuideModal");
+  modal.classList.add("active");
 }
 
 function closeAppGuide() {
-  const modal = document.getElementById('appGuideModal');
-  modal.classList.remove('active');
+  const modal = document.getElementById("appGuideModal");
+  modal.classList.remove("active");
 }
 
 // Close app guide modal on outside click
-document.getElementById("appGuideModal").addEventListener("click", function (e) {
-  if (e.target === this) {
-    closeAppGuide();
-  }
-});
+document
+  .getElementById("appGuideModal")
+  .addEventListener("click", function (e) {
+    if (e.target === this) {
+      closeAppGuide();
+    }
+  });
 
 // Initialize sort controls
 function initSortControls() {
@@ -1416,40 +1449,43 @@ function calculateFreedomTimeline() {
   const emis = loadEMIs();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   // Filter active EMIs with end dates (exclude ongoing expenses and savings for freedom calc)
-  const activeEMIs = emis.filter(emi => {
+  const activeEMIs = emis.filter((emi) => {
     if (!emi.emiEndDate) return false;
     const endDate = new Date(emi.emiEndDate);
     if (endDate < today) return false;
     // Include only debt/expense category for freedom calculation
-    return emi.emiCategory === 'expense';
+    return emi.emiCategory === "expense";
   });
-  
+
   if (activeEMIs.length === 0) {
     return null;
   }
-  
+
   // Sort by end date
   activeEMIs.sort((a, b) => new Date(a.emiEndDate) - new Date(b.emiEndDate));
-  
+
   // Calculate freedom date (last EMI end date)
   const freedomDate = new Date(activeEMIs[activeEMIs.length - 1].emiEndDate);
-  
+
   // Calculate current monthly total
-  const currentMonthly = activeEMIs.reduce((sum, emi) => sum + parseFloat(emi.emiAmount || 0), 0);
-  
+  const currentMonthly = activeEMIs.reduce(
+    (sum, emi) => sum + parseFloat(emi.emiAmount || 0),
+    0
+  );
+
   // Calculate milestones (when each EMI ends)
-  const milestones = activeEMIs.map(emi => ({
+  const milestones = activeEMIs.map((emi) => ({
     date: new Date(emi.emiEndDate),
     name: emi.emiName,
     amount: parseFloat(emi.emiAmount || 0),
-    type: emi.type
+    type: emi.type,
   }));
-  
+
   // Calculate year-by-year breakdown
   const yearBreakdown = {};
-  activeEMIs.forEach(emi => {
+  activeEMIs.forEach((emi) => {
     const year = new Date(emi.emiEndDate).getFullYear();
     if (!yearBreakdown[year]) {
       yearBreakdown[year] = { count: 0, items: [] };
@@ -1457,60 +1493,77 @@ function calculateFreedomTimeline() {
     yearBreakdown[year].count++;
     yearBreakdown[year].items.push(emi.emiName);
   });
-  
+
   // Calculate monthly payment over time for graph
   const graphData = [];
   let currentYear = today.getFullYear();
   const lastYear = freedomDate.getFullYear();
-  
+
   for (let year = currentYear; year <= lastYear; year++) {
     // Calculate monthly payment for this year
     let yearlyPayment = activeEMIs
-      .filter(emi => new Date(emi.emiEndDate).getFullYear() >= year)
+      .filter((emi) => new Date(emi.emiEndDate).getFullYear() >= year)
       .reduce((sum, emi) => sum + parseFloat(emi.emiAmount || 0), 0);
-    
+
     graphData.push({
       year: year,
-      amount: yearlyPayment
+      amount: yearlyPayment,
     });
   }
-  
+
   return {
     freedomDate,
     currentMonthly,
     milestones,
     yearBreakdown,
-    graphData
+    graphData,
   };
 }
 
 // Render Freedom Timeline
 function renderFreedomTimeline() {
-  const freedomCard = document.getElementById('freedomCard');
-  const freedomDateSummary = document.getElementById('freedomDateSummary');
-  const freedomCountdownSummary = document.getElementById('freedomCountdownSummary');
-  
+  const freedomCard = document.getElementById("freedomCard");
+  const freedomDateSummary = document.getElementById("freedomDateSummary");
+  const freedomCountdownSummary = document.getElementById(
+    "freedomCountdownSummary"
+  );
+
   const data = calculateFreedomTimeline();
-  
+
   if (!data) {
-    freedomCard.style.display = 'none';
+    freedomCard.style.display = "none";
     return;
   }
-  
-  freedomCard.style.display = 'flex';
-  
+
+  freedomCard.style.display = "flex";
+
   // Format freedom date
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  freedomDateSummary.textContent = `${monthNames[data.freedomDate.getMonth()]} ${data.freedomDate.getDate()}, ${data.freedomDate.getFullYear()}`;
-  
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  freedomDateSummary.textContent = `${
+    monthNames[data.freedomDate.getMonth()]
+  } ${data.freedomDate.getDate()}, ${data.freedomDate.getFullYear()}`;
+
   // Calculate countdown
   const today = new Date();
   const diffTime = data.freedomDate - today;
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   const diffYears = Math.floor(diffDays / 365);
   const diffMonths = Math.floor((diffDays % 365) / 30);
-  
-  let countdownText = '';
+
+  let countdownText = "";
   if (diffYears > 0) {
     countdownText = `${diffYears}y ${diffMonths}m away`;
   } else if (diffMonths > 0) {
@@ -1518,7 +1571,7 @@ function renderFreedomTimeline() {
   } else {
     countdownText = `${diffDays} days away`;
   }
-  
+
   freedomCountdownSummary.textContent = countdownText;
 }
 
@@ -1526,76 +1579,105 @@ function renderFreedomTimeline() {
 function openFreedomModal() {
   const data = calculateFreedomTimeline();
   if (!data) return;
-  
-  const modal = document.getElementById('freedomModal');
-  const freedomDateModal = document.getElementById('freedomDateModal');
-  const freedomCountdownModal = document.getElementById('freedomCountdownModal');
-  const milestonesList = document.getElementById('freedomMilestonesList');
-  
+
+  const modal = document.getElementById("freedomModal");
+  const freedomDateModal = document.getElementById("freedomDateModal");
+  const freedomCountdownModal = document.getElementById(
+    "freedomCountdownModal"
+  );
+  const milestonesList = document.getElementById("freedomMilestonesList");
+
   // Format freedom date
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  freedomDateModal.textContent = `${monthNames[data.freedomDate.getMonth()]} ${data.freedomDate.getDate()}, ${data.freedomDate.getFullYear()}`;
-  
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  freedomDateModal.textContent = `${
+    monthNames[data.freedomDate.getMonth()]
+  } ${data.freedomDate.getDate()}, ${data.freedomDate.getFullYear()}`;
+
   // Calculate countdown
   const today = new Date();
   const diffTime = data.freedomDate - today;
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   const diffYears = Math.floor(diffDays / 365);
   const diffMonths = Math.floor((diffDays % 365) / 30);
-  
-  let countdownText = '';
+
+  let countdownText = "";
   if (diffYears > 0) {
     const remainingMonths = diffMonths;
-    countdownText = `${diffYears} year${diffYears > 1 ? 's' : ''}`;
+    countdownText = `${diffYears} year${diffYears > 1 ? "s" : ""}`;
     if (remainingMonths > 0) {
-      countdownText += `, ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}`;
+      countdownText += `, ${remainingMonths} month${
+        remainingMonths > 1 ? "s" : ""
+      }`;
     }
-    countdownText += ' to freedom';
+    countdownText += " to freedom";
   } else if (diffMonths > 0) {
-    countdownText = `${diffMonths} month${diffMonths > 1 ? 's' : ''} to freedom`;
+    countdownText = `${diffMonths} month${
+      diffMonths > 1 ? "s" : ""
+    } to freedom`;
   } else {
-    countdownText = `${diffDays} day${diffDays > 1 ? 's' : ''} to freedom`;
+    countdownText = `${diffDays} day${diffDays > 1 ? "s" : ""} to freedom`;
   }
-  
+
   freedomCountdownModal.textContent = countdownText;
-  
+
   // Render milestones (next 5)
-  milestonesList.innerHTML = '';
+  milestonesList.innerHTML = "";
   if (data.milestones.length > 0) {
     const nextMilestones = data.milestones.slice(0, 5);
     nextMilestones.forEach((milestone, index) => {
-      const monthYear = `${monthNames[milestone.date.getMonth()]} ${milestone.date.getFullYear()}`;
+      const monthYear = `${
+        monthNames[milestone.date.getMonth()]
+      } ${milestone.date.getFullYear()}`;
       const isLast = index === data.milestones.length - 1;
-      
-      const item = document.createElement('div');
-      item.className = 'freedom-milestone-item';
+
+      const item = document.createElement("div");
+      item.className = "freedom-milestone-item";
       item.innerHTML = `
         <div class="milestone-info">
           <div class="milestone-name">${milestone.name} ends</div>
-          <div class="milestone-date">${monthYear}${isLast ? ' 🎉 (Last EMI!)' : ''}</div>
+          <div class="milestone-date">${monthYear}${
+        isLast ? " 🎉 (Last EMI!)" : ""
+      }</div>
         </div>
-        <div class="milestone-relief">+${formatCurrency(milestone.amount)}/mo</div>
+        <div class="milestone-relief">+${formatCurrency(
+          milestone.amount
+        )}/mo</div>
       `;
       milestonesList.appendChild(item);
     });
-    
+
     if (data.milestones.length > 5) {
-      const moreText = document.createElement('div');
-      moreText.style.textAlign = 'center';
-      moreText.style.padding = '12px';
-      moreText.style.color = 'var(--text-secondary)';
-      moreText.style.fontSize = '0.85rem';
-      moreText.textContent = `+ ${data.milestones.length - 5} more EMI${data.milestones.length - 5 > 1 ? 's' : ''} ending later`;
+      const moreText = document.createElement("div");
+      moreText.style.textAlign = "center";
+      moreText.style.padding = "12px";
+      moreText.style.color = "var(--text-secondary)";
+      moreText.style.fontSize = "0.85rem";
+      moreText.textContent = `+ ${data.milestones.length - 5} more EMI${
+        data.milestones.length - 5 > 1 ? "s" : ""
+      } ending later`;
       milestonesList.appendChild(moreText);
     }
   }
-  
-  modal.classList.add('active');
+
+  modal.classList.add("active");
 }
 
 // Close Freedom Modal
 function closeFreedomModal() {
-  document.getElementById('freedomModal').classList.remove('active');
+  document.getElementById("freedomModal").classList.remove("active");
 }
 
 // Initialize app
@@ -1646,7 +1728,7 @@ function exportData() {
   const emis = loadEMIs();
   const archived = loadArchived();
   const sealState = loadSealState();
-  
+
   const exportData = {
     active: emis,
     archived: archived,
@@ -1672,13 +1754,14 @@ function importData(event) {
 
   // Pre-validate file size
   if (file.size === 0) {
-    showImportError('empty', 'File is empty (0 bytes)', file.size);
+    showImportError("empty", "File is empty (0 bytes)", file.size);
     event.target.value = "";
     return;
   }
 
-  if (file.size > 10 * 1024 * 1024) { // 10MB limit
-    showImportError('too-large', 'File is too large (max 10MB)', file.size);
+  if (file.size > 10 * 1024 * 1024) {
+    // 10MB limit
+    showImportError("too-large", "File is too large (max 10MB)", file.size);
     event.target.value = "";
     return;
   }
@@ -1687,16 +1770,16 @@ function importData(event) {
   reader.onload = function (e) {
     try {
       const fileContent = e.target.result;
-      
+
       // Pre-validate file content
-      if (!fileContent || typeof fileContent !== 'string') {
-        showImportError('invalid', 'File content is not text', file.size);
+      if (!fileContent || typeof fileContent !== "string") {
+        showImportError("invalid", "File content is not text", file.size);
         event.target.value = "";
         return;
       }
 
       if (fileContent.trim().length < 10) {
-        showImportError('empty', 'File is too short to be valid', file.size);
+        showImportError("empty", "File is too short to be valid", file.size);
         event.target.value = "";
         return;
       }
@@ -1707,19 +1790,27 @@ function importData(event) {
         importedData = JSON.parse(fileContent);
       } catch (parseError) {
         // Categorize JSON syntax errors
-        const errorMsg = parseError.message || '';
-        if (errorMsg.includes('position') || errorMsg.includes('line') || errorMsg.includes('Unexpected')) {
-          showImportError('syntax', parseError.message, file.size);
+        const errorMsg = parseError.message || "";
+        if (
+          errorMsg.includes("position") ||
+          errorMsg.includes("line") ||
+          errorMsg.includes("Unexpected")
+        ) {
+          showImportError("syntax", parseError.message, file.size);
         } else {
-          showImportError('corrupted', parseError.message, file.size);
+          showImportError("corrupted", parseError.message, file.size);
         }
         event.target.value = "";
         return;
       }
 
       // Validate data type
-      if (typeof importedData !== 'object' || importedData === null) {
-        showImportError('wrong-format', 'File is not a valid JSON object', file.size);
+      if (typeof importedData !== "object" || importedData === null) {
+        showImportError(
+          "wrong-format",
+          "File is not a valid JSON object",
+          file.size
+        );
         event.target.value = "";
         return;
       }
@@ -1736,18 +1827,24 @@ function importData(event) {
         activeData = importedData.active;
         archivedData = importedData.archived || [];
         importedSealState = importedData.sealState || null;
-        
+
         // Extract month from export date
         if (importedData.exportDate) {
           const exportDate = new Date(importedData.exportDate);
-          exportMonth = `${exportDate.getFullYear()}-${String(exportDate.getMonth() + 1).padStart(2, "0")}`;
+          exportMonth = `${exportDate.getFullYear()}-${String(
+            exportDate.getMonth() + 1
+          ).padStart(2, "0")}`;
         }
       }
       // Handle old export format (just array)
       else if (Array.isArray(importedData)) {
         activeData = importedData;
       } else {
-        showImportError('wrong-app', "File structure doesn't match this app's format", file.size);
+        showImportError(
+          "wrong-app",
+          "File structure doesn't match this app's format",
+          file.size
+        );
         event.target.value = "";
         return;
       }
@@ -1805,13 +1902,18 @@ function importData(event) {
         archivedData,
         isSameMonth,
         exportMonth,
-        importedSealState
+        importedSealState,
       };
 
       // Show confirmation modal
-      showImportConfirmModal(stillActive.length, archivedData.length, isSameMonth, exportMonth);
+      showImportConfirmModal(
+        stillActive.length,
+        archivedData.length,
+        isSameMonth,
+        exportMonth
+      );
     } catch (error) {
-      showImportError('unknown', error.message, file.size);
+      showImportError("unknown", error.message, file.size);
     }
     event.target.value = "";
   };
@@ -1819,33 +1921,40 @@ function importData(event) {
 }
 
 // Show import confirmation modal
-function showImportConfirmModal(activeCount, archivedCount, isSameMonth, exportMonth) {
-  const modal = document.getElementById('importConfirmModal');
-  document.getElementById('importActiveCount').textContent = activeCount;
-  document.getElementById('importArchivedCount').textContent = archivedCount;
-  
-  const monthWarning = document.getElementById('importMonthWarning');
+function showImportConfirmModal(
+  activeCount,
+  archivedCount,
+  isSameMonth,
+  exportMonth
+) {
+  const modal = document.getElementById("importConfirmModal");
+  document.getElementById("importActiveCount").textContent = activeCount;
+  document.getElementById("importArchivedCount").textContent = archivedCount;
+
+  const monthWarning = document.getElementById("importMonthWarning");
   if (!isSameMonth && exportMonth) {
-    monthWarning.style.display = 'block';
+    monthWarning.style.display = "block";
   } else {
-    monthWarning.style.display = 'none';
+    monthWarning.style.display = "none";
   }
-  
-  modal.classList.add('active');
+
+  modal.classList.add("active");
 }
 
 function closeImportConfirmModal() {
-  const modal = document.getElementById('importConfirmModal');
-  modal.classList.remove('active');
+  const modal = document.getElementById("importConfirmModal");
+  modal.classList.remove("active");
   window.pendingImportData = null;
 }
 
 // Close import confirm modal on outside click
-document.getElementById("importConfirmModal").addEventListener("click", function (e) {
-  if (e.target === this) {
-    closeImportConfirmModal();
-  }
-});
+document
+  .getElementById("importConfirmModal")
+  .addEventListener("click", function (e) {
+    if (e.target === this) {
+      closeImportConfirmModal();
+    }
+  });
 
 // Execute the actual import after confirmation
 function confirmImport() {
@@ -1862,9 +1971,9 @@ function confirmImport() {
     exportMonth,
     importedSealState,
   } = pendingData;
-  
+
   let resetMessage = "";
-  
+
   try {
     const existingActive = loadEMIs();
     const existingArchived = loadArchived();
@@ -1887,54 +1996,55 @@ function confirmImport() {
         isSealed: false,
         sealedMonth: null,
         sealedDate: null,
-        sealedItems: []
+        sealedItems: [],
       });
       removeSealedUI();
-      resetMessage = "📅 Month changed! Data imported with payments and seal reset for new entries";
+      resetMessage =
+        "📅 Month changed! Data imported with payments and seal reset for new entries";
     } else {
       // Old format or no seal: clear seal
       saveSealState({
         isSealed: false,
         sealedMonth: null,
         sealedDate: null,
-        sealedItems: []
+        sealedItems: [],
       });
       removeSealedUI();
       resetMessage = "✅ Data imported successfully!";
     }
 
     renderTable();
-    
+
     // Show appropriate toast message
     const toast = document.getElementById("paymentToast");
     toast.textContent = resetMessage;
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 4000);
   } catch (importError) {
-    showImportError('import-failed', importError.message, 0);
+    showImportError("import-failed", importError.message, 0);
   }
-  
+
   window.pendingImportData = null;
 }
 
 // Show user-friendly import error modal
 function showImportError(errorType, errorMessage, fileSize) {
-  const modal = document.getElementById('importErrorModal');
-  const titleEl = document.getElementById('importErrorTitle');
-  const causesEl = document.getElementById('importErrorCauses');
-  const errorTypeEl = document.getElementById('errorType');
-  const errorMessageEl = document.getElementById('errorMessage');
-  const fileSizeEl = document.getElementById('fileSize');
+  const modal = document.getElementById("importErrorModal");
+  const titleEl = document.getElementById("importErrorTitle");
+  const causesEl = document.getElementById("importErrorCauses");
+  const errorTypeEl = document.getElementById("errorType");
+  const errorMessageEl = document.getElementById("errorMessage");
+  const fileSizeEl = document.getElementById("fileSize");
 
   // Update technical details
   errorTypeEl.textContent = errorType;
   errorMessageEl.textContent = errorMessage;
-  fileSizeEl.textContent = fileSize ? `${fileSize} bytes` : 'Unknown';
+  fileSizeEl.textContent = fileSize ? `${fileSize} bytes` : "Unknown";
 
   // Customize message based on error type
-  switch(errorType) {
-    case 'empty':
-      titleEl.innerHTML = '⚠️ <strong>The file is empty or invalid</strong>';
+  switch (errorType) {
+    case "empty":
+      titleEl.innerHTML = "⚠️ <strong>The file is empty or invalid</strong>";
       causesEl.innerHTML = `
         <li>❌ Downloaded file is incomplete</li>
         <li>❌ Export process was interrupted</li>
@@ -1942,8 +2052,8 @@ function showImportError(errorType, errorMessage, fileSize) {
       `;
       break;
 
-    case 'too-large':
-      titleEl.innerHTML = '⚠️ <strong>The file is too large</strong>';
+    case "too-large":
+      titleEl.innerHTML = "⚠️ <strong>The file is too large</strong>";
       causesEl.innerHTML = `
         <li>❌ Not a backup file from this app</li>
         <li>❌ File contains extra data</li>
@@ -1951,8 +2061,8 @@ function showImportError(errorType, errorMessage, fileSize) {
       `;
       break;
 
-    case 'syntax':
-      titleEl.innerHTML = '⚠️ <strong>The file has JSON syntax errors</strong>';
+    case "syntax":
+      titleEl.innerHTML = "⚠️ <strong>The file has JSON syntax errors</strong>";
       causesEl.innerHTML = `
         <li>❌ File was manually edited in text editor</li>
         <li>❌ Missing comma, bracket, or quote</li>
@@ -1961,9 +2071,10 @@ function showImportError(errorType, errorMessage, fileSize) {
       `;
       break;
 
-    case 'wrong-format':
-    case 'wrong-app':
-      titleEl.innerHTML = '⚠️ <strong>This is not a backup file from this app</strong>';
+    case "wrong-format":
+    case "wrong-app":
+      titleEl.innerHTML =
+        "⚠️ <strong>This is not a backup file from this app</strong>";
       causesEl.innerHTML = `
         <li>❌ Wrong file selected</li>
         <li>❌ File from different app</li>
@@ -1972,8 +2083,9 @@ function showImportError(errorType, errorMessage, fileSize) {
       `;
       break;
 
-    case 'corrupted':
-      titleEl.innerHTML = '⚠️ <strong>The file appears to be corrupted</strong>';
+    case "corrupted":
+      titleEl.innerHTML =
+        "⚠️ <strong>The file appears to be corrupted</strong>";
       causesEl.innerHTML = `
         <li>❌ File damaged during transfer</li>
         <li>❌ Storage device error</li>
@@ -1982,8 +2094,8 @@ function showImportError(errorType, errorMessage, fileSize) {
       `;
       break;
 
-    case 'import-failed':
-      titleEl.innerHTML = '⚠️ <strong>Import process failed</strong>';
+    case "import-failed":
+      titleEl.innerHTML = "⚠️ <strong>Import process failed</strong>";
       causesEl.innerHTML = `
         <li>❌ Data validation failed</li>
         <li>❌ Required fields missing</li>
@@ -1992,7 +2104,7 @@ function showImportError(errorType, errorMessage, fileSize) {
       break;
 
     default:
-      titleEl.innerHTML = '⚠️ <strong>Unknown error occurred</strong>';
+      titleEl.innerHTML = "⚠️ <strong>Unknown error occurred</strong>";
       causesEl.innerHTML = `
         <li>❌ Unexpected error during import</li>
         <li>❌ Please try again or use different file</li>
@@ -2000,26 +2112,27 @@ function showImportError(errorType, errorMessage, fileSize) {
   }
 
   // Reset technical details visibility
-  document.getElementById('technicalDetailsSection').style.display = 'none';
-  document.getElementById('techDetailsToggle').textContent = 'Show Technical Details ▼';
+  document.getElementById("technicalDetailsSection").style.display = "none";
+  document.getElementById("techDetailsToggle").textContent =
+    "Show Technical Details ▼";
 
   // Show modal
-  modal.classList.add('active');
+  modal.classList.add("active");
 }
 
 function closeImportErrorModal() {
-  document.getElementById('importErrorModal').classList.remove('active');
+  document.getElementById("importErrorModal").classList.remove("active");
 }
 
 function toggleTechnicalDetails() {
-  const section = document.getElementById('technicalDetailsSection');
-  const toggle = document.getElementById('techDetailsToggle');
-  
-  if (section.style.display === 'none') {
-    section.style.display = 'block';
-    toggle.textContent = 'Hide Technical Details ▲';
+  const section = document.getElementById("technicalDetailsSection");
+  const toggle = document.getElementById("techDetailsToggle");
+
+  if (section.style.display === "none") {
+    section.style.display = "block";
+    toggle.textContent = "Hide Technical Details ▲";
   } else {
-    section.style.display = 'none';
-    toggle.textContent = 'Show Technical Details ▼';
+    section.style.display = "none";
+    toggle.textContent = "Show Technical Details ▼";
   }
 }
