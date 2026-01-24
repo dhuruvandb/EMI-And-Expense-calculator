@@ -1849,11 +1849,19 @@ document.getElementById("importConfirmModal").addEventListener("click", function
 
 // Execute the actual import after confirmation
 function confirmImport() {
-  closeImportConfirmModal();
-  
-  if (!window.pendingImportData) return;
-  
-  const { stillActive, archivedData, isSameMonth, exportMonth, importedSealState } = window.pendingImportData;
+  const pendingData = window.pendingImportData; // ✅ Save reference FIRST
+
+  closeImportConfirmModal(); // Now it's safe to clear window.pendingImportData
+
+  if (!pendingData) return;
+
+  const {
+    stillActive,
+    archivedData,
+    isSameMonth,
+    exportMonth,
+    importedSealState,
+  } = pendingData;
   
   let resetMessage = "";
   
