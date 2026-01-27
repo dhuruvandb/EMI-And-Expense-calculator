@@ -981,6 +981,7 @@ function renderTable() {
   });
 
   tbody.innerHTML = html;
+  tbody.offsetHeight;
   if (!showArchived) {
     updateSummary(loadEMIs());
     renderFreedomTimeline(); // Update freedom timeline when table updates
