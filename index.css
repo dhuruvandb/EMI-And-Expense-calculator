@@ -1339,10 +1339,6 @@ td {
   color: var(--text-primary);
 }
 
-tbody tr {
-  transition: background-color 0.2s ease;
-}
-
 tbody tr:hover {
   background-color: #f8fafc;
 }
