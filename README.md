@@ -641,6 +641,6 @@ _Your finances. Your data. Your control._
 ![GitHub last commit](https://img.shields.io/github/last-commit/dhuruvandb/EMI-And-Expense-calculator)
 ![GitHub repo size](https://img.shields.io/github/repo-size/dhuruvandb/EMI-And-Expense-calculator)
 
-**If this helps you, give it a ⭐**
+**If this helps you, give it a ⭐.**
 
 </div>
