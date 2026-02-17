@@ -637,6 +637,18 @@ body.dark-mode .info-btn:hover {
   color: white;
 }
 
+.github-btn {
+  display: inline-flex !important;
+}
+
+.github-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.github-btn:hover svg {
+  transform: scale(1.1);
+}
+
 .group-header {
   background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
   font-weight: 700;
