@@ -1363,24 +1363,6 @@ document.getElementById("dataConsistencyModal").addEventListener("click", functi
   }
 });
 
-// App guide modal functions
-function showAppGuide() {
-  const modal = document.getElementById('appGuideModal');
-  modal.classList.add('active');
-}
-
-function closeAppGuide() {
-  const modal = document.getElementById('appGuideModal');
-  modal.classList.remove('active');
-}
-
-// Close app guide modal on outside click
-document.getElementById("appGuideModal").addEventListener("click", function (e) {
-  if (e.target === this) {
-    closeAppGuide();
-  }
-});
-
 // Initialize sort controls
 function initSortControls() {
   const prefs = loadSortPrefs();
