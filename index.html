@@ -64,11 +64,16 @@
                   style="margin-left: 4px;">
             ⚠️
           </button>
-          <button class="info-btn" onclick="showAppGuide()" 
-                  title="App Guide & Limitations"
-                  style="margin-right: 8px;">
-            📖
-          </button>
+          <a href="https://github.com/dhuruvandb/EMI-And-Expense-calculator" 
+             target="_blank" 
+             rel="noopener noreferrer" 
+             class="info-btn github-btn" 
+             title="View on GitHub"
+             style="margin-right: 8px; text-decoration: none;">
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+            </svg>
+          </a>
           <input
             type="file"
             id="importFile"
@@ -475,90 +480,6 @@
         <div class="modal-footer">
           <button class="btn btn-primary" onclick="closeDataConsistencyInfo()">
             I Understand
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- App Guide Modal -->
-    <div id="appGuideModal" class="modal">
-      <div class="modal-content info-modal">
-        <div class="modal-header">
-          <h2>📖 App Guide & Philosophy</h2>
-          <button class="close-btn" onclick="closeAppGuide()">&times;</button>
-        </div>
-        <div class="modal-body">
-          <div class="info-section" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1)); padding: 16px; border-radius: 8px; border-left: 4px solid var(--primary-color);">
-            <h3>📲 Install as Native App (Highly Recommended!)</h3>
-            <p style="color: var(--text-secondary); line-height: 1.6; margin: 10px 0;">
-              Get the best experience by installing this app on your device:
-            </p>
-            <ul class="info-benefits">
-              <li>⚡ <strong>Lightning fast</strong> - Loads instantly, no browser overhead</li>
-              <li>📱 <strong>Works like a native app</strong> - Full-screen, no browser UI clutter</li>
-              <li>💾 <strong>Ultra lightweight</strong> - Under 1 MB total size (yes, really!)</li>
-              <li>🔒 <strong>More secure</strong> - Isolated from browser cookies and trackers</li>
-              <li>📴 <strong>True offline</strong> - Works perfectly without internet, forever</li>
-              <li>🎯 <strong>Quick access</strong> - Launch from home screen like any app</li>
-            </ul>
-            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px; font-style: italic;">
-              💡 <strong>Pro tip:</strong> Click the "📲 Install" button in the header (if available) or use your browser's "Add to Home Screen" option. Takes 5 seconds, worth it forever!
-            </p>
-          </div>
-          
-          <div class="info-section">
-            <h3>✅ What This App IS For:</h3>
-            <ul class="info-benefits">
-              <li>💳 <strong>Fixed monthly expenses</strong> - EMIs, loans, rent, subscriptions</li>
-              <li>📊 <strong>One clear number</strong> - "How much MUST I pay this month?"</li>
-              <li>🎯 <strong>Debt freedom tracking</strong> - See when your last EMI ends</li>
-              <li>🔒 <strong>Payment certainty</strong> - Seal mode locks confirmed payments</li>
-              <li>🗃️ <strong>Auto-archive</strong> - Completed EMIs move out automatically</li>
-            </ul>
-          </div>
-          
-          <div class="info-section">
-            <h3>❌ What This App is NOT For:</h3>
-            <ul class="info-restrictions">
-              <li>❌ <strong>Daily expense tracking</strong> - Not for coffee or groceries</li>
-              <li>❌ <strong>Per-transaction budgeting</strong> - Not a detailed budget tool</li>
-              <li>❌ <strong>Income tracking</strong> - Only tracks mandatory outflows</li>
-              <li>❌ <strong>Push notifications</strong> - We chose privacy over reminders</li>
-              <li>❌ <strong>Automatic sync</strong> - No cloud means manual export/import</li>
-            </ul>
-          </div>
-          
-          <div class="info-section">
-            <h3>🚀 Quick Start Guide:</h3>
-            <ol class="info-steps">
-              <li><strong>Add Items</strong> - Click + button, enter EMI/expense details</li>
-              <li><strong>Check Off Payments</strong> - Mark items as paid throughout the month</li>
-              <li><strong>Seal for Peace</strong> - Lock confirmed payments to prevent accidents</li>
-              <li><strong>Auto-Reset</strong> - Everything resets on the 1st of next month</li>
-              <li><strong>Export Regularly</strong> - Backup your data monthly (privacy = responsibility)</li>
-            </ol>
-          </div>
-          
-          <div class="info-section">
-            <h3>💡 The Core Philosophy:</h3>
-            <p style="color: var(--text-secondary); line-height: 1.6; margin: 0;">
-              This app answers <strong>one question</strong>: "What MUST I pay this month?"
-              <br><br>
-              <strong>Not:</strong> "Where did my money go?"<br>
-              <strong>Not:</strong> "Should I buy this coffee?"<br>
-              <strong>But:</strong> "These are my mandatory payments. Everything else is optional."
-              <br><br>
-              <strong>Simplicity is the #1 priority.</strong> Every feature serves this single goal.
-            </p>
-          </div>
-          
-          <div class="info-caution">
-            <p><strong>💚 Simple. Private. Focused. That's the whole point.</strong></p>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-primary" onclick="closeAppGuide()">
-            Got It!
           </button>
         </div>
       </div>
