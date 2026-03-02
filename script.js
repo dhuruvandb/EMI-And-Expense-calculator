@@ -21,6 +21,8 @@ function getCurrentMonth() {
 
 // ========== PERIODIC PAYMENT HELPERS ==========
 
+const AVG_DAYS_PER_MONTH = 30.44; // Average days per calendar month
+
 // Convert frequency preset to days
 function frequencyToDays(frequency, customValue, customUnit) {
   switch (frequency) {
@@ -29,7 +31,7 @@ function frequencyToDays(frequency, customValue, customUnit) {
     case 'halfyearly': return 180;
     case 'yearly':     return 365;
     case 'custom':
-      if (customUnit === 'months') return Math.round(parseFloat(customValue) * 30.44);
+      if (customUnit === 'months') return Math.round(parseFloat(customValue) * AVG_DAYS_PER_MONTH);
       if (customUnit === 'days')   return parseInt(customValue);
       return null;
     default: return null;
@@ -1092,6 +1094,10 @@ function groupEMIs(emis, groupBy) {
         groupKey = emi.type === "emi" ? "💳 EMI" : "🏠 Constant Expense";
         break;
       case "dueDateRange":
+        if (emi.paymentFrequency && emi.paymentFrequency !== 'monthly') {
+          groupKey = "🔄 Periodic";
+          break;
+        }
         const day = emi.dueDate;
         if (day <= 10) groupKey = "📅 Early Month (1-10)";
         else if (day <= 20) groupKey = "📅 Mid Month (11-20)";
@@ -1121,6 +1127,10 @@ function groupEMIs(emis, groupBy) {
 function calculateGroupTotal(groupItems) {
   const currentMonth = getCurrentMonth();
   return groupItems.reduce((sum, emi) => {
+    // Skip periodic items from group total (shown separately)
+    if (emi.paymentFrequency && emi.paymentFrequency !== 'monthly') {
+      return sum;
+    }
     // Skip if paid this month
     if (emi.isPaidThisMonth && emi.currentMonth === currentMonth) {
       return sum;
@@ -1544,7 +1554,7 @@ document.getElementById("emiForm").addEventListener("submit", function (e) {
     emiCategory: emiCategory,
     emiName: document.getElementById("emiName").value,
     emiAmount: parseFloat(document.getElementById("emiAmount").value),
-    dueDate: selectedFrequency === 'monthly' ? parseInt(document.getElementById("dueDate").value) : 0,
+    dueDate: selectedFrequency === 'monthly' ? parseInt(document.getElementById("dueDate").value) : null,
     emiEndDate: endDateValue || null,
     totalAmount:
       itemType === "emi" && document.getElementById("totalAmount").value
