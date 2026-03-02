@@ -7,6 +7,8 @@ const SEAL_STATE_KEY = "emi_tracker_seal_state";
 // Global state
 let searchQuery = "";
 let showArchived = false;
+let showPeriodic = false;
+let periodicFreqFilter = 'all'; // 'all' | 'quarterly' | 'halfyearly' | 'yearly' | 'custom'
 let isSealCountdownActive = false;
 let sealCountdownTimer = null;
 let undoGracePeriodTimer = null;
@@ -744,19 +746,61 @@ function autoArchiveCompleted() {
   }
 }
 
-// Toggle archived view
-function toggleArchivedView() {
-  showArchived = !showArchived;
-  const toggleText = document.getElementById("viewToggleText");
-  const tableWrapper = document.getElementById("tableWrapper");
+// Switch between Monthly, Periodic, and Archive views
+function switchView(view) {
+  // Reset all states
+  showArchived = false;
+  showPeriodic = false;
 
-  toggleText.textContent = showArchived ? "📋 View Active" : "📦 View Archive";
+  // Set active state
+  if (view === 'archive') showArchived = true;
+  if (view === 'periodic') showPeriodic = true;
 
-  if (showArchived) {
-    tableWrapper.classList.add("archive-mode");
+  // Update button active states
+  document.getElementById('viewBtnMonthly').classList.toggle('active', view === 'monthly');
+  document.getElementById('viewBtnPeriodic').classList.toggle('active', view === 'periodic');
+  document.getElementById('viewBtnArchive').classList.toggle('active', view === 'archive');
+
+  // Show/hide frequency filter (only visible in Periodic view)
+  const freqFilter = document.getElementById('periodicFreqFilter');
+  if (freqFilter) freqFilter.style.display = view === 'periodic' ? 'flex' : 'none';
+
+  // Show/hide archive mode styling
+  const tableWrapper = document.getElementById('tableWrapper');
+  if (view === 'archive') {
+    tableWrapper.classList.add('archive-mode');
   } else {
-    tableWrapper.classList.remove("archive-mode");
+    tableWrapper.classList.remove('archive-mode');
   }
+
+  // Restore monthly summary labels when switching to monthly view
+  if (view === 'monthly') {
+    const totalEMIsCard = document.getElementById('totalEMIs');
+    if (totalEMIsCard) totalEMIsCard.closest('.summary-card').querySelector('.summary-label').textContent = 'Total Items';
+    const totalMonthlyCard = document.getElementById('totalMonthly');
+    if (totalMonthlyCard) totalMonthlyCard.closest('.summary-card').querySelector('.summary-label').textContent = 'Monthly Payment';
+    const totalDebtCard = document.getElementById('totalDebt');
+    if (totalDebtCard) totalDebtCard.closest('.summary-card').querySelector('.summary-label').textContent = 'Total Debt';
+    const freedomCard = document.getElementById('freedomCard');
+    if (freedomCard) freedomCard.style.display = '';
+  }
+
+  renderTable();
+}
+
+// Toggle archived view (kept for backward compatibility)
+function toggleArchivedView() {
+  switchView(showArchived ? 'monthly' : 'archive');
+}
+
+// Set periodic frequency filter
+function setPeriodicFilter(freq) {
+  periodicFreqFilter = freq;
+
+  // Update active button state
+  document.querySelectorAll('.freq-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.freq === freq);
+  });
 
   renderTable();
 }
@@ -1151,7 +1195,27 @@ function calculateGroupTotal(groupItems) {
 function renderTable() {
   autoArchiveCompleted(); // Auto-archive before rendering
 
-  let emis = showArchived ? loadArchived() : loadEMIs();
+  let emis;
+
+  if (showArchived) {
+    // ARCHIVE VIEW — existing behavior, untouched
+    emis = loadArchived();
+  } else if (showPeriodic) {
+    // PERIODIC VIEW — load only periodic items
+    emis = loadEMIs().filter(emi =>
+      emi.paymentFrequency && emi.paymentFrequency !== 'monthly'
+    );
+    // Apply frequency filter
+    if (periodicFreqFilter !== 'all') {
+      emis = emis.filter(emi => emi.paymentFrequency === periodicFreqFilter);
+    }
+  } else {
+    // MONTHLY VIEW (default) — load only monthly items
+    emis = loadEMIs().filter(emi =>
+      !emi.paymentFrequency || emi.paymentFrequency === 'monthly'
+    );
+  }
+
   const tbody = document.getElementById("emiTableBody");
   const emptyState = document.getElementById("emptyState");
 
@@ -1161,8 +1225,25 @@ function renderTable() {
   if (emis.length === 0) {
     tbody.innerHTML = "";
     emptyState.style.display = "block";
-    if (!showArchived) {
-      updateSummary(loadEMIs());
+    // Update empty state messages based on view
+    const emptyStateIcon = document.getElementById('emptyStateIcon');
+    const emptyStateTitle = document.getElementById('emptyStateTitle');
+    const emptyStateDesc = document.getElementById('emptyStateDesc');
+    if (showPeriodic) {
+      if (emptyStateIcon) emptyStateIcon.textContent = '🔄';
+      if (emptyStateTitle) emptyStateTitle.textContent = periodicFreqFilter !== 'all'
+        ? `No ${getFrequencyLabel(periodicFreqFilter, null /* frequencyDays not needed for preset labels */)} items`
+        : 'No Periodic Payments';
+      if (emptyStateDesc) emptyStateDesc.textContent = 'Add an item with a non-monthly frequency to track it here';
+    } else if (showArchived) {
+      if (emptyStateIcon) emptyStateIcon.textContent = '📦';
+      if (emptyStateTitle) emptyStateTitle.textContent = 'No Archived Items';
+      if (emptyStateDesc) emptyStateDesc.textContent = 'Completed items will appear here';
+    } else {
+      if (emptyStateIcon) emptyStateIcon.textContent = '📋';
+      if (emptyStateTitle) emptyStateTitle.textContent = 'No Items Added Yet';
+      if (emptyStateDesc) emptyStateDesc.textContent = 'Tap the + button below to add your first EMI or expense';
+      updateSummary(loadEMIs().filter(emi => !emi.paymentFrequency || emi.paymentFrequency === 'monthly'));
     }
     return;
   }
@@ -1206,8 +1287,10 @@ function renderTable() {
 
   tbody.innerHTML = html;
   if (!showArchived) {
-    updateSummary(loadEMIs());
-    renderFreedomTimeline(); // Update freedom timeline when table updates
+    updateSummary(loadEMIs().filter(emi => !emi.paymentFrequency || emi.paymentFrequency === 'monthly'));
+    if (!showPeriodic) {
+      renderFreedomTimeline(); // Update freedom timeline only in monthly view
+    }
   }
   
   // Update sealed banner state based on current items
@@ -1333,21 +1416,23 @@ function getDaySuffix(day) {
 
 // Update summary cards
 function updateSummary(emis) {
+  if (showPeriodic) {
+    updatePeriodicSummary();
+    return;
+  }
+  if (showArchived) {
+    return; // existing archive behavior — no summary update
+  }
+
+  // MONTHLY VIEW — existing logic completely unchanged
   const currentMonth = getCurrentMonth();
   const totalEMIs = emis.length;
 
   let totalMonthly = 0;
   let debtAmount = 0;
   let savingsAmount = 0;
-  let periodicItems = []; // Collect periodic items separately
 
   emis.forEach((emi) => {
-    // PERIODIC ITEMS — collect separately, don't add to monthly total
-    if (emi.paymentFrequency && emi.paymentFrequency !== 'monthly') {
-      periodicItems.push(emi);
-      return;
-    }
-
     // MONTHLY ITEMS — existing logic completely unchanged
     // Skip if paid this month
     if (emi.isPaidThisMonth && emi.currentMonth === currentMonth) {
@@ -1393,9 +1478,42 @@ function updateSummary(emis) {
     debtAmount
   )} | Savings: ${formatCurrency(savingsAmount)}`;
   document.getElementById("totalDebt").textContent = formatCurrency(totalDebt);
+}
 
-  // Render periodic payments section
-  renderPeriodicSummary(periodicItems);
+// Update summary cards for Periodic view
+function updatePeriodicSummary() {
+  const allPeriodic = loadEMIs().filter(emi =>
+    emi.paymentFrequency && emi.paymentFrequency !== 'monthly'
+  );
+
+  const dueNow = allPeriodic.filter(emi => isPeriodicItemDue(emi) && !isPaidInCurrentCycle(emi));
+  const dueNowTotal = dueNow.reduce((sum, emi) => sum + parseFloat(emi.emiAmount || 0), 0);
+
+  // Find next upcoming due date
+  const upcoming = allPeriodic
+    .filter(emi => !isPeriodicItemDue(emi))
+    .sort((a, b) => new Date(a.nextDueDate) - new Date(b.nextDueDate));
+  const nextUpcoming = upcoming[0];
+
+  document.getElementById('totalEMIs').textContent = allPeriodic.length;
+  document.getElementById('totalMonthly').textContent = dueNow.length > 0
+    ? formatCurrency(dueNowTotal)
+    : '₹0';
+  document.getElementById('monthlyBreakdown').innerHTML = dueNow.length > 0
+    ? `${dueNow.length} payment${dueNow.length > 1 ? 's' : ''} due now`
+    : 'Nothing due right now';
+  document.getElementById('totalDebt').textContent = nextUpcoming
+    ? formatDate(nextUpcoming.nextDueDate)
+    : '—';
+
+  // Update labels for periodic context
+  document.getElementById('totalEMIs').closest('.summary-card').querySelector('.summary-label').textContent = 'Periodic Items';
+  document.getElementById('totalMonthly').closest('.summary-card').querySelector('.summary-label').textContent = 'Due Now';
+  document.getElementById('totalDebt').closest('.summary-card').querySelector('.summary-label').textContent = 'Next Due';
+
+  // Hide freedom timeline in periodic view
+  const freedomCard = document.getElementById('freedomCard');
+  if (freedomCard) freedomCard.style.display = 'none';
 }
 
 // Open modal
