@@ -19,6 +19,191 @@ function getCurrentMonth() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 }
 
+// ========== PERIODIC PAYMENT HELPERS ==========
+
+// Convert frequency preset to days
+function frequencyToDays(frequency, customValue, customUnit) {
+  switch (frequency) {
+    case 'monthly':    return null;
+    case 'quarterly':  return 90;
+    case 'halfyearly': return 180;
+    case 'yearly':     return 365;
+    case 'custom':
+      if (customUnit === 'months') return Math.round(parseFloat(customValue) * 30.44);
+      if (customUnit === 'days')   return parseInt(customValue);
+      return null;
+    default: return null;
+  }
+}
+
+// Get human-readable frequency label
+function getFrequencyLabel(frequency, frequencyDays) {
+  switch (frequency) {
+    case 'monthly':    return 'Monthly';
+    case 'quarterly':  return 'Every 3 months';
+    case 'halfyearly': return 'Every 6 months';
+    case 'yearly':     return 'Yearly';
+    case 'custom':     return `Every ${frequencyDays} days`;
+    default:           return 'Monthly';
+  }
+}
+
+// Calculate next due date
+function calculateNextDueDate(fromDateStr, frequencyDays) {
+  const date = new Date(fromDateStr);
+  date.setDate(date.getDate() + frequencyDays);
+  return date.toISOString().split('T')[0];
+}
+
+// Check if a periodic item is currently due (nextDueDate <= today)
+function isPeriodicItemDue(emi) {
+  if (!emi.paymentFrequency || emi.paymentFrequency === 'monthly') return true;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const nextDue = new Date(emi.nextDueDate);
+  nextDue.setHours(0, 0, 0, 0);
+  return today >= nextDue;
+}
+
+// Check if periodic item is paid in its current cycle
+function isPaidInCurrentCycle(emi) {
+  if (!emi.paymentFrequency || emi.paymentFrequency === 'monthly') {
+    return emi.isPaidThisMonth && emi.currentMonth === getCurrentMonth();
+  }
+  return emi.isPaidThisCycle === true && emi.currentCycleId === emi.nextDueDate;
+}
+
+// Toggle visibility of frequency-related form fields
+function toggleFrequencyFields() {
+  const selected = document.querySelector('input[name="paymentFrequency"]:checked');
+  if (!selected) return;
+  const freq = selected.value;
+  const customFields = document.getElementById('customFrequencyFields');
+  const cycleStartGroup = document.getElementById('cycleStartGroup');
+  const dueDateGroup = document.getElementById('dueDateGroup');
+  const amountLabel = document.getElementById('amountLabel');
+
+  if (freq === 'monthly') {
+    customFields.style.display = 'none';
+    cycleStartGroup.style.display = 'none';
+    dueDateGroup.style.display = 'block';
+    // Re-enable dueDate required validation
+    const dueDateInput = document.getElementById('dueDate');
+    if (dueDateInput) dueDateInput.required = true;
+    if (amountLabel) amountLabel.innerHTML = 'Monthly Amount (₹) <span class="required">*</span>';
+  } else {
+    customFields.style.display = freq === 'custom' ? 'block' : 'none';
+    cycleStartGroup.style.display = 'block';
+    dueDateGroup.style.display = 'none';
+    // Disable dueDate required validation since it's hidden
+    const dueDateInput = document.getElementById('dueDate');
+    if (dueDateInput) { dueDateInput.required = false; dueDateInput.value = ''; }
+    if (amountLabel) amountLabel.innerHTML = 'Payment Amount (₹) <span class="required">*</span>';
+  }
+
+  // Update cycle preview
+  updateCyclePreview();
+}
+
+// Update the cycle preview text based on selected frequency and start date
+function updateCyclePreview() {
+  const selected = document.querySelector('input[name="paymentFrequency"]:checked');
+  if (!selected || selected.value === 'monthly') return;
+
+  const freq = selected.value;
+  const cycleStartDateVal = document.getElementById('cycleStartDate').value;
+  const preview = document.getElementById('cyclePreview');
+
+  if (!cycleStartDateVal || !preview) return;
+
+  const customValue = document.getElementById('customFreqValue').value;
+  const customUnitEl = document.querySelector('input[name="customFreqUnit"]:checked');
+  const customUnit = customUnitEl ? customUnitEl.value : 'days';
+  const days = frequencyToDays(freq, customValue, customUnit);
+
+  if (days && days > 0) {
+    const nextDate = calculateNextDueDate(cycleStartDateVal, days);
+    const formatted = formatDate(nextDate);
+    preview.textContent = `Next due: ${formatted}`;
+    preview.style.display = 'block';
+  } else {
+    preview.textContent = '';
+    preview.style.display = 'none';
+  }
+}
+
+// Render the periodic payments summary section
+function renderPeriodicSummary(periodicItems) {
+  const section = document.getElementById('periodicPaymentsSection');
+  if (!section) return;
+  if (!periodicItems || periodicItems.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+
+  const dueNow = periodicItems.filter(emi => isPeriodicItemDue(emi) && !isPaidInCurrentCycle(emi));
+  const paidCycle = periodicItems.filter(emi => isPaidInCurrentCycle(emi));
+  const upcoming = periodicItems.filter(emi => !isPeriodicItemDue(emi));
+
+  const dueTotal = dueNow.reduce((s, e) => s + parseFloat(e.emiAmount || 0), 0);
+
+  let html = '';
+
+  if (dueNow.length > 0) {
+    html += `<div class="periodic-group-label">Due Now</div>`;
+    dueNow.forEach(emi => {
+      const freqLabel = getFrequencyLabel(emi.paymentFrequency, emi.frequencyDays);
+      const nextDueFormatted = formatDate(emi.nextDueDate);
+      html += `<div class="periodic-item due-now">
+        <div class="periodic-item-info">
+          <span class="periodic-item-name">${emi.emiName}</span>
+          <span class="freq-badge">${freqLabel}</span>
+          <span class="periodic-item-due">Due: ${nextDueFormatted}</span>
+        </div>
+        <div class="periodic-item-amount">${formatCurrency(emi.emiAmount)}</div>
+        <span class="due-now-badge">Due!</span>
+      </div>`;
+    });
+    html += `<div class="periodic-due-total">Total due now: ${formatCurrency(dueTotal)}</div>`;
+  }
+
+  if (paidCycle.length > 0) {
+    html += `<div class="periodic-group-label">Paid This Cycle</div>`;
+    paidCycle.forEach(emi => {
+      const freqLabel = getFrequencyLabel(emi.paymentFrequency, emi.frequencyDays);
+      const nextDueFormatted = formatDate(emi.nextDueDate);
+      html += `<div class="periodic-item paid-cycle">
+        <div class="periodic-item-info">
+          <span class="periodic-item-name">${emi.emiName}</span>
+          <span class="freq-badge">${freqLabel}</span>
+          <span class="periodic-item-due">Cycle ends: ${nextDueFormatted}</span>
+        </div>
+        <div class="periodic-item-amount">${formatCurrency(emi.emiAmount)}</div>
+        <span class="paid-badge">✓ Paid</span>
+      </div>`;
+    });
+  }
+
+  if (upcoming.length > 0) {
+    html += `<div class="periodic-group-label">Upcoming</div>`;
+    upcoming.forEach(emi => {
+      const freqLabel = getFrequencyLabel(emi.paymentFrequency, emi.frequencyDays);
+      const nextDueFormatted = formatDate(emi.nextDueDate);
+      html += `<div class="periodic-item upcoming">
+        <div class="periodic-item-info">
+          <span class="periodic-item-name">${emi.emiName}</span>
+          <span class="freq-badge">${freqLabel}</span>
+          <span class="periodic-item-due">Next due: ${nextDueFormatted}</span>
+        </div>
+        <div class="periodic-item-amount">${formatCurrency(emi.emiAmount)}</div>
+      </div>`;
+    });
+  }
+
+  document.getElementById('periodicPaymentsList').innerHTML = html;
+}
+
 // Toggle form fields based on type selection
 function toggleFormFields() {
   const isEMI = document.getElementById("typeEMI").checked;
@@ -215,9 +400,13 @@ function checkSealButtonState() {
   }
   
   // Check if at least one UNSEALED item is paid
-  const unsealedPaidItems = unsealedItems.filter(emi =>
-    emi.isPaidThisMonth && emi.currentMonth === currentMonth
-  );
+  const unsealedPaidItems = unsealedItems.filter(emi => {
+    if (!emi.paymentFrequency || emi.paymentFrequency === 'monthly') {
+      return emi.isPaidThisMonth && emi.currentMonth === currentMonth;
+    }
+    // Periodic: paid this cycle AND currently due
+    return emi.isPaidThisCycle && isPeriodicItemDue(emi);
+  });
   
   if (unsealedPaidItems.length === 0) {
     return { enabled: false, reason: "Check at least one payment to enable" };
@@ -357,11 +546,17 @@ function executeSeal() {
   
   // Add new items to sealed list (only unsealed AND PAID ones)
   const newItemsToSeal = emis
-    .filter(emi => 
-      !wasItemSealed(emi) && 
-      emi.isPaidThisMonth && 
-      emi.currentMonth === currentMonth
-    )
+    .filter(emi => {
+      if (!wasItemSealed(emi)) {
+        // Monthly items
+        if (!emi.paymentFrequency || emi.paymentFrequency === 'monthly') {
+          return emi.isPaidThisMonth && emi.currentMonth === currentMonth;
+        }
+        // Periodic items: paid this cycle AND currently due
+        return emi.isPaidThisCycle && isPeriodicItemDue(emi);
+      }
+      return false;
+    })
     .map(emi => ({
       emiName: emi.emiName,
       emiAmount: emi.emiAmount,
@@ -576,7 +771,29 @@ function markAsPaid(index) {
   if (wasItemSealed(emis[index])) {
     return; // Can't mark a sealed item
   }
-  
+
+  const emi = emis[index];
+
+  // PERIODIC ITEM
+  if (emi.paymentFrequency && emi.paymentFrequency !== 'monthly') {
+    if (!emi.isPaidThisCycle) {
+      emis[index].isPaidThisCycle = true;
+      emis[index].currentCycleId = emi.nextDueDate;
+      saveEMIs(emis);
+
+      const toast = document.getElementById("paymentToast");
+      const category = emi.emiCategory || "expense";
+      toast.textContent = category === "savings" ? "Thanks for Saving!  💰" : "Thanks for paying! 🎉";
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3000);
+
+      checkAllPaidAndCelebrate();
+      renderTable();
+    }
+    return;
+  }
+
+  // MONTHLY ITEM — existing logic unchanged
   const currentMonth = getCurrentMonth();
 
   if (
@@ -634,9 +851,17 @@ function checkAllPaidAndCelebrate() {
   if (unsealedItems.length === 0) return; // All items already sealed
 
   // Count paid items among unsealed items
-  const paidItems = unsealedItems.filter(
-    (emi) => emi.isPaidThisMonth && emi.currentMonth === currentMonth
-  );
+  const paidItems = unsealedItems.filter((emi) => {
+    // Monthly
+    if (!emi.paymentFrequency || emi.paymentFrequency === 'monthly') {
+      return emi.isPaidThisMonth && emi.currentMonth === currentMonth;
+    }
+    // Periodic: only count if currently due
+    if (isPeriodicItemDue(emi)) {
+      return isPaidInCurrentCycle(emi);
+    }
+    return true; // Not yet due = doesn't block celebration
+  });
 
   // All unsealed items paid?
   if (paidItems.length === unsealedItems.length) {
@@ -659,6 +884,18 @@ function unmarkAsPaid(index) {
   if (wasItemSealed(emis[index])) {
     return; // Can't unmark a sealed item
   }
+
+  const emi = emis[index];
+
+  // PERIODIC ITEM
+  if (emi.paymentFrequency && emi.paymentFrequency !== 'monthly') {
+    emis[index].isPaidThisCycle = false;
+    saveEMIs(emis);
+    renderTable();
+    return;
+  }
+
+  // MONTHLY ITEM — existing logic unchanged
   emis[index].isPaidThisMonth = false;
   emis[index].currentMonth = "";
   saveEMIs(emis);
@@ -980,7 +1217,7 @@ function generateRowHTML(emi, index) {
   const isEMI = emi.type === "emi";
   const category = emi.emiCategory || "expense";
   const currentMonth = getCurrentMonth();
-  const isPaid = emi.isPaidThisMonth && emi.currentMonth === currentMonth;
+  const isPaid = isPaidInCurrentCycle(emi);
   const periodLeft = calculatePeriodLeft(emi.emiEndDate, emi.type, category);
   const sealed = wasItemSealed(emi); // Check if THIS specific item was sealed
 
@@ -1028,15 +1265,25 @@ function generateRowHTML(emi, index) {
             </div>
           </td>`;
 
+  // Due date display — monthly or periodic
+  let dueDateDisplay;
+  if (!emi.paymentFrequency || emi.paymentFrequency === 'monthly') {
+    dueDateDisplay = `<strong>${emi.dueDate}${getDaySuffix(emi.dueDate)}</strong> of every month`;
+  } else {
+    const freqLabel = getFrequencyLabel(emi.paymentFrequency, emi.frequencyDays);
+    const isDue = isPeriodicItemDue(emi);
+    const nextDueFormatted = formatDate(emi.nextDueDate);
+    dueDateDisplay = `<strong>${nextDueFormatted}</strong><br><span class="freq-badge">${freqLabel}</span>`;
+    if (isDue) dueDateDisplay += ` <span class="due-now-badge">Due!</span>`;
+  }
+
   return `
           <tr class="${rowClass}">
             ${checkboxHtml}
             <td><span style="font-size: 18px;" title="${typeText}">${typeIcon}</span></td>
             <td><strong>${emi.emiName}</strong></td>
             <td class="amount">${formatCurrency(emi.emiAmount)}</td>
-            <td class="date"><strong>${emi.dueDate}${getDaySuffix(
-    emi.dueDate
-  )}</strong> of every month</td>
+            <td class="date">${dueDateDisplay}</td>
             <td class="date"><strong>${
               emi.emiEndDate
                 ? formatDate(emi.emiEndDate)
@@ -1082,8 +1329,16 @@ function updateSummary(emis) {
   let totalMonthly = 0;
   let debtAmount = 0;
   let savingsAmount = 0;
+  let periodicItems = []; // Collect periodic items separately
 
   emis.forEach((emi) => {
+    // PERIODIC ITEMS — collect separately, don't add to monthly total
+    if (emi.paymentFrequency && emi.paymentFrequency !== 'monthly') {
+      periodicItems.push(emi);
+      return;
+    }
+
+    // MONTHLY ITEMS — existing logic completely unchanged
     // Skip if paid this month
     if (emi.isPaidThisMonth && emi.currentMonth === currentMonth) {
       return;
@@ -1128,6 +1383,9 @@ function updateSummary(emis) {
     debtAmount
   )} | Savings: ${formatCurrency(savingsAmount)}`;
   document.getElementById("totalDebt").textContent = formatCurrency(totalDebt);
+
+  // Render periodic payments section
+  renderPeriodicSummary(periodicItems);
 }
 
 // Open modal
@@ -1146,6 +1404,10 @@ function openModal(editIndex = null) {
 
   // Reset to EMI by default
   document.getElementById("typeEMI").checked = true;
+  // Reset frequency to monthly by default
+  const monthlyRadio = document.querySelector('input[name="paymentFrequency"][value="monthly"]');
+  if (monthlyRadio) monthlyRadio.checked = true;
+  toggleFrequencyFields();
   toggleFormFields();
 
   if (editIndex !== null) {
@@ -1172,6 +1434,21 @@ function openModal(editIndex = null) {
     document.getElementById("principalPaid").value = emi.principalPaid || "";
     document.getElementById("interestPaid").value = emi.interestPaid || "";
     document.getElementById("editIndex").value = editIndex;
+
+    // Populate frequency fields
+    const freq = emi.paymentFrequency || 'monthly';
+    const freqRadio = document.querySelector(`input[name="paymentFrequency"][value="${freq}"]`);
+    if (freqRadio) freqRadio.checked = true;
+
+    if (freq === 'custom' && emi.frequencyDays) {
+      document.getElementById('customFreqValue').value = emi.frequencyDays;
+      const daysRadio = document.querySelector('input[name="customFreqUnit"][value="days"]');
+      if (daysRadio) daysRadio.checked = true;
+    }
+    if (freq !== 'monthly') {
+      document.getElementById('cycleStartDate').value = emi.cycleStartDate || '';
+    }
+    toggleFrequencyFields();
 
     modalTitle.textContent = "Edit Item";
     submitBtn.textContent = "Update Item";
@@ -1236,12 +1513,38 @@ document.getElementById("emiForm").addEventListener("submit", function (e) {
   const endDateValue = document.getElementById("emiEndDate").value;
   const emiCategory = document.getElementById("emiCategory").value;
 
+  // Read frequency fields
+  const selectedFrequency = (document.querySelector('input[name="paymentFrequency"]:checked') || {}).value || 'monthly';
+  let frequencyDays = null;
+  let cycleStartDate = null;
+  let nextDueDate = null;
+
+  if (selectedFrequency !== 'monthly') {
+    const customValue = document.getElementById('customFreqValue').value;
+    const customUnitEl = document.querySelector('input[name="customFreqUnit"]:checked');
+    const customUnit = customUnitEl ? customUnitEl.value : 'days';
+    frequencyDays = frequencyToDays(selectedFrequency, customValue, customUnit);
+    cycleStartDate = document.getElementById('cycleStartDate').value;
+
+    // Validate required fields for periodic items
+    if (!cycleStartDate) {
+      alert('Please enter the First Payment Date for periodic items.');
+      return;
+    }
+    if (selectedFrequency === 'custom' && (!customValue || parseInt(customValue) < 1)) {
+      alert('Please enter a valid custom frequency (at least 1).');
+      return;
+    }
+
+    nextDueDate = calculateNextDueDate(cycleStartDate, frequencyDays);
+  }
+
   const emiData = {
     type: itemType,
     emiCategory: emiCategory,
     emiName: document.getElementById("emiName").value,
     emiAmount: parseFloat(document.getElementById("emiAmount").value),
-    dueDate: parseInt(document.getElementById("dueDate").value),
+    dueDate: selectedFrequency === 'monthly' ? parseInt(document.getElementById("dueDate").value) : 0,
     emiEndDate: endDateValue || null,
     totalAmount:
       itemType === "emi" && document.getElementById("totalAmount").value
@@ -1257,6 +1560,13 @@ document.getElementById("emiForm").addEventListener("submit", function (e) {
         : null,
     isPaidThisMonth: false,
     currentMonth: "",
+    // Frequency fields (undefined/null for monthly = existing behavior)
+    paymentFrequency: selectedFrequency,
+    frequencyDays: frequencyDays,
+    cycleStartDate: cycleStartDate,
+    nextDueDate: nextDueDate,
+    currentCycleId: nextDueDate,
+    isPaidThisCycle: false,
   };
 
   const emis = loadEMIs();
@@ -1267,6 +1577,16 @@ document.getElementById("emiForm").addEventListener("submit", function (e) {
     const oldEmi = emis[parseInt(editIndex)];
     emiData.isPaidThisMonth = oldEmi.isPaidThisMonth || false;
     emiData.currentMonth = oldEmi.currentMonth || "";
+    // Preserve periodic payment status if frequency unchanged
+    if (selectedFrequency !== 'monthly') {
+      emiData.isPaidThisCycle = oldEmi.isPaidThisCycle || false;
+      emiData.currentCycleId = oldEmi.currentCycleId || nextDueDate;
+      // Keep nextDueDate from old item if cycle start didn't change
+      if (oldEmi.cycleStartDate === cycleStartDate && oldEmi.frequencyDays === frequencyDays) {
+        emiData.nextDueDate = oldEmi.nextDueDate || nextDueDate;
+        emiData.currentCycleId = oldEmi.currentCycleId || nextDueDate;
+      }
+    }
     emis[parseInt(editIndex)] = emiData;
   } else {
     emis.push(emiData);
@@ -1376,13 +1696,34 @@ function initSortControls() {
 function resetPaymentStatusIfNewMonth() {
   const emis = loadEMIs();
   const currentMonth = getCurrentMonth();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   let hasChanges = false;
 
   emis.forEach((emi) => {
-    if (emi.isPaidThisMonth && emi.currentMonth !== currentMonth) {
-      emi.isPaidThisMonth = false;
-      emi.currentMonth = "";
-      hasChanges = true;
+    // MONTHLY ITEMS — existing logic, completely untouched
+    if (!emi.paymentFrequency || emi.paymentFrequency === 'monthly') {
+      if (emi.isPaidThisMonth && emi.currentMonth !== currentMonth) {
+        emi.isPaidThisMonth = false;
+        emi.currentMonth = "";
+        hasChanges = true;
+      }
+      return;
+    }
+
+    // PERIODIC ITEMS — check if cycle has expired
+    if (emi.isPaidThisCycle && emi.nextDueDate && emi.frequencyDays) {
+      const cycleEndDate = new Date(emi.nextDueDate);
+      cycleEndDate.setDate(cycleEndDate.getDate() + emi.frequencyDays);
+      cycleEndDate.setHours(0, 0, 0, 0);
+
+      if (today >= cycleEndDate) {
+        // Cycle expired → advance to next cycle
+        emi.isPaidThisCycle = false;
+        emi.nextDueDate = calculateNextDueDate(emi.nextDueDate, emi.frequencyDays);
+        emi.currentCycleId = emi.nextDueDate;
+        hasChanges = true;
+      }
     }
   });
 
@@ -1742,22 +2083,35 @@ function importData(event) {
       activeData = activeData.map((item) => {
         if (isSameMonth) {
           // Same month: preserve payment status for this month
-          if (item.isPaidThisMonth && item.currentMonth === currentMonth) {
-            return item;
+          if (!item.paymentFrequency || item.paymentFrequency === 'monthly') {
+            if (item.isPaidThisMonth && item.currentMonth === currentMonth) {
+              return item;
+            } else {
+              return {
+                ...item,
+                isPaidThisMonth: false,
+                currentMonth: "",
+              };
+            }
           } else {
+            // Periodic item: preserve as-is
+            return item;
+          }
+        } else {
+          // Different month: reset all payment status
+          if (!item.paymentFrequency || item.paymentFrequency === 'monthly') {
             return {
               ...item,
               isPaidThisMonth: false,
               currentMonth: "",
             };
+          } else {
+            // Periodic item: reset cycle paid status
+            return {
+              ...item,
+              isPaidThisCycle: false,
+            };
           }
-        } else {
-          // Different month: reset all payment status
-          return {
-            ...item,
-            isPaidThisMonth: false,
-            currentMonth: "",
-          };
         }
       });
 

@@ -111,6 +111,15 @@
       </div>
     </div>
 
+    <!-- Periodic Payments Section (Option C) -->
+    <div id="periodicPaymentsSection" class="periodic-section" style="display: none;">
+      <div class="periodic-header">
+        <span class="periodic-title">🔄 Periodic Payments</span>
+        <span class="periodic-subtitle">Payments on custom schedules</span>
+      </div>
+      <div id="periodicPaymentsList" class="periodic-list"></div>
+    </div>
+
     <!-- Freedom Timeline Modal -->
     <div id="freedomModal" class="modal">
       <div class="modal-content freedom-modal">
@@ -682,7 +691,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" id="dueDateGroup">
                 <label for="dueDate"
                   >Monthly Due Date <span class="required">*</span></label
                 >
@@ -708,6 +717,52 @@
                   style="display: none"
                 >
                   Optional for ongoing expenses like rent
+                </div>
+              </div>
+
+              <!-- Payment Frequency (NEW) -->
+              <div class="form-group" id="frequencyGroup">
+                <label>Payment Frequency</label>
+                <div class="frequency-options">
+                  <label class="freq-option">
+                    <input type="radio" name="paymentFrequency" value="monthly" checked onchange="toggleFrequencyFields()">
+                    <span>Monthly</span>
+                  </label>
+                  <label class="freq-option">
+                    <input type="radio" name="paymentFrequency" value="quarterly" onchange="toggleFrequencyFields()">
+                    <span>Every 3 months</span>
+                  </label>
+                  <label class="freq-option">
+                    <input type="radio" name="paymentFrequency" value="halfyearly" onchange="toggleFrequencyFields()">
+                    <span>Every 6 months</span>
+                  </label>
+                  <label class="freq-option">
+                    <input type="radio" name="paymentFrequency" value="yearly" onchange="toggleFrequencyFields()">
+                    <span>Yearly</span>
+                  </label>
+                  <label class="freq-option">
+                    <input type="radio" name="paymentFrequency" value="custom" onchange="toggleFrequencyFields()">
+                    <span>Custom</span>
+                  </label>
+                </div>
+
+                <!-- Custom frequency input — shown only when "Custom" is selected -->
+                <div id="customFrequencyFields" style="display: none;">
+                  <div class="custom-freq-row">
+                    <span>Every</span>
+                    <input type="number" id="customFreqValue" min="1" max="9999" placeholder="e.g. 231" oninput="updateCyclePreview()">
+                    <label><input type="radio" name="customFreqUnit" value="days" checked onchange="updateCyclePreview()"> days</label>
+                    <label><input type="radio" name="customFreqUnit" value="months" onchange="updateCyclePreview()"> months</label>
+                  </div>
+                  <div class="helper-text">e.g. 231 days, or 18 months (1.5 years)</div>
+                </div>
+
+                <!-- Cycle start date — shown for all non-monthly frequencies -->
+                <div id="cycleStartGroup" style="display: none;">
+                  <label for="cycleStartDate">First Payment Date <span class="required">*</span></label>
+                  <input type="date" id="cycleStartDate" oninput="updateCyclePreview()">
+                  <div class="helper-text">The date of your first/most recent payment for this item</div>
+                  <div class="cycle-preview" id="cyclePreview" style="display: none;"></div>
                 </div>
               </div>
             </div>

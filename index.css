@@ -1970,6 +1970,276 @@ body.dark-mode .freedom-modal-title {
 }
 
 /* ============================================
+   PERIODIC PAYMENTS SECTION
+   ============================================ */
+
+.periodic-section {
+  margin: 0 auto 16px;
+  max-width: 1200px;
+  padding: 0 16px;
+}
+
+.periodic-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px 12px 0 0;
+  border-bottom: none;
+}
+
+.periodic-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.periodic-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.periodic-list {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0 0 12px 12px;
+  padding: 8px 0;
+}
+
+.periodic-group-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  padding: 8px 16px 4px;
+}
+
+.periodic-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.15s;
+}
+
+.periodic-item:last-child {
+  border-bottom: none;
+}
+
+.periodic-item.due-now {
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.periodic-item.upcoming {
+  opacity: 0.65;
+}
+
+.periodic-item.paid-cycle {
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.periodic-item-info {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.periodic-item-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.periodic-item-due {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.periodic-item-amount {
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.periodic-due-total {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ef4444;
+  text-align: right;
+}
+
+/* Frequency badges (used in table and periodic section) */
+.freq-badge {
+  display: inline-block;
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  vertical-align: middle;
+}
+
+.due-now-badge {
+  display: inline-block;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 20px;
+  padding: 2px 7px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.paid-badge {
+  display: inline-block;
+  background: #10b981;
+  color: #fff;
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Frequency options in the form */
+.frequency-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.freq-option {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  user-select: none;
+}
+
+.freq-option input[type="radio"] {
+  accent-color: var(--primary-color);
+  width: 14px;
+  height: 14px;
+}
+
+.freq-option:has(input:checked) {
+  border-color: var(--primary-color);
+  background: rgba(0, 164, 189, 0.08);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.custom-freq-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.custom-freq-row input[type="number"] {
+  width: 90px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+.custom-freq-row label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+#cycleStartGroup {
+  margin-top: 12px;
+}
+
+#cycleStartGroup label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.cycle-preview {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: #6366f1;
+  font-weight: 600;
+  padding: 4px 10px;
+  background: rgba(99, 102, 241, 0.08);
+  border-radius: 8px;
+  display: inline-block;
+}
+
+/* Dark mode for periodic section */
+body.dark-mode .periodic-header,
+body.dark-mode .periodic-list {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+body.dark-mode .periodic-item.due-now {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+body.dark-mode .periodic-item.paid-cycle {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+body.dark-mode .freq-badge {
+  background: rgba(129, 140, 248, 0.18);
+  color: #818cf8;
+}
+
+body.dark-mode .freq-option {
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+body.dark-mode .freq-option:has(input:checked) {
+  border-color: #818cf8;
+  background: rgba(129, 140, 248, 0.12);
+  color: #818cf8;
+}
+
+body.dark-mode .cycle-preview {
+  background: rgba(129, 140, 248, 0.12);
+  color: #818cf8;
+}
+
+body.dark-mode .custom-freq-row input[type="number"] {
+  background: #0f172a;
+  color: #f1f5f9;
+  border-color: var(--border-color);
+}
+
+/* ============================================
    RESPONSIVE DESIGN
    ============================================ */
 
