@@ -34,7 +34,7 @@
 
 ## 📋 **TL;DR**
 
-**Privacy-first, 100% offline expense tracker. No accounts, no cloud. Track EMIs, subscriptions, recurring payments. Auto-archives completed items. Seal Mode locks payments for financial certainty. Freedom Timeline shows your debt-free date. PWA, open source, free.**
+**Privacy-first, 100% offline expense tracker. No accounts, no cloud. Track EMIs, subscriptions, recurring payments with flexible frequencies (monthly, quarterly, half-yearly, yearly, custom). Auto-archives completed items. Seal Mode locks payments for financial certainty. Freedom Timeline shows your debt-free date. PWA, open source, free.**
 
 [Try it Now →](https://dhuruvandb.github.io/EMI-And-Expense-calculator/)
 
@@ -73,10 +73,11 @@ What _doesn't_ change are **constant spendings**:
 
 I was tired of:
 
-- Re-adding the same expenses every month
+- Re-adding the same expenses every month (or quarter/year)
 - Remembering which EMIs are still active
 - Manually excluding EMIs after they end
-- Tracking which payments I've already made this month
+- Tracking which payments I've already made this month/cycle
+- Converting quarterly/yearly expenses to "monthly equivalents" (confusing!)
 - **Accidentally unchecking payments or changing status after I've confirmed everything**
 - **Doubting myself: "Did I really pay this? Should I double-check?"**
 - **The anxiety of accidental touches messing up my payment tracking**
@@ -94,10 +95,11 @@ That's the core problem.
 
 A **simple, privacy-first, offline Progressive Web App** that:
 
-- Tracks only **constant monthly expenses**
+- Tracks **expenses with flexible payment frequencies** (monthly, quarterly, half-yearly, yearly, custom)
 - Automatically **excludes EMIs after their end date**
 - Shows **one clear number**:
   > **Total mandatory monthly payment**
+- **🔄 Periodic Payment Tracking** — Manage non-monthly expenses separately
 - **🎯 Financial Freedom Timeline** — See exactly when you'll be debt-free
 - Works **100% offline**
 - Requires **zero sign-up**
@@ -122,13 +124,15 @@ A lightweight, privacy-first Progressive Web App for tracking EMIs, loans, and r
 
 ## 🎯 **How It Works**
 
-1. **Add Your Items** — EMIs, loans, rent, subscriptions, savings goals
-2. **Mark as Paid** — Check off items as you pay them throughout the month
-3. **🔒 Seal Payments** — Lock checked items to prevent accidental changes
-4. **Auto-Reset** — Payment status automatically resets each month
-5. **Get Celebrated** — Complete all payments? We'll celebrate with you! 🎉
-6. **Auto-Archive** — Completed EMIs automatically move to archive
-7. **Track Your Progress** — Real-time dashboard shows what you owe vs what you're saving
+1. **Add Your Items** — EMIs, loans, rent, subscriptions, savings goals with flexible frequencies
+2. **Choose Frequency** — Monthly, quarterly, half-yearly, yearly, or custom intervals
+3. **Mark as Paid** — Check off items as you pay them throughout the month/cycle
+4. **🔒 Seal Payments** — Lock checked items to prevent accidental changes
+5. **Auto-Reset** — Payment status automatically resets each month or cycle
+6. **Get Celebrated** — Complete all payments? We'll celebrate with you! 🎉
+7. **Auto-Archive** — Completed EMIs automatically move to archive
+8. **Track Your Freedom** — Financial Freedom Timeline shows when you'll be debt-free
+9. **Manage Periodic Payments** — Separate view for quarterly, half-yearly, yearly expenses
 
 ---
 
@@ -197,7 +201,10 @@ webView.loadUrl("file:///android_asset/index.html");
 ### **Core Features**
 
 ✅ Track unlimited EMIs, loans, and recurring expenses  
+✅ **Flexible payment frequencies** — Monthly, quarterly, half-yearly, yearly, custom intervals  
+✅ **3-tab view system** — Monthly, Periodic, and Archive views  
 ✅ **Monthly payment tracking** — Check off items as you pay them  
+✅ **Periodic payment tracking** — Separate cycle-based tracking for non-monthly expenses  
 ✅ **🔒 Seal Mode** — Lock your payments to prevent accidental changes  
 ✅ **🎯 Financial Freedom Timeline** — See your debt-free date and countdown  
 ✅ **Auto-archive system** — Completed EMIs automatically move to archive  
@@ -242,7 +249,58 @@ webView.loadUrl("file:///android_asset/index.html");
 - Visual strikethrough for paid items
 - Smart calculation excludes paid items from monthly total
 
-### **🗃️ Intelligent Archive Management**
+### **� Periodic Payment Tracking — Beyond Monthly**
+
+> **The Problem**: Not all expenses are monthly. Insurance premiums, property taxes, annual subscriptions, quarterly maintenance — real life has varied payment schedules.
+
+**Periodic Payment Tracking gives you flexibility without complexity:**
+
+- ✅ **5 Frequency Options**:
+  - **Monthly** — Traditional monthly tracking (default)
+  - **Quarterly** — Every 3 months (e.g., property tax, quarterly insurance)
+  - **Half-Yearly** — Every 6 months (e.g., car insurance, semi-annual fees)
+  - **Yearly** — Annual payments (e.g., domain renewals, memberships)
+  - **Custom** — Any interval in days or months (e.g., every 45 days, every 2.5 months)
+- ✅ **Separate Periodic View** — 3-tab system: Monthly | Periodic | Archive
+- ✅ **Cycle-Based Tracking** — Each periodic item tracks its own payment cycle
+- ✅ **Next Due Date Calculation** — Automatically calculates when payment is due next
+- ✅ **Smart Due Status**:
+  - **Due Now** — Payment is currently due (highlighted)
+  - **Paid This Cycle** — Payment completed for current cycle
+  - **Upcoming** — Not yet due
+- ✅ **Visual Frequency Badges** — See at a glance: "Every 3 months", "Yearly", "Every 45 days"
+- ✅ **Frequency Filtering** — Filter periodic view by frequency type
+- ✅ **Separate Totals** — Periodic payments don't clutter your monthly budget
+
+**How Periodic Payments Work:**
+
+1. **Add Item** — Choose payment frequency (e.g., "Quarterly")
+2. **Set Cycle Start Date** — When did this cycle begin? (e.g., Jan 1, 2026)
+3. **See Next Due Date** — App calculates: "Next due: Apr 1, 2026"
+4. **Track Payment** — When due date arrives, item shows in "Due Now" section
+5. **Mark as Paid** — Check it off, moves to "Paid This Cycle"
+6. **Auto-Reset** — On next due date, payment status resets automatically
+7. **Separate View** — Switch to Periodic tab to see all non-monthly items
+
+**Real-World Examples:**
+
+- **Car Insurance** — Half-yearly, cycle starts Jun 1 → Next due: Dec 1
+- **Property Tax** — Quarterly, cycle starts Jan 1 → Next due: Apr 1
+- **Domain Renewal** — Yearly, cycle starts Mar 15 → Next due: Mar 15, 2027
+- **Maintenance Fee** — Custom (every 45 days), cycle starts Feb 1 → Next due: Mar 18
+
+**Why This Matters:**
+
+Instead of manually converting quarterly payments to "monthly equivalent" (confusing and inaccurate), track them naturally. See exactly when they're due, pay them, forget them until next cycle.
+
+**Smart Integration:**
+
+- Monthly view shows only monthly items (clean, focused)
+- Periodic view shows only non-monthly items (organized by due status)
+- Archive view shows completed EMIs (regardless of frequency)
+- Export/Import preserves all frequency settings and cycle states
+
+### **�🗃️ Intelligent Archive Management**
 
 - Completed EMIs automatically archive when end date passes
 - Separate archive view to review past items
@@ -341,9 +399,9 @@ webView.loadUrl("file:///android_asset/index.html");
 
 It is designed **only** for:
 
-- Fixed monthly expenses
+- Fixed recurring expenses (monthly, quarterly, half-yearly, yearly, custom)
 - EMIs with clear end dates
-- Knowing your _mandatory monthly payment_ — fast and reliably
+- Knowing your _mandatory payment obligations_ — fast and reliably
 
 ---
 
@@ -378,7 +436,7 @@ Every line of code is open for inspection. No hidden trackers, no backdoors.
 
 1. Click **"📥 Export"** button in header
 2. Saves as `emi-tracker-backup-YYYY-MM-DD.json`
-3. Includes both active AND archived items
+3. Includes active items (monthly & periodic), archived items, and preferences
 4. Store in cloud (Google Drive, Dropbox, etc.)
 
 ### **Import**
@@ -387,7 +445,8 @@ Every line of code is open for inspection. No hidden trackers, no backdoors.
 2. Select your `.json` file
 3. Choose to merge with existing data or replace
 4. Handles both old format (array) and new format (active/archived split)
-5. Auto-archives completed items during import
+5. Preserves payment frequencies and cycle states
+6. Auto-archives completed items during import
 
 **⚠️ Important**: Browser cache clears can delete data. **Export regularly!**
 
@@ -410,6 +469,51 @@ A: When an EMI's end date passes, it automatically moves to the archive on next 
 ### **Q: What's the difference between EMI and Constant Expense?**
 
 A: **EMI** has a fixed end date (like a car loan ending in 2027). **Constant Expense** is ongoing with no end date (like rent or Netflix).
+
+### **Q: What are periodic payments and how do they work?**
+
+A: **Periodic payments** are expenses that occur at intervals other than monthly — like quarterly insurance, half-yearly property tax, or yearly subscriptions. Instead of tracking them as "monthly equivalent," you track them naturally:
+
+1. Choose frequency: Quarterly, Half-Yearly, Yearly, or Custom
+2. Set cycle start date (when the payment cycle began)
+3. App calculates next due date automatically
+4. Payment appears in "Due Now" when it's time to pay
+5. Mark as paid, and it moves to "Paid This Cycle"
+6. On the next due date, it resets automatically
+
+This keeps your monthly view clean while tracking non-monthly expenses accurately.
+
+### **Q: What's the difference between Monthly and Periodic views?**
+
+A: The app has a **3-tab view system**:
+
+- **📅 Monthly** — Shows only items with monthly payment frequency
+- **🔄 Periodic** — Shows only items with quarterly, half-yearly, yearly, or custom frequencies
+- **📦 Archive** — Shows completed EMIs (all frequencies)
+
+This separation keeps each view focused and clutter-free. Your monthly budget only shows monthly items, while periodic items are managed separately by their own cycles.
+
+### **Q: Can I use custom payment frequencies?**
+
+A: Yes! The **Custom** frequency option lets you set any interval in days or months. Examples:
+
+- Every 45 days
+- Every 2.5 months
+- Every 90 days
+- Every 1.5 months
+
+Just select "Custom", enter the number, and choose "days" or "months" as the unit.
+
+### **Q: How does payment tracking work for periodic items?**
+
+A: Periodic items use **cycle-based tracking** instead of monthly tracking:
+
+- When a periodic item's due date arrives, it shows in "Due Now"
+- You mark it as paid, and it moves to "Paid This Cycle"
+- The payment status stays "paid" until the next due date arrives
+- Then it automatically resets and becomes due again
+
+This is different from monthly items, which reset every calendar month.
 
 ### **Q: What happens to payment tracking each month?**
 
@@ -518,21 +622,23 @@ Instead, we chose to keep your data 100% private, even if it meant saying "no" t
 
 ## 🆚 **Why Choose This Over Other Apps?**
 
-| Feature                  | Other Apps | EMI Tracker |
-| ------------------------ | ---------- | ----------- |
-| Requires Account         | ✅ Yes     | ❌ No       |
-| Cloud Sync Required      | ✅ Yes     | ❌ No       |
-| Works Offline            | ❌ No      | ✅ Yes      |
-| Monthly Payment Tracking | Sometimes  | ✅ Yes      |
-| Seal Mode (Lock Status)  | ❌ No      | ✅ Yes      |
-| Freedom Timeline         | ❌ No      | ✅ Yes      |
-| Auto-Archive Completed   | ❌ No      | ✅ Yes      |
-| Auto-Reset Monthly       | ❌ No      | ✅ Yes      |
-| Push Notifications       | ✅ Yes     | ❌ No       |
-| Privacy First            | ❌ No      | ✅ Yes      |
-| 100% Free                | ❌ No      | ✅ Yes      |
-| Zero Dependencies        | ❌ No      | ✅ Yes      |
-| Open Source              | ❌ No      | ✅ Yes      |
+| Feature                     | Other Apps | EMI Tracker |
+| --------------------------- | ---------- | ----------- |
+| Requires Account            | ✅ Yes     | ❌ No       |
+| Cloud Sync Required         | ✅ Yes     | ❌ No       |
+| Works Offline               | ❌ No      | ✅ Yes      |
+| Monthly Payment Tracking    | Sometimes  | ✅ Yes      |
+| Periodic Payment Frequencies| ❌ No      | ✅ Yes      |
+| Custom Intervals            | ❌ No      | ✅ Yes      |
+| Seal Mode (Lock Status)     | ❌ No      | ✅ Yes      |
+| Freedom Timeline            | ❌ No      | ✅ Yes      |
+| Auto-Archive Completed      | ❌ No      | ✅ Yes      |
+| Auto-Reset Monthly          | ❌ No      | ✅ Yes      |
+| Push Notifications          | ✅ Yes     | ❌ No       |
+| Privacy First               | ❌ No      | ✅ Yes      |
+| 100% Free                   | ❌ No      | ✅ Yes      |
+| Zero Dependencies           | ❌ No      | ✅ Yes      |
+| Open Source                 | ❌ No      | ✅ Yes      |
 
 ---
 
@@ -551,6 +657,7 @@ Instead, we chose to keep your data 100% private, even if it meant saying "no" t
 ## 👤 **User Journey**
 
 **Day 1**: Add all your EMIs and recurring expenses (home loan, car EMI, rent, Netflix)  
+**Day 1**: Add quarterly car insurance to Periodic view (₹20,000 every 3 months)  
 **Day 1**: 🎯 Freedom Timeline appears — "Debt-Free: Dec 15, 2028 • 2y 11m away"  
 **Day 5**: Mark "Home Loan" as paid ✓ — monthly total updates automatically  
 **Day 6**: Seal "Home Loan" 🔒 — Now it's locked, no accidental unchecking  
@@ -558,8 +665,9 @@ Instead, we chose to keep your data 100% private, even if it meant saying "no" t
 **Day 15**: All items paid! Seal remaining → 🎉 "Financial peace of mind!"  
 **Day 20**: Try to edit sealed item → Blocked with message "🔒 Cannot edit sealed payments"  
 **Next Month (1st)**: All seals auto-unlock, payment status resets, start fresh  
+**3 Months Later**: Car insurance shows "Due Now" in Periodic view → Pay it, mark as paid  
 **6 Months Later**: Car EMI completed → Auto-archived, Freedom Timeline updates to new date  
-**1 Year Later**: Export backup (with seal state), import to new device, seals preserved  
+**1 Year Later**: Export backup (includes monthly, periodic, archived items), import to new device  
 **2 Years Later**: Click Freedom Timeline → See "6 months away!" → Motivation boost 🚀
 
 ---
@@ -577,6 +685,10 @@ Instead, we chose to keep your data 100% private, even if it meant saying "no" t
 - [x] **Multi-seal support (seal items progressively)**
 - [x] **Seal state export/import with month awareness**
 - [x] **🎯 Financial Freedom Timeline (debt-free date & countdown)**
+- [x] **🔄 Periodic Payment Frequencies (quarterly, half-yearly, yearly, custom)**
+- [x] **3-tab view system (Monthly | Periodic | Archive)**
+- [x] **Cycle-based tracking for non-monthly payments**
+- [x] **Frequency filtering and smart due status**
 - [x] Auto-archive system
 - [x] Category-based separation (Debt/Savings)
 - [x] Celebration mode for completed payments
