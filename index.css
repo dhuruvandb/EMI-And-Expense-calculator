@@ -512,6 +512,10 @@ body.dark-mode .data-btn:disabled {
   min-width: 200px;
 }
 
+.seal-group {
+  margin-left: 20px;
+}
+
 .sort-label {
   font-size: 13px;
   font-weight: 600;
@@ -616,6 +620,7 @@ body.dark-mode .data-btn:disabled {
 .periodic-freq-filter {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 10px 16px;
   background: var(--bg-secondary);
