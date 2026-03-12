@@ -343,11 +343,16 @@ function wasItemSealed(emi) {
   }
   
   // Check if this item exists in the sealed snapshot
-  return sealState.sealedItems.some(sealed => 
-    sealed.emiName === emi.emiName && 
-    sealed.emiAmount === emi.emiAmount && 
-    sealed.dueDate === emi.dueDate
-  );
+  return sealState.sealedItems.some(sealed => {
+    const nameMatch = sealed.emiName === emi.emiName;
+    const amountMatch = sealed.emiAmount === emi.emiAmount;
+    // For periodic items, match by nextDueDate; for monthly, match by dueDate
+    const isPeriodicItem = emi.paymentFrequency && emi.paymentFrequency !== 'monthly';
+    if (isPeriodicItem) {
+      return nameMatch && amountMatch && sealed.nextDueDate === emi.nextDueDate;
+    }
+    return nameMatch && amountMatch && sealed.dueDate === emi.dueDate;
+  });
 }
 
 // Check if all current active items are sealed
@@ -564,7 +569,9 @@ function executeSeal() {
     .map(emi => ({
       emiName: emi.emiName,
       emiAmount: emi.emiAmount,
-      dueDate: emi.dueDate
+      dueDate: emi.dueDate,
+      nextDueDate: emi.nextDueDate || null,
+      paymentFrequency: emi.paymentFrequency || 'monthly'
     }));
   
   // Combine existing sealed items with new ones
@@ -1006,6 +1013,34 @@ function calculatePeriodLeft(endDate, type, category) {
   return { text: periodText.trim(), class: statusClass };
 }
 
+// Calculate period left for periodic (non-monthly) items based on next due date
+function calculatePeriodicPeriodLeft(emi) {
+  if (isPeriodicItemDue(emi)) {
+    return { text: "Due Now", class: "normal" };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const nextDue = new Date(emi.nextDueDate);
+  nextDue.setHours(0, 0, 0, 0);
+
+  const diffTime = nextDue - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  const months = Math.floor(diffDays / 30);
+  const days = diffDays % 30;
+
+  let periodText = "";
+  if (months > 0) periodText += `${months}m `;
+  if (days > 0 || periodText === "") periodText += `${days}d`;
+
+  let statusClass = "critical";
+  if (diffDays <= 30) statusClass = "normal";
+  else if (diffDays <= 90) statusClass = "warning";
+
+  return { text: periodText.trim(), class: statusClass };
+}
+
 // Format currency
 function formatCurrency(amount) {
   if (!amount && amount !== 0) return "—";
@@ -1311,7 +1346,10 @@ function generateRowHTML(emi, index) {
   const category = emi.emiCategory || "expense";
   const currentMonth = getCurrentMonth();
   const isPaid = isPaidInCurrentCycle(emi);
-  const periodLeft = calculatePeriodLeft(emi.emiEndDate, emi.type, category);
+  const isPeriodic = emi.paymentFrequency && emi.paymentFrequency !== 'monthly';
+  const periodLeft = isPeriodic
+    ? calculatePeriodicPeriodLeft(emi)
+    : calculatePeriodLeft(emi.emiEndDate, emi.type, category);
   const sealed = wasItemSealed(emi); // Check if THIS specific item was sealed
 
   let typeIcon, typeText, rowClass;
