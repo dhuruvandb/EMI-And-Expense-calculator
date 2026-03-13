@@ -1428,6 +1428,31 @@ function updateSummary(emis) {
   const currentMonth = getCurrentMonth();
   const totalEMIs = emis.length;
 
+  // Calculate Monthly Commitment Baseline (full obligation, skipping only completed items)
+  const today = new Date();
+  let monthlyCommitment = 0;
+  let commitmentDebt = 0;
+  let commitmentSavings = 0;
+
+  emis.forEach((emi) => {
+    if (emi.emiEndDate) {
+      const end = new Date(emi.emiEndDate);
+      if (end < today) {
+        return;
+      }
+    }
+
+    const amount = parseFloat(emi.emiAmount || 0);
+    monthlyCommitment += amount;
+
+    const category = emi.emiCategory || "expense";
+    if (category === "savings") {
+      commitmentSavings += amount;
+    } else {
+      commitmentDebt += amount;
+    }
+  });
+
   let totalMonthly = 0;
   let debtAmount = 0;
   let savingsAmount = 0;
@@ -1441,7 +1466,6 @@ function updateSummary(emis) {
 
     // Skip if completed (end date has passed)
     if (emi.emiEndDate) {
-      const today = new Date();
       const end = new Date(emi.emiEndDate);
       if (end < today) {
         return;
@@ -1472,11 +1496,9 @@ function updateSummary(emis) {
   document.getElementById("totalEMIs").textContent = totalEMIs;
   document.getElementById("totalMonthly").textContent =
     formatCurrency(totalMonthly);
-  document.getElementById(
-    "monthlyBreakdown"
-  ).innerHTML = `Debt: ${formatCurrency(
-    debtAmount
-  )} | Savings: ${formatCurrency(savingsAmount)}`;
+  document.getElementById("monthlyBreakdown").innerHTML =
+    `Debt: ${formatCurrency(commitmentDebt)} | Savings: ${formatCurrency(commitmentSavings)}<br>` +
+    `<span class="commitment-baseline">(Monthly Commitment: ${formatCurrency(monthlyCommitment)})</span>`;
   document.getElementById("totalDebt").textContent = formatCurrency(totalDebt);
 }
 
