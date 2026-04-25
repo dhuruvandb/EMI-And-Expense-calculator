@@ -1464,6 +1464,27 @@ function updateSummary(emis) {
   // MONTHLY VIEW — existing logic completely unchanged
   const currentMonth = getCurrentMonth();
   const totalEMIs = emis.length;
+  const today = new Date();
+
+  // Commitment baseline: total of all active (non-expired) items regardless of paid status
+  let monthlyCommitment = 0;
+  let commitmentDebt = 0;
+  let commitmentSavings = 0;
+
+  emis.forEach((emi) => {
+    if (emi.emiEndDate) {
+      const end = new Date(emi.emiEndDate);
+      if (end < today) return;
+    }
+    const amount = parseFloat(emi.emiAmount || 0);
+    monthlyCommitment += amount;
+    const category = emi.emiCategory || "expense";
+    if (category === "savings") {
+      commitmentSavings += amount;
+    } else {
+      commitmentDebt += amount;
+    }
+  });
 
   let totalMonthly = 0;
   let debtAmount = 0;
@@ -1478,7 +1499,6 @@ function updateSummary(emis) {
 
     // Skip if completed (end date has passed)
     if (emi.emiEndDate) {
-      const today = new Date();
       const end = new Date(emi.emiEndDate);
       if (end < today) {
         return;
@@ -1514,6 +1534,17 @@ function updateSummary(emis) {
   ).innerHTML = `Debt: ${formatCurrency(
     debtAmount
   )} | Savings: ${formatCurrency(savingsAmount)}`;
+
+  // Commitment baseline — only show when totalMonthly differs from commitment (i.e. some items paid)
+  const commitmentEl = document.getElementById("monthlyCommitment");
+  if (commitmentEl) {
+    if (totalMonthly < monthlyCommitment) {
+      commitmentEl.textContent = `Monthly Commitment: ${formatCurrency(monthlyCommitment)} (Debt: ${formatCurrency(commitmentDebt)} | Savings: ${formatCurrency(commitmentSavings)})`;
+    } else {
+      commitmentEl.textContent = '';
+    }
+  }
+
   document.getElementById("totalDebt").textContent = formatCurrency(totalDebt);
 }
 
@@ -1551,6 +1582,10 @@ function updatePeriodicSummary() {
   // Hide freedom timeline in periodic view
   const freedomCard = document.getElementById('freedomCard');
   if (freedomCard) freedomCard.style.display = 'none';
+
+  // Clear commitment baseline (not applicable in periodic view)
+  const commitmentEl = document.getElementById('monthlyCommitment');
+  if (commitmentEl) commitmentEl.textContent = '';
 }
 
 // Open modal
